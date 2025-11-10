@@ -1,116 +1,1081 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KrishiSetu - Agriculture Platform</title>
-  <script src="/_sdk/element_sdk.js"></script>
-  <script src="/_sdk/data_sdk.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; position: relative; }
-    * { box-sizing: border-box; }
-    html, body { height: 100%; overflow-x: hidden; }
-    .gradient-bg { background: linear-gradient(135deg, #2d5016 0%, #4a7c2c 50%, #6b9d3e 100%); position: relative; overflow: hidden; }
-    .gradient-bg::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 50px 50px; animation: moveBackground 20s linear infinite; }
-    @keyframes moveBackground { 0% { transform: translate(0, 0); } 100% { transform: translate(50px, 50px); } }
-    .gradient-bg-light { background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 50%, #a5d6a7 100%); position: relative; overflow: hidden; }
-    .gradient-bg-light::after { content: '🌾'; position: absolute; font-size: 100px; opacity: 0.05; animation: floatCrop 15s ease-in-out infinite; pointer-events: none; }
-    @keyframes floatCrop { 0%, 100% { transform: translate(10%, 10%) rotate(0deg); opacity: 0.05; } 50% { transform: translate(80%, 80%) rotate(180deg); opacity: 0.1; } }
-    .dark-mode { background: linear-gradient(135deg, #1a2f0f 0%, #2d4a1e 50%, #3d5a2a 100%); color: #e8f5e9; }
-    .card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 16px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden; }
-    .card::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(107, 157, 62, 0.2), transparent); transition: left 0.5s ease; }
-    .card:hover::before { left: 100%; }
-    .dark-mode .card { background: rgba(45, 80, 22, 0.9); color: #e8f5e9; }
-    .card:hover { transform: translateY(-8px) scale(1.02); box-shadow: 0 16px 64px rgba(107, 157, 62, 0.3); }
-    .btn { padding: 12px 24px; border-radius: 8px; font-weight: 600; transition: all 0.3s ease; cursor: pointer; border: none; position: relative; overflow: hidden; }
-    .btn::after { content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0; border-radius: 50%; background: rgba(255, 255, 255, 0.3); transform: translate(-50%, -50%); transition: width 0.6s, height 0.6s; }
-    .btn:active::after { width: 300px; height: 300px; }
-    .btn-primary { background: linear-gradient(135deg, #4a7c2c 0%, #6b9d3e 100%); color: white; box-shadow: 0 4px 15px rgba(74, 124, 44, 0.4); }
-    .btn-primary:hover { background: linear-gradient(135deg, #3d6623 0%, #5a8c32 100%); transform: translateY(-2px) scale(1.05); box-shadow: 0 6px 20px rgba(74, 124, 44, 0.6); }
-    .btn-secondary { background: rgba(107, 157, 62, 0.2); color: #2d5016; border: 2px solid #6b9d3e; }
-    .btn-secondary:hover { background: rgba(107, 157, 62, 0.4); transform: translateY(-2px); }
-    .dark-mode .btn-secondary { background: rgba(107, 157, 62, 0.3); color: #a5d6a7; }
-    .input-field { width: 100%; padding: 12px 16px; border: 2px solid #c8e6c9; border-radius: 8px; font-size: 16px; transition: all 0.3s ease; background: white; position: relative; }
-    .dark-mode .input-field { background: rgba(45, 80, 22, 0.5); border-color: #4a7c2c; color: #e8f5e9; }
-    .input-field:focus { outline: none; border-color: #6b9d3e; box-shadow: 0 0 0 4px rgba(107, 157, 62, 0.2), 0 4px 12px rgba(107, 157, 62, 0.3); transform: translateY(-2px); }
-    .input-field:hover { border-color: #a5d6a7; box-shadow: 0 2px 8px rgba(107, 157, 62, 0.1); }
-    .theme-toggle { position: relative; width: 60px; height: 30px; background: linear-gradient(135deg, #c8e6c9 0%, #a5d6a7 100%); border-radius: 30px; cursor: pointer; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1); }
-    .dark-mode .theme-toggle { background: linear-gradient(135deg, #2d5016 0%, #1a2f0f 100%); box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3); }
-    .theme-toggle-slider { position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; background: #ffd700; border-radius: 50%; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); animation: glow-sun 2s ease-in-out infinite; }
-    @keyframes glow-sun { 0%, 100% { box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4); } 50% { box-shadow: 0 2px 15px rgba(255, 215, 0, 0.8); } }
-    @keyframes glow-moon { 0%, 100% { box-shadow: 0 2px 8px rgba(74, 124, 44, 0.4); } 50% { box-shadow: 0 2px 15px rgba(74, 124, 44, 0.8); } }
-    .dark-mode .theme-toggle-slider { left: 33px; background: linear-gradient(135deg, #4a7c2c 0%, #6b9d3e 100%); animation: glow-moon 2s ease-in-out infinite; }
-    .fade-in { animation: fadeIn 0.5s ease-in; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    .pulse { animation: pulse 2s infinite; }
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
-    .chart-container { width: 100%; height: 250px; position: relative; }
-    .status-healthy { color: #4caf50; animation: pulse-green 2s ease-in-out infinite; }
-    .status-warning { color: #ff9800; animation: pulse-orange 2s ease-in-out infinite; }
-    .status-critical { color: #f44336; animation: pulse-red 1s ease-in-out infinite; }
-    @keyframes pulse-green { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.7; transform: scale(1.2); } }
-    @keyframes pulse-orange { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.7; transform: scale(1.3); } }
-    @keyframes pulse-red { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.8; transform: scale(1.4); } }
-    .crop-status-icon { font-size: 60px; animation: rotate-scale 3s ease-in-out infinite; }
-    @keyframes rotate-scale { 0%, 100% { transform: rotate(0deg) scale(1); } 25% { transform: rotate(-10deg) scale(1.1); } 75% { transform: rotate(10deg) scale(1.1); } }
-    .chat-bubble { max-width: 70%; padding: 12px 16px; border-radius: 16px; margin-bottom: 12px; word-wrap: break-word; animation: slideIn 0.4s ease-out; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; }
-    @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    .chat-bubble:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); }
-    .chat-bubble-farmer { background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); align-self: flex-start; border-bottom-left-radius: 4px; }
-    .dark-mode .chat-bubble-farmer { background: linear-gradient(135deg, rgba(107, 157, 62, 0.3) 0%, rgba(74, 124, 44, 0.3) 100%); }
-    .chat-bubble-admin { background: linear-gradient(135deg, #6b9d3e 0%, #4a7c2c 100%); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
-    .loading-spinner { border: 4px solid rgba(107, 157, 62, 0.2); border-top: 4px solid #6b9d3e; border-right: 4px solid #4a7c2c; border-radius: 50%; width: 50px; height: 50px; animation: spin 0.8s cubic-bezier(0.5, 0, 0.5, 1) infinite; box-shadow: 0 0 20px rgba(107, 157, 62, 0.3); }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    .floating-particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
-    .particle { position: absolute; font-size: 20px; opacity: 0.3; animation: float 10s ease-in-out infinite; }
-    @keyframes float { 0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.3; } 50% { transform: translateY(-100px) rotate(180deg); opacity: 0.6; } }
-    @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-    .scroll-container { max-height: 400px; overflow-y: auto; }
-    .scroll-container::-webkit-scrollbar { width: 8px; }
-    .scroll-container::-webkit-scrollbar-track { background: rgba(200, 230, 201, 0.3); border-radius: 4px; }
-    .scroll-container::-webkit-scrollbar-thumb { background: #6b9d3e; border-radius: 4px; }
-    .iot-card { background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(232, 245, 233, 0.9) 100%); padding: 20px; border-radius: 12px; text-align: center; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); animation: fadeInUp 0.6s ease-out backwards; }
-    .iot-card:nth-child(1) { animation-delay: 0.1s; }
-    .iot-card:nth-child(2) { animation-delay: 0.2s; }
-    .iot-card:nth-child(3) { animation-delay: 0.3s; }
-    .iot-card:nth-child(4) { animation-delay: 0.4s; }
-    @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-    .dark-mode .iot-card { background: linear-gradient(135deg, rgba(45, 80, 22, 0.8) 0%, rgba(61, 90, 42, 0.8) 100%); }
-    .iot-card:hover { transform: scale(1.1) rotate(2deg); box-shadow: 0 8px 30px rgba(107, 157, 62, 0.4); }
-    .iot-card .text-3xl { animation: bounce 2s ease-in-out infinite; }
-    @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-    .language-btn { padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; border: 2px solid #6b9d3e; background: transparent; }
-    .language-btn.active { background: #6b9d3e; color: white; }
-    .chat-fab { position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #4a7c2c 0%, #6b9d3e 100%); color: white; display: flex; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; box-shadow: 0 4px 20px rgba(74, 124, 44, 0.5); transition: all 0.3s ease; z-index: 1000; animation: pulse-fab 2s ease-in-out infinite; }
-    @keyframes pulse-fab { 0%, 100% { transform: scale(1); box-shadow: 0 4px 20px rgba(74, 124, 44, 0.5); } 50% { transform: scale(1.1); box-shadow: 0 6px 30px rgba(74, 124, 44, 0.8); } }
-    .chat-fab:hover { transform: scale(1.15) rotate(10deg); box-shadow: 0 6px 30px rgba(74, 124, 44, 0.8); }
-    .chat-fab-badge { position: absolute; top: -5px; right: -5px; background: #f44336; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; animation: bounce 1s ease-in-out infinite; }
-    .chat-modal { position: fixed; bottom: 100px; right: 30px; width: 400px; max-width: calc(100vw - 60px); max-height: 600px; background: white; border-radius: 16px; box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3); z-index: 999; display: flex; flex-direction: column; animation: slideUp 0.3s ease-out; overflow: hidden; }
-    .dark-mode .chat-modal { background: #2d5016; color: #e8f5e9; }
-    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    .chat-modal-header { background: linear-gradient(135deg, #4a7c2c 0%, #6b9d3e 100%); color: white; padding: 16px; display: flex; justify-content: space-between; align-items: center; border-radius: 16px 16px 0 0; }
-    .chat-modal-body { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
-    .chat-modal-footer { padding: 16px; border-top: 2px solid rgba(107, 157, 62, 0.2); display: flex; gap: 8px; }
-    .chat-close-btn { background: rgba(255, 255, 255, 0.2); border: none; color: white; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; }
-    .chat-close-btn:hover { background: rgba(255, 255, 255, 0.3); transform: rotate(90deg); }
-    .loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #2d5016 0%, #4a7c2c 50%, #6b9d3e 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; }
-    .tree-animation { width: 200px; height: 200px; position: relative; display: flex; align-items: center; justify-content: center; }
-    /* ... (rest of styles unchanged) ... */
-    /* Fix: ensure language dropdown is shown above cards even when they use overflow:hidden */
-    .language-dropdown { position: relative; z-index: 20000; }
-    .language-dropdown-menu { position: absolute; top: 100%; right: 0; margin-top: 8px; background: white; border: 2px solid #6b9d3e; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); z-index: 20001; min-width: 180px; max-height: 300px; overflow-y: auto; display: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-    .language-dropdown-menu.open { display: block; }
-    /* Make sure when we position it to body we have a "floating" style to avoid clipping */
-    .language-floating { position: fixed !important; transform-origin: top right; }
-  </style>
-  <style>@view-transition { navigation: auto; }</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KrishiSetu - Agriculture Platform</title>
+    <script src="/_sdk/element_sdk.js"></script>
+    <script src="/_sdk/data_sdk.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            position: relative;
+        }
+        * {
+            box-sizing: border-box;
+        }
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #2d5016 0%, #4a7c2c 50%, #6b9d3e 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .gradient-bg::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: moveBackground 20s linear infinite;
+        }
+        @keyframes moveBackground {
+            0% {
+                transform: translate(0, 0);
+            }
+            100% {
+                transform: translate(50px, 50px);
+            }
+        }
+        .gradient-bg-light {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 50%, #a5d6a7 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .gradient-bg-light::after {
+            content: '🌾';
+            position: absolute;
+            font-size: 100px;
+            opacity: 0.05;
+            animation: floatCrop 15s ease-in-out infinite;
+            pointer-events: none;
+        }
+        @keyframes floatCrop {
+            0%, 100% {
+                transform: translate(10%, 10%) rotate(0deg);
+                opacity: 0.05;
+            }
+            50% {
+                transform: translate(80%, 80%) rotate(180deg);
+                opacity: 0.1;
+            }
+        }
+        .dark-mode {
+            background: linear-gradient(135deg, #1a2f0f 0%, #2d4a1e 50%, #3d5a2a 100%);
+            color: #e8f5e9;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(107, 157, 62, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        .card:hover::before {
+            left: 100%;
+        }
+        .dark-mode .card {
+            background: rgba(45, 80, 22, 0.9);
+            color: #e8f5e9;
+        }
+        .card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 16px 64px rgba(107, 157, 62, 0.3);
+        }
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        .btn:active::after {
+            width: 300px;
+            height: 300px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #4a7c2c 0%, #6b9d3e 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(74, 124, 44, 0.4);
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #3d6623 0%, #5a8c32 100%);
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 6px 20px rgba(74, 124, 44, 0.6);
+        }
+        .btn-secondary {
+            background: rgba(107, 157, 62, 0.2);
+            color: #2d5016;
+            border: 2px solid #6b9d3e;
+        }
+        .btn-secondary:hover {
+            background: rgba(107, 157, 62, 0.4);
+            transform: translateY(-2px);
+        }
+        .dark-mode .btn-secondary {
+            background: rgba(107, 157, 62, 0.3);
+            color: #a5d6a7;
+        }
+        .input-field {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #c8e6c9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+            position: relative;
+        }
+        .dark-mode .input-field {
+            background: rgba(45, 80, 22, 0.5);
+            border-color: #4a7c2c;
+            color: #e8f5e9;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #6b9d3e;
+            box-shadow: 0 0 0 4px rgba(107, 157, 62, 0.2), 0 4px 12px rgba(107, 157, 62, 0.3);
+            transform: translateY(-2px);
+        }
+        .input-field:hover {
+            border-color: #a5d6a7;
+            box-shadow: 0 2px 8px rgba(107, 157, 62, 0.1);
+        }
+        .theme-toggle {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: linear-gradient(135deg, #c8e6c9 0%, #a5d6a7 100%);
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .dark-mode .theme-toggle {
+            background: linear-gradient(135deg, #2d5016 0%, #1a2f0f 100%);
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        .theme-toggle-slider {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: #ffd700;
+            border-radius: 50%;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            animation: glow-sun 2s ease-in-out infinite;
+        }
+        @keyframes glow-sun {
+            0%, 100% {
+                box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4);
+            }
+            50% {
+                box-shadow: 0 2px 15px rgba(255, 215, 0, 0.8);
+            }
+        }
+        @keyframes glow-moon {
+            0%, 100% {
+                box-shadow: 0 2px 8px rgba(74, 124, 44, 0.4);
+            }
+            50% {
+                box-shadow: 0 2px 15px rgba(74, 124, 44, 0.8);
+            }
+        }
+        .dark-mode .theme-toggle-slider {
+            left: 33px;
+            background: linear-gradient(135deg, #4a7c2c 0%, #6b9d3e 100%);
+            animation: glow-moon 2s ease-in-out infinite;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+        }
+        .chart-container {
+            width: 100%;
+            height: 250px;
+            position: relative;
+        }
+        .status-healthy {
+            color: #4caf50;
+            animation: pulse-green 2s ease-in-out infinite;
+        }
+        .status-warning {
+            color: #ff9800;
+            animation: pulse-orange 2s ease-in-out infinite;
+        }
+        .status-critical {
+            color: #f44336;
+            animation: pulse-red 1s ease-in-out infinite;
+        }
+        @keyframes pulse-green {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.7;
+                transform: scale(1.2);
+            }
+        }
+        @keyframes pulse-orange {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.7;
+                transform: scale(1.3);
+            }
+        }
+        @keyframes pulse-red {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.8;
+                transform: scale(1.4);
+            }
+        }
+        .crop-status-icon {
+            font-size: 60px;
+            animation: rotate-scale 3s ease-in-out infinite;
+        }
+        @keyframes rotate-scale {
+            0%, 100% {
+                transform: rotate(0deg) scale(1);
+            }
+            25% {
+                transform: rotate(-10deg) scale(1.1);
+            }
+            75% {
+                transform: rotate(10deg) scale(1.1);
+            }
+        }
+        .chat-bubble {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 16px;
+            margin-bottom: 12px;
+            word-wrap: break-word;
+            animation: slideIn 0.4s ease-out;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .chat-bubble:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        .chat-bubble-farmer {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+        .dark-mode .chat-bubble-farmer {
+            background: linear-gradient(135deg, rgba(107, 157, 62, 0.3) 0%, rgba(74, 124, 44, 0.3) 100%);
+        }
+        .chat-bubble-admin {
+            background: linear-gradient(135deg, #6b9d3e 0%, #4a7c2c 100%);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+        .loading-spinner {
+            border: 4px solid rgba(107, 157, 62, 0.2);
+            border-top: 4px solid #6b9d3e;
+            border-right: 4px solid #4a7c2c;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 0.8s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+            box-shadow: 0 0 20px rgba(107, 157, 62, 0.3);
+        }
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        .floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .particle {
+            position: absolute;
+            font-size: 20px;
+            opacity: 0.3;
+            animation: float 10s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0.3;
+            }
+            50% {
+                transform: translateY(-100px) rotate(180deg);
+                opacity: 0.6;
+            }
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .scroll-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .scroll-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        .scroll-container::-webkit-scrollbar-track {
+            background: rgba(200, 230, 201, 0.3);
+            border-radius: 4px;
+        }
+        .scroll-container::-webkit-scrollbar-thumb {
+            background: #6b9d3e;
+            border-radius: 4px;
+        }
+        .iot-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(232, 245, 233, 0.9) 100%);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            animation: fadeInUp 0.6s ease-out backwards;
+        }
+        .iot-card:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+        .iot-card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        .iot-card:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+        .iot-card:nth-child(4) {
+            animation-delay: 0.4s;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .dark-mode .iot-card {
+            background: linear-gradient(135deg, rgba(45, 80, 22, 0.8) 0%, rgba(61, 90, 42, 0.8) 100%);
+        }
+        .iot-card:hover {
+            transform: scale(1.1) rotate(2deg);
+            box-shadow: 0 8px 30px rgba(107, 157, 62, 0.4);
+        }
+        .iot-card .text-3xl {
+            animation: bounce 2s ease-in-out infinite;
+        }
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        .language-btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid #6b9d3e;
+            background: transparent;
+        }
+        .language-btn.active {
+            background: #6b9d3e;
+            color: white;
+        }
+        .chat-fab {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4a7c2c 0%, #6b9d3e 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(74, 124, 44, 0.5);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            animation: pulse-fab 2s ease-in-out infinite;
+        }
+        @keyframes pulse-fab {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 4px 20px rgba(74, 124, 44, 0.5);
+            }
+            50% {
+                transform: scale(1.1);
+                box-shadow: 0 6px 30px rgba(74, 124, 44, 0.8);
+            }
+        }
+        .chat-fab:hover {
+            transform: scale(1.15) rotate(10deg);
+            box-shadow: 0 6px 30px rgba(74, 124, 44, 0.8);
+        }
+        .chat-fab-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #f44336;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            animation: bounce 1s ease-in-out infinite;
+        }
+        .chat-modal {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 400px;
+            max-width: calc(100vw - 60px);
+            max-height: 600px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            animation: slideUp 0.3s ease-out;
+            overflow: hidden;
+        }
+        .dark-mode .chat-modal {
+            background: #2d5016;
+            color: #e8f5e9;
+        }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .chat-modal-header {
+            background: linear-gradient(135deg, #4a7c2c 0%, #6b9d3e 100%);
+            color: white;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 16px 16px 0 0;
+        }
+        .chat-modal-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .chat-modal-footer {
+            padding: 16px;
+            border-top: 2px solid rgba(107, 157, 62, 0.2);
+            display: flex;
+            gap: 8px;
+        }
+        .chat-close-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        .chat-close-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #2d5016 0%, #4a7c2c 50%, #6b9d3e 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        .tree-animation {
+            width: 200px;
+            height: 200px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .seedling-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        .soil-line {
+            position: absolute;
+            bottom: 30%;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #8b4513, transparent);
+            animation: soilAppear 0.3s ease-out forwards;
+            opacity: 0;
+        }
+        @keyframes soilAppear {
+            to {
+                opacity: 0.7;
+            }
+        }
+        .seed {
+            position: absolute;
+            bottom: 30%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 16px;
+            height: 16px;
+            background: radial-gradient(circle, #d4a574, #8b6f47);
+            border-radius: 50%;
+            animation: seedPulse 0.5s ease-in-out 0.3s forwards;
+            opacity: 0;
+        }
+        @keyframes seedPulse {
+            0% {
+                opacity: 0;
+                transform: translateX(-50%) scale(0);
+            }
+            50% {
+                opacity: 1;
+                transform: translateX(-50%) scale(1.2);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(-50%) scale(1);
+            }
+        }
+        .sprout {
+            position: absolute;
+            bottom: 30%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 0;
+            background: linear-gradient(to top, #8b4513, #6b4423);
+            border-radius: 4px;
+            animation: trunkGrow 0.8s ease-out 0.8s forwards;
+        }
+        @keyframes trunkGrow {
+            to {
+                height: 100px;
+            }
+        }
+        .first-leaves {
+            position: absolute;
+            bottom: calc(30% + 100px);
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            animation: canopyAppear 0.6s ease-out 1.6s forwards;
+        }
+        @keyframes canopyAppear {
+            0% {
+                opacity: 0;
+                transform: translateX(-50%) scale(0);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(-50%) scale(1);
+            }
+        }
+        .leaf-left, .leaf-right {
+            position: absolute;
+            width: 50px;
+            height: 40px;
+            background: radial-gradient(ellipse at center, #6b9d3e, #4a7c2c);
+            border-radius: 50%;
+        }
+        .leaf-left {
+            right: 4px;
+            top: -10px;
+            animation: leafSway 2s ease-in-out 2.2s infinite;
+        }
+        .leaf-right {
+            left: 4px;
+            top: -10px;
+            animation: leafSway 2s ease-in-out 2.5s infinite alternate;
+        }
+        @keyframes leafSway {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+        .mature-plant {
+            position: absolute;
+            bottom: calc(30% + 100px);
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            animation: plantMature 0.6s ease-out 2.2s forwards;
+        }
+        @keyframes plantMature {
+            0% {
+                opacity: 0;
+                transform: translateX(-50%) scale(0.5);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(-50%) scale(1);
+            }
+        }
+        .plant-crown {
+            position: relative;
+            width: 120px;
+            height: 80px;
+        }
+        .crown-leaf {
+            position: absolute;
+            width: 60px;
+            height: 50px;
+            background: radial-gradient(ellipse at center, #6b9d3e, #4a7c2c);
+            border-radius: 50%;
+            transform-origin: center;
+        }
+        .crown-leaf:nth-child(1) {
+            top: 0;
+            left: 30px;
+            animation: crownGrow 0.4s ease-out 2.8s backwards;
+        }
+        .crown-leaf:nth-child(2) {
+            top: 10px;
+            left: 0;
+            animation: crownGrow 0.4s ease-out 3s backwards;
+        }
+        .crown-leaf:nth-child(3) {
+            top: 10px;
+            right: 0;
+            animation: crownGrow 0.4s ease-out 3.2s backwards;
+        }
+        .crown-leaf:nth-child(4) {
+            top: 30px;
+            left: 15px;
+            animation: crownGrow 0.4s ease-out 3.4s backwards;
+        }
+        .crown-leaf:nth-child(5) {
+            top: 30px;
+            right: 15px;
+            animation: crownGrow 0.4s ease-out 3.6s backwards;
+        }
+        @keyframes crownGrow {
+            0% {
+                opacity: 0;
+                transform: scale(0);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        .flower-bloom {
+            position: absolute;
+            bottom: -15px;
+            left: 20%;
+            width: 20px;
+            height: 20px;
+            opacity: 0;
+            animation: fruitAppear 0.5s ease-out 4s forwards;
+        }
+        @keyframes fruitAppear {
+            0% {
+                opacity: 0;
+                transform: translateY(-10px) scale(0);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        .petal {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: radial-gradient(circle, #ff6b6b, #c92a2a);
+            border-radius: 50%;
+            transform-origin: center;
+        }
+        .petal:nth-child(1) {
+            left: 0;
+            animation: fruitHang 2s ease-in-out 4.5s infinite;
+        }
+        .petal:nth-child(2) {
+            left: 25px;
+            animation: fruitHang 2s ease-in-out 4.7s infinite;
+        }
+        .petal:nth-child(3) {
+            left: 50px;
+            animation: fruitHang 2s ease-in-out 4.9s infinite;
+        }
+        .petal:nth-child(4) {
+            left: 75px;
+            top: 5px;
+            animation: fruitHang 2s ease-in-out 5.1s infinite;
+        }
+        .petal:nth-child(5) {
+            left: 100px;
+            animation: fruitHang 2s ease-in-out 5.3s infinite;
+        }
+        @keyframes fruitHang {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(5px);
+            }
+        }
+        .flower-center {
+            position: absolute;
+            top: -8px;
+            left: 0;
+            width: 2px;
+            height: 15px;
+            background: #8b4513;
+        }
+        .loading-text {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 40px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        .portal-toggle {
+            position: relative;
+            width: 300px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            overflow: hidden;
+        }
+        .portal-toggle-slider {
+            position: absolute;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(135deg, #6b9d3e 0%, #4a7c2c 100%);
+            border-radius: 30px;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        .portal-toggle-slider.admin {
+            transform: translateX(100%);
+        }
+        .portal-option {
+            flex: 1;
+            text-align: center;
+            font-weight: bold;
+            z-index: 1;
+            transition: color 0.3s ease;
+            padding: 10px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        .portal-option.active {
+            color: white;
+        }
+        .language-selector {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .language-btn-small {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(107, 157, 62, 0.5);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 12px;
+        }
+        .language-btn-small.active {
+            background: #6b9d3e;
+            color: white;
+            border-color: #6b9d3e;
+        }
+        .language-dropdown {
+            position: relative;
+            display: inline-block;
+            z-index: 9998;
+        }
+        .language-dropdown-button {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid #6b9d3e;
+            background: white;
+            color: #2d5016;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .dark-mode .language-dropdown-button {
+            background: rgba(45, 80, 22, 0.8);
+            color: #e8f5e9;
+            border-color: #6b9d3e;
+        }
+        .language-dropdown-button:hover {
+            background: #e8f5e9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(107, 157, 62, 0.3);
+        }
+        .dark-mode .language-dropdown-button:hover {
+            background: rgba(45, 80, 22, 0.95);
+        }
+        .language-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 8px;
+            background: white;
+            border: 2px solid #6b9d3e;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            z-index: 9999;
+            min-width: 150px;
+            max-height: 250px;
+            overflow-y: auto;
+            display: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .dark-mode .language-dropdown-menu {
+            background: #2d5016;
+            border-color: #6b9d3e;
+        }
+        .language-dropdown-menu.open {
+            display: block;
+        }
+        .language-dropdown-menu::-webkit-scrollbar {
+            width: 6px;
+        }
+        .language-dropdown-menu::-webkit-scrollbar-track {
+            background: rgba(200, 230, 201, 0.3);
+            border-radius: 3px;
+        }
+        .language-dropdown-menu::-webkit-scrollbar-thumb {
+            background: #6b9d3e;
+            border-radius: 3px;
+        }
+        .language-option {
+            padding: 10px 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #2d5016;
+        }
+        .dark-mode .language-option {
+            color: #e8f5e9;
+        }
+        .language-option:hover {
+            background: #e8f5e9;
+        }
+        .dark-mode .language-option:hover {
+            background: rgba(107, 157, 62, 0.3);
+        }
+        .language-option.active {
+            background: #6b9d3e;
+            color: white;
+            font-weight: bold;
+        }
+        .language-option.active:hover {
+            background: #5a8c32;
+        }
+        .helpline-section {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .helpline-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid #6b9d3e;
+            background: white;
+            color: #2d5016;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            text-decoration: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .dark-mode .helpline-btn {
+            background: rgba(45, 80, 22, 0.8);
+            color: #e8f5e9;
+        }
+        .helpline-btn:hover {
+            background: #e8f5e9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(107, 157, 62, 0.3);
+        }
+        .dark-mode .helpline-btn:hover {
+            background: rgba(45, 80, 22, 0.95);
+        }
+        .dark-mode .card h2, .dark-mode .card h3, .dark-mode .card h4, .dark-mode .card p, .dark-mode .card label, .dark-mode .card td, .dark-mode .card th {
+            color: #e8f5e9;
+        }
+        .dark-mode .text-gray-600, .dark-mode .text-gray-500 {
+            color: #c8e6c9 !important;
+        }
+    </style>
+    <style>
+        @view-transition {
+            navigation: auto;
+        }
+    </style>
 </head>
 <body>
-  <div id="app"></div>
-
-  <script>
-    const defaultConfig = { app_title: "KrishiSetu", app_tagline: "Empowering Farmers with Technology", admin_welcome: "Welcome to Admin Dashboard", farmer_welcome: "Welcome to Your Dashboard", primary_color: "#4a7c2c", secondary_color: "#6b9d3e", background_color: "#e8f5e9", text_color: "#1a2f0f", accent_color: "#ffd700" };
+<div id="app"></div>
+<script>
+    const defaultConfig = {
+        app_title: "KrishiSetu",
+        app_tagline: "Empowering Farmers with Technology",
+        admin_welcome: "Welcome to Admin Dashboard",
+        farmer_welcome: "Welcome to Your Dashboard",
+        primary_color: "#4a7c2c",
+        secondary_color: "#6b9d3e",
+        background_color: "#e8f5e9",
+        text_color: "#1a2f0f",
+        accent_color: "#ffd700"
+    };
     let currentData = [];
     let currentView = 'login';
     let currentPortal = null;
@@ -121,114 +1086,498 @@
     let isChatOpen = false;
     let loginPortalType = 'farmer';
     let isLoading = false;
-
-    // Demo marketplace and news data (will be persisted via dataSdk when available)
-    const demoNews = [
-      { id: 'news-1', title: 'Weather Alert: Light showers expected in some regions', summary: 'Light showers predicted; check irrigation schedule', date: new Date().toISOString() },
-      { id: 'news-2', title: 'New organic seed varieties released', summary: 'Certified organic seeds with higher drought resistance.', date: new Date().toISOString() }
-    ];
-
-    const translations = { /* unchanged translations - omitted here for brevity in the editor but kept in file */ };
-    // --- for brevity of this display the translations object is still present in the file exactly as before ---
-    
-    // To avoid repeating huge translation block in this preview, assume translations from your original file are retained here exactly.
-
-    // t() helper
-    const t = (key) => (translations && translations[currentLanguage] && translations[currentLanguage][key]) ? translations[currentLanguage][key] : key;
-
+    const translations = {
+        en: {
+            login: "Login",
+            adminPortal: "Admin Portal",
+            farmerPortal: "Farmer Portal",
+            enterDAN: "Enter 12-digit DAN",
+            dashboard: "Dashboard",
+            addFarmer: "Add Farmer",
+            allFarmers: "All Farmers",
+            chatSupport: "Chat Support",
+            logout: "Logout",
+            name: "Name",
+            age: "Age",
+            contact: "Contact",
+            location: "Location",
+            plotId: "Plot ID",
+            area: "Area (acres)",
+            cropType: "Crop Type",
+            soilType: "Soil Type",
+            irrigation: "Irrigation Method",
+            soilMoisture: "Soil Moisture",
+            temperature: "Temperature",
+            humidity: "Humidity",
+            pH: "pH Level",
+            save: "Save",
+            cancel: "Cancel",
+            search: "Search by DAN",
+            cropCondition: "Crop Condition",
+            healthy: "Healthy",
+            needsAttention: "Needs Attention",
+            critical: "Critical",
+            sendMessage: "Send Message",
+            typeMessage: "Type your message...",
+            noMessages: "No messages yet",
+            reply: "Reply",
+            settings: "Settings",
+            darkMode: "Dark Mode",
+            language: "Language",
+            password: "Password",
+            enterPassword: "Enter admin password",
+            marketplace: "Marketplace",
+            news: "News",
+            sellYourGoods: "Sell Your Goods",
+            buyGoods: "Buy Goods",
+            productName: "Product Name",
+            price: "Price",
+            description: "Description",
+            uploadPhoto: "Upload Photo",
+            postAd: "Post Advertisement",
+            latestNews: "Latest News",
+            readMore: "Read More"
+        },
+        hi: {
+            login: "लॉगिन",
+            adminPortal: "प्रशासक पोर्टल",
+            farmerPortal: "किसान पोर्टल",
+            enterDAN: "12 अंकों का DAN दर्ज करें",
+            dashboard: "डैशबोर्ड",
+            addFarmer: "किसान जोड़ें",
+            allFarmers: "सभी किसान",
+            chatSupport: "चैट सहायता",
+            logout: "लॉगआउट",
+            name: "नाम",
+            age: "आयु",
+            contact: "संपर्क",
+            location: "स्थान",
+            plotId: "प्लॉट आईडी",
+            area: "क्षेत्रफल (एकड़)",
+            cropType: "फसल का प्रकार",
+            soilType: "मिट्टी का प्रकार",
+            irrigation: "सिंचाई विधि",
+            soilMoisture: "मिट्टी की नमी",
+            temperature: "तापमान",
+            humidity: "आर्द्रता",
+            pH: "pH स्तर",
+            save: "सहेजें",
+            cancel: "रद्द करें",
+            search: "DAN से खोजें",
+            cropCondition: "फसल की स्थिति",
+            healthy: "स्वस्थ",
+            needsAttention: "ध्यान चाहिए",
+            critical: "गंभीर",
+            sendMessage: "संदेश भेजें",
+            typeMessage: "अपना संदेश लिखें...",
+            noMessages: "अभी तक कोई संदेश नहीं",
+            reply: "जवाब दें",
+            settings: "सेटिंग्स",
+            darkMode: "डार्क मोड",
+            language: "भाषा",
+            password: "पासवर्ड",
+            enterPassword: "प्रशासक पासवर्ड दर्ज करें",
+            marketplace: "बाजार",
+            news: "समाचार",
+            sellYourGoods: "अपना माल बेचें",
+            buyGoods: "माल खरीदें",
+            productName: "उत्पाद का नाम",
+            price: "कीमत",
+            description: "विवरण",
+            uploadPhoto: "फोटो अपलोड करें",
+            postAd: "विज्ञापन पोस्ट करें",
+            latestNews: "ताज़ा खबर",
+            readMore: "और पढ़ें"
+        },
+        kn: {
+            login: "ಲಾಗಿನ್",
+            adminPortal: "ನಿರ್ವಾಹಕ ಪೋರ್ಟಲ್",
+            farmerPortal: "ರೈತ ಪೋರ್ಟಲ್",
+            enterDAN: "12 ಅಂಕಿಯ DAN ನಮೂದಿಸಿ",
+            dashboard: "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
+            addFarmer: "ರೈತರನ್ನು ಸೇರಿಸಿ",
+            allFarmers: "ಎಲ್ಲಾ ರೈತರು",
+            chatSupport: "ಚಾಟ್ ಬೆಂಬಲ",
+            logout: "ಲಾಗ್ಔಟ್",
+            name: "ಹೆಸರು",
+            age: "ವಯಸ್ಸು",
+            contact: "ಸಂಪರ್ಕ",
+            location: "ಸ್ಥಳ",
+            plotId: "ಪ್ಲಾಟ್ ID",
+            area: "ವಿಸ್ತೀರ್ಣ (ಎಕರೆ)",
+            cropType: "ಬೆಳೆ ಪ್ರಕಾರ",
+            soilType: "ಮಣ್ಣಿನ ಪ್ರಕಾರ",
+            irrigation: "ನೀರಾವರಿ ವಿಧಾನ",
+            soilMoisture: "ಮಣ್ಣಿನ ತೇವಾಂಶ",
+            temperature: "ತಾಪಮಾನ",
+            humidity: "ಆರ್ದ್ರತೆ",
+            pH: "pH ಮಟ್ಟ",
+            save: "ಉಳಿಸಿ",
+            cancel: "ರದ್ದುಮಾಡಿ",
+            search: "DAN ಮೂಲಕ ಹುಡುಕಿ",
+            cropCondition: "ಬೆಳೆ ಸ್ಥಿತಿ",
+            healthy: "ಆರೋಗ್ಯಕರ",
+            needsAttention: "ಗಮನ ಬೇಕು",
+            critical: "ನಿರ್ಣಾಯಕ",
+            sendMessage: "ಸಂದೇಶ ಕಳುಹಿಸಿ",
+            typeMessage: "ನಿಮ್ಮ ಸಂದೇಶವನ್ನು ಟೈಪ್ ಮಾಡಿ...",
+            noMessages: "ಇನ್ನೂ ಯಾವುದೇ ಸಂದೇಶಗಳಿಲ್ಲ",
+            reply: "ಉತ್ತರಿಸಿ",
+            settings: "ಸೆಟ್ಟಿಂಗ್‌ಗಳು",
+            darkMode: "ಡಾರ್ಕ್ ಮೋಡ್",
+            language: "ಭಾಷೆ",
+            password: "ಪಾಸ್‌ವರ್ಡ್",
+            enterPassword: "ನಿರ್ವಾಹಕ ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ",
+            marketplace: "ಮಾರುಕಟ್ಟೆ",
+            news: "ಸುದ್ದಿ",
+            sellYourGoods: "ನಿಮ್ಮ ಸರಕುಗಳನ್ನು ಮಾರಾಟ ಮಾಡಿ",
+            buyGoods: "ಸರಕುಗಳನ್ನು ಖರೀದಿಸಿ",
+            productName: "ಉತ್ಪನ್ನದ ಹೆಸರು",
+            price: "ಬೆಲೆ",
+            description: "ವಿವರಣೆ",
+            uploadPhoto: "ಫೋಟೋ ಅಪ್ಲೋಡ್ ಮಾಡಿ",
+            postAd: "ಜಾಹೀರಾತನ್ನು ಪೋಸ್ಟ್ ಮಾಡಿ",
+            latestNews: "ಇತ್ತೀಚಿನ ಸುದ್ದಿ",
+            readMore: "ಮತ್ತಷ್ಟು ಓದಿ"
+        },
+        ml: {
+            login: "ലോഗിൻ",
+            adminPortal: "അഡ്മിൻ പോർട്ടൽ",
+            farmerPortal: "കർഷക പോർട്ടൽ",
+            enterDAN: "12 അക്ക DAN നൽകുക",
+            dashboard: "ഡാഷ്‌ബോർഡ്",
+            addFarmer: "കർഷകനെ ചേർക്കുക",
+            allFarmers: "എല്ലാ കർഷകരും",
+            chatSupport: "ചാറ്റ് പിന്തുണ",
+            logout: "ലോഗൗട്ട്",
+            name: "പേര്",
+            age: "പ്രായം",
+            contact: "ബന്ധപ്പെടുക",
+            location: "സ്ഥലം",
+            plotId: "പ്ലോട്ട് ID",
+            area: "വിസ്തീർണ്ണം (ഏക്കർ)",
+            cropType: "വിള തരം",
+            soilType: "മണ്ണിന്റെ തരം",
+            irrigation: "ജലസേചന രീതി",
+            soilMoisture: "മണ്ണിലെ ഈർപ്പം",
+            temperature: "താപനില",
+            humidity: "ആർദ്രത",
+            pH: "pH നില",
+            save: "സംരക്ഷിക്കുക",
+            cancel: "റദ്ദാക്കുക",
+            search: "DAN വഴി തിരയുക",
+            cropCondition: "വിള അവസ്ഥ",
+            healthy: "ആരോഗ്യകരം",
+            needsAttention: "ശ്രദ്ധ ആവശ്യമാണ്",
+            critical: "നിർണായകം",
+            sendMessage: "സന്ദേശം അയയ്ക്കുക",
+            typeMessage: "നിങ്ങളുടെ സന്ദേശം ടൈപ്പ് ചെയ്യുക...",
+            noMessages: "ഇതുവരെ സന്ദേശങ്ങളൊന്നുമില്ല",
+            reply: "മറുപടി",
+            settings: "ക്രമീകരണങ്ങൾ",
+            darkMode: "ഡാർക്ക് മോഡ്",
+            language: "ഭാഷ",
+            password: "പാസ്‌വേഡ്",
+            enterPassword: "അഡ്മിൻ പാസ്‌വേഡ് നൽകുക",
+            marketplace: "ചന്ത",
+            news: "വാർത്തകൾ",
+            sellYourGoods: "നിങ്ങളുടെ സാധനങ്ങൾ വിൽക്കുക",
+            buyGoods: "സാധനങ്ങൾ വാങ്ങുക",
+            productName: "ഉൽപ്പന്നത്തിൻ്റെ പേര്",
+            price: "വില",
+            description: "വിവരണം",
+            uploadPhoto: "ഫോട്ടോ അപ്ലോഡ് ചെയ്യുക",
+            postAd: "പരസ്യം പോസ്റ്റ് ചെയ്യുക",
+            latestNews: "പുതിയ വാർത്തകൾ",
+            readMore: "കൂടുതൽ വായിക്കുക"
+        },
+        ta: {
+            login: "உள்நுழைய",
+            adminPortal: "நிர்வாக போர்ட்டல்",
+            farmerPortal: "விவசாயி போர்ட்டல்",
+            enterDAN: "12 இலக்க DAN உள்ளிடவும்",
+            dashboard: "டாஷ்போர்டு",
+            addFarmer: "விவசாயியைச் சேர்க்கவும்",
+            allFarmers: "அனைத்து விவசாயிகள்",
+            chatSupport: "அரட்டை ஆதரவு",
+            logout: "வெளியேறு",
+            name: "பெயர்",
+            age: "வயது",
+            contact: "தொடர்பு",
+            location: "இடம்",
+            plotId: "நிலம் ID",
+            area: "பரப்பளவு (ஏக்கர்)",
+            cropType: "பயிர் வகை",
+            soilType: "மண் வகை",
+            irrigation: "நீர்ப்பாசன முறை",
+            soilMoisture: "மண் ஈரப்பதம்",
+            temperature: "வெப்பநிலை",
+            humidity: "ஈரப்பதம்",
+            pH: "pH நிலை",
+            save: "சேமி",
+            cancel: "ரத்துசெய்",
+            search: "DAN மூலம் தேடு",
+            cropCondition: "பயிர் நிலை",
+            healthy: "ஆரோக்கியமான",
+            needsAttention: "கவனம் தேவை",
+            critical: "முக்கியமான",
+            sendMessage: "செய்தி அனுப்பு",
+            typeMessage: "உங்கள் செய்தியை தட்டச்சு செய்யவும்...",
+            noMessages: "இன்னும் செய்திகள் இல்லை",
+            reply: "பதில்",
+            settings: "அமைப்புகள்",
+            darkMode: "இருண்ட பயன்முறை",
+            language: "மொழி",
+            password: "கடவுச்சொல்",
+            enterPassword: "நிர்வாக கடவுச்சொல்லை உள்ளிடவும்",
+            marketplace: "சந்தை",
+            news: "செய்திகள்",
+            sellYourGoods: "உங்கள் பொருட்களை விற்கவும்",
+            buyGoods: "பொருட்களை வாங்கவும்",
+            productName: "பொருள் பெயர்",
+            price: "விலை",
+            description: "விளக்கம்",
+            uploadPhoto: "புகைப்படத்தைப் பதிவேற்றவும்",
+            postAd: "விளம்பரத்தை இடுகையிடவும்",
+            latestNews: "சமீபத்திய செய்திகள்",
+            readMore: "மேலும் படிக்க"
+        },
+        te: {
+            login: "లాగిన్",
+            adminPortal: "అడ్మిన్ పోర్టల్",
+            farmerPortal: "రైతు పోర్టల్",
+            enterDAN: "12 అంకెల DAN నమోదు చేయండి",
+            dashboard: "డాష్‌బోర్డ్",
+            addFarmer: "రైతును జోడించండి",
+            allFarmers: "అన్ని రైతులు",
+            chatSupport: "చాట్ మద్దతు",
+            logout: "లాగ్అవుట్",
+            name: "పేరు",
+            age: "వయస్సు",
+            contact: "సంప్రదించండి",
+            location: "స్థానం",
+            plotId: "ప్లాట్ ID",
+            area: "విస్తీర్ణం (ఎకరాలు)",
+            cropType: "పంట రకం",
+            soilType: "నేల రకం",
+            irrigation: "నీటిపారుదల పద్ధతి",
+            soilMoisture: "నేల తేమ",
+            temperature: "ఉష్ణోగ్రత",
+            humidity: "తేమ",
+            pH: "pH స్థాయి",
+            save: "సేవ్ చేయండి",
+            cancel: "రద్దు చేయండి",
+            search: "DAN ద్వారా శోధించండి",
+            cropCondition: "పంట పరిస్థితి",
+            healthy: "ఆరోగ్యకరమైన",
+            needsAttention: "శ్రద్ధ అవసరం",
+            critical: "క్లిష్టమైన",
+            sendMessage: "సందేశం పంపండి",
+            typeMessage: "మీ సందేశాన్ని టైప్ చేయండి...",
+            noMessages: "ఇంకా సందేశాలు లేవు",
+            reply: "సమాధానం",
+            settings: "సెట్టింగ్‌లు",
+            darkMode: "డార్క్ మోడ్",
+            language: "భాష",
+            password: "పాస్‌వర్డ్",
+            enterPassword: "అడ్మిన్ పాస్‌వర్డ్ నమోదు చేయండి",
+            marketplace: "మార్కెట్",
+            news: "వార్తలు",
+            sellYourGoods: "మీ వస్తువులను అమ్మండి",
+            buyGoods: "వస్తువులు కొనండి",
+            productName: "ఉత్పత్తి పేరు",
+            price: "ధర",
+            description: "వివరణ",
+            uploadPhoto: "ఫోటోను అప్‌లోడ్ చేయండి",
+            postAd: "ప్రకటనను పోస్ట్ చేయండి",
+            latestNews: "తాజా వార్తలు",
+            readMore: "ఇంకా చదవండి"
+        }
+    };
+    const t = (key) => translations[currentLanguage][key] || key;
     const dataHandler = {
-      onDataChanged(data) { currentData = data; render(); }
+        onDataChanged(data) {
+            currentData = data;
+            render();
+        }
     };
 
-    function generateDAN() { return Math.floor(100000000000 + Math.random() * 900000000000).toString(); }
-    function generateIoTData() { return { soilMoisture: Math.floor(30 + Math.random() * 40), temperature: Math.floor(20 + Math.random() * 15), humidity: Math.floor(40 + Math.random() * 40), pH: (6 + Math.random() * 2).toFixed(1) }; }
-
-    function getCropStatus(iotData) { if (!iotData) return { status: 'healthy', text: t('healthy') }; if (iotData.soilMoisture < 40 || iotData.temperature > 32) { return { status: 'critical', text: t('critical') }; } else if (iotData.soilMoisture < 50 || iotData.temperature > 28) { return { status: 'warning', text: t('needsAttention') }; } return { status: 'healthy', text: t('healthy') }; }
-
-    // MARK: - Login / sessions
-    async function handleLogin(portal, dan = null, password = null) {
-      if (portal === 'admin') {
-        if (password === 'admin123') {
-          isLoading = true; currentView = 'loading'; render(); await new Promise(resolve => setTimeout(resolve, 1200)); isLoading = false; currentPortal = 'admin'; currentView = 'admin-dashboard'; currentUser = { role: 'admin' }; render();
-        } else { showToast('Invalid password. Please try again.'); return; }
-      } else if (portal === 'farmer' && dan) {
-        const farmer = currentData.find(d => d.type === 'farmer' && d.dan === dan);
-        if (farmer) { isLoading = true; currentView = 'loading'; render(); await new Promise(resolve => setTimeout(resolve, 1200)); isLoading = false; currentPortal = 'farmer'; currentView = 'farmer-dashboard'; currentUser = farmer; startIoTUpdates(); render(); } else { showToast('Invalid DAN. Please try again.'); return; }
-      }
+    function generateDAN() {
+        return Math.floor(100000000000 + Math.random() * 900000000000).toString();
     }
 
-    function startIoTUpdates() { if (iotInterval) clearInterval(iotInterval); iotInterval = setInterval(() => { if (currentUser && currentUser.type === 'farmer') { const newIoT = generateIoTData(); currentUser.soilMoisture = newIoT.soilMoisture; currentUser.temperature = newIoT.temperature; currentUser.humidity = newIoT.humidity; currentUser.pH = newIoT.pH; render(); } }, 5000); }
-
-    function handleLogout() { currentPortal = null; currentView = 'login'; currentUser = null; if (iotInterval) clearInterval(iotInterval); render(); }
-
-    // MARK: - Farmer CRUD
-    async function handleAddFarmer(formData) { const iotData = generateIoTData(); const result = await window.dataSdk.create({ type: 'farmer', dan: generateDAN(), name: formData.name, age: parseInt(formData.age), contact: formData.contact, location: formData.location, plotId: formData.plotId, area: parseFloat(formData.area), cropType: formData.cropType, soilType: formData.soilType, irrigation: formData.irrigation, ...iotData, timestamp: new Date().toISOString() }); if (result.isOk) { showToast('Farmer added successfully!'); currentView = 'admin-dashboard'; } else { showToast('Error adding farmer. Please try again.'); } }
-
-    // MARK: - Chat
-    async function handleSendMessage(message) { if (!message.trim()) return; const result = await window.dataSdk.create({ type: 'message', dan: currentUser.dan, message: message, sender: 'farmer', reply: '', status: 'pending', timestamp: new Date().toISOString() }); if (result.isOk) { showToast('Message sent to admin!'); } else { showToast('Error sending message.'); } }
-    async function handleReplyMessage(messageId, reply) { const message = currentData.find(d => d.id === messageId); if (message) { message.reply = reply; message.status = 'replied'; const result = await window.dataSdk.update(message); if (result.isOk) { showToast('Reply sent successfully!'); } } }
-
-    // MARK: - Marketplace
-    // Create / list market items (type: 'market_item')
-    async function handleCreateMarketItem(form) {
-      // form is HTMLFormElement
-      const data = new FormData(form);
-      const item = {
-        type: 'market_item',
-        sellerDan: currentUser?.dan || 'admin',
-        name: data.get('item_name'),
-        price: parseFloat(data.get('price')) || 0,
-        details: data.get('details'),
-        category: data.get('category') || 'general',
-        timestamp: new Date().toISOString()
-      };
-      // handle photo file upload if dataSdk supports files -- here we'll store a local data URL preview for demo
-      const photoFile = data.get('photo');
-      if (photoFile && photoFile.size) {
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-          item.photo = e.target.result; // dataURL preview stored as demo
-          const res = await window.dataSdk.create(item);
-          if (res.isOk) { showToast('Item posted in marketplace'); currentView = 'marketplace'; render(); } else showToast('Error posting item');
+    function generateIoTData() {
+        return {
+            soilMoisture: Math.floor(30 + Math.random() * 40),
+            temperature: Math.floor(20 + Math.random() * 15),
+            humidity: Math.floor(40 + Math.random() * 40),
+            pH: (6 + Math.random() * 2).toFixed(1)
         };
-        reader.readAsDataURL(photoFile);
-      } else {
-        const res = await window.dataSdk.create(item);
-        if (res.isOk) { showToast('Item posted in marketplace'); currentView = 'marketplace'; render(); } else showToast('Error posting item');
-      }
     }
 
-    async function handleBuyItem(itemId) {
-      const item = currentData.find(d => d.type === 'market_item' && d.id === itemId);
-      if (!item) { showToast('Item not found'); return; }
-      // For demo we'll create a purchase record
-      const res = await window.dataSdk.create({ type: 'purchase', itemId, buyerDan: currentUser?.dan || 'guest', timestamp: new Date().toISOString() });
-      if (res.isOk) { showToast('Purchase successful (demo)'); } else showToast('Error during purchase');
+    function getCropStatus(iotData) {
+        if (iotData.soilMoisture < 40 || iotData.temperature > 32) {
+            return {status: 'critical', text: t('critical')};
+        } else if (iotData.soilMoisture < 50 || iotData.temperature > 28) {
+            return {status: 'warning', text: t('needsAttention')};
+        }
+        return {status: 'healthy', text: t('healthy')};
     }
 
-    // MARK: - News
-    function getNews() {
-      // combine demoNews with any persistent news in currentData
-      const persistedNews = currentData.filter(d => d.type === 'news');
-      return [...demoNews, ...persistedNews].sort((a,b) => new Date(b.date) - new Date(a.date));
+    async function handleLogin(portal, dan = null, password = null) {
+        if (portal === 'admin') {
+            if (password === 'admin123') {
+                isLoading = true;
+                currentView = 'loading';
+                render();
+                await new Promise(resolve => setTimeout(resolve, 5500));
+                isLoading = false;
+                currentPortal = 'admin';
+                currentView = 'admin-dashboard';
+                currentUser = {role: 'admin'};
+                render();
+            } else {
+                showToast('Invalid password. Please try again.');
+                return;
+            }
+        } else if (portal === 'farmer' && dan) {
+            const farmer = currentData.find(d => d.type === 'farmer' && d.dan === dan);
+            if (farmer) {
+                isLoading = true;
+                currentView = 'loading';
+                render();
+                await new Promise(resolve => setTimeout(resolve, 5500));
+                isLoading = false;
+                currentPortal = 'farmer';
+                currentView = 'farmer-dashboard';
+                currentUser = farmer;
+                startIoTUpdates();
+                render();
+            } else {
+                showToast('Invalid DAN. Please try again.');
+                return;
+            }
+        }
     }
 
-    // MARK: - UI helpers
-    function toggleDarkMode() { isDarkMode = !isDarkMode; document.body.classList.toggle('dark-mode', isDarkMode); render(); }
+    function startIoTUpdates() {
+        if (iotInterval) clearInterval(iotInterval);
+        iotInterval = setInterval(() => {
+            if (currentUser && currentUser.type === 'farmer') {
+                const newIoT = generateIoTData();
+                currentUser.soilMoisture = newIoT.soilMoisture;
+                currentUser.temperature = newIoT.temperature;
+                currentUser.humidity = newIoT.humidity;
+                currentUser.pH = newIoT.pH;
+                render();
+            }
+        }, 5000);
+    }
 
-    function toggleChat() { isChatOpen = !isChatOpen; render(); }
+    function handleLogout() {
+        currentPortal = null;
+        currentView = 'login';
+        currentUser = null;
+        if (iotInterval) clearInterval(iotInterval);
+        render();
+    }
+
+    async function handleAddFarmer(formData) {
+        const iotData = generateIoTData();
+        const result = await window.dataSdk.create({
+            type: 'farmer',
+            dan: generateDAN(),
+            name: formData.name,
+            age: parseInt(formData.age),
+            contact: formData.contact,
+            location: formData.location,
+            plotId: formData.plotId,
+            area: parseFloat(formData.area),
+            cropType: formData.cropType,
+            soilType: formData.soilType,
+            irrigation: formData.irrigation,
+            ...iotData,
+            timestamp: new Date().toISOString()
+        });
+        if (result.isOk) {
+            showToast('Farmer added successfully!');
+            currentView = 'admin-dashboard';
+        } else {
+            showToast('Error adding farmer. Please try again.');
+        }
+    }
+
+    async function handleSendMessage(message) {
+        if (!message.trim()) return;
+        const result = await window.dataSdk.create({
+            type: 'message',
+            dan: currentUser.dan,
+            message: message,
+            sender: 'farmer',
+            reply: '',
+            status: 'pending',
+            timestamp: new Date().toISOString()
+        });
+        if (result.isOk) {
+            showToast('Message sent to admin!');
+        } else {
+            showToast('Error sending message.');
+        }
+    }
+
+    async function handleReplyMessage(messageId, reply) {
+        const message = currentData.find(d => d.id === messageId);
+        if (message) {
+            message.reply = reply;
+            message.status = 'replied';
+            const result = await window.dataSdk.update(message);
+            if (result.isOk) {
+                showToast('Reply sent successfully!');
+            }
+        }
+    }
+
+    function toggleDarkMode() {
+        isDarkMode = !isDarkMode;
+        document.body.classList.toggle('dark-mode', isDarkMode);
+        render();
+    }
+
+    function toggleLanguage() {
+        currentLanguage = currentLanguage === 'en' ? 'hi' : 'en';
+        render();
+    }
+
+    function toggleChat() {
+        isChatOpen = !isChatOpen;
+        render();
+    }
 
     function showToast(message) {
-      const toast = document.createElement('div');
-      toast.textContent = message;
-      toast.style.cssText = "position: fixed; top: 20px; right: 20px; background: #4a7c2c; color: white; padding: 16px 24px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 30000; animation: fadeIn 0.3s ease;";
-      document.body.appendChild(toast);
-      setTimeout(() => { toast.style.animation = 'fadeOut 0.3s ease'; setTimeout(() => toast.remove(), 300); }, 3000);
+        const toast = document.createElement('div');
+        toast.textContent = message;
+        toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #4a7c2c;
+        color: white;
+        padding: 16px 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        z-index: 1000;
+        animation: fadeIn 0.3s ease;
+      `;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            toast.style.animation = 'fadeOut 0.3s ease';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
     }
 
-    // --- Rendering functions ---
     function renderLoginView() {
-      return `<div class="min-h-full flex items-center justify-center p-4 gradient-bg" style="position: relative; overflow: hidden;">
+        return `
+      <div class="min-h-full flex items-center justify-center p-4 gradient-bg" style="position: relative; overflow: hidden;">
         <div class="floating-particles">
           <div class="particle" style="left: 10%; top: 20%; animation-delay: 0s;">🌱</div>
           <div class="particle" style="left: 80%; top: 30%; animation-delay: 2s;">🌾</div>
@@ -250,14 +1599,27 @@
                 </linearGradient>
               </defs>
               <circle cx="100" cy="100" r="90" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
-              <path d="M100 40 Q80 70 100 100 Q120 70 100 40" fill="url(#plantGradient)"></path>
-              <path d="M100 100 Q70 120 100 160 Q130 120 100 100" fill="url(#plantGradient)"></path>
+              <path d="M100 40 Q80 70 100 100 Q120 70 100 40" fill="url(#plantGradient)">
+                <animateTransform attributeName="transform" type="rotate" from="0 100 100" to="10 100 100" dur="2s" repeatCount="indefinite" />
+              </path>
+              <path d="M100 100 Q70 120 100 160 Q130 120 100 100" fill="url(#plantGradient)">
+                <animateTransform attributeName="transform" type="rotate" from="0 100 100" to="-10 100 100" dur="2s" repeatCount="indefinite" />
+              </path>
               <rect x="96" y="100" width="8" height="60" fill="#8b4513" rx="4"/>
+              <circle cx="60" cy="60" r="15" fill="#ffd700" opacity="0.9">
+                <animate attributeName="opacity" values="0.7;1;0.7" dur="3s" repeatCount="indefinite" />
+              </circle>
+              <path d="M60 45 L60 55 M60 65 L60 75 M45 60 L55 60 M65 60 L75 60" stroke="#ffd700" stroke-width="3" stroke-linecap="round">
+                <animate attributeName="opacity" values="0.5;1;0.5" dur="3s" repeatCount="indefinite" />
+              </path>
             </svg>
-            <h1 class="text-4xl font-bold mb-2" style="text-shadow: 2px 2px 10px rgba(0,0,0,0.3);"> ${window.elementSdk?.config?.app_title || defaultConfig.app_title} </h1>
-            <p class="text-lg" style="text-shadow: 1px 1px 5px rgba(0,0,0,0.3);"> ${window.elementSdk?.config?.app_tagline || defaultConfig.app_tagline} </p>
+            <h1 class="text-4xl font-bold mb-2" style="text-shadow: 2px 2px 10px rgba(0,0,0,0.3);">
+              ${window.elementSdk?.config?.app_title || defaultConfig.app_title}
+            </h1>
+            <p class="text-lg" style="text-shadow: 1px 1px 5px rgba(0,0,0,0.3);">
+              ${window.elementSdk?.config?.app_tagline || defaultConfig.app_tagline}
+            </p>
           </div>
-
           <!-- Language Selector -->
           <div class="mb-6 text-center">
             <div class="language-selector">
@@ -269,85 +1631,129 @@
               <button onclick="setLanguage('te')" class="language-btn-small ${currentLanguage === 'te' ? 'active' : ''}">తెలుగు</button>
             </div>
           </div>
-
           <!-- Portal Toggle -->
           <div class="mb-6 flex justify-center">
             <div class="portal-toggle" onclick="togglePortalType()">
               <div class="portal-toggle-slider ${loginPortalType === 'admin' ? 'admin' : ''}"></div>
-              <div class="portal-option ${loginPortalType === 'farmer' ? 'active' : ''}"> 👨‍🌾 ${t('farmerPortal')} </div>
-              <div class="portal-option ${loginPortalType === 'admin' ? 'active' : ''}"> 🌾 ${t('adminPortal')} </div>
+              <div class="portal-option ${loginPortalType === 'farmer' ? 'active' : ''}">
+                👨‍🌾 ${t('farmerPortal')}
+              </div>
+              <div class="portal-option ${loginPortalType === 'admin' ? 'active' : ''}">
+                🌾 ${t('adminPortal')}
+              </div>
             </div>
           </div>
-
           <!-- Login Card -->
           <div class="card p-8 fade-in">
             ${loginPortalType === 'farmer' ? `
-              <form onsubmit="handleFarmerLoginSubmit(event)" class="space-y-4">
-                <div>
-                  <label class="block mb-2 font-semibold" style="color: ${window.elementSdk?.config?.text_color || defaultConfig.text_color}"> 🆔 ${t('enterDAN')} </label>
-                  <input type="text" id="danInput" placeholder="${t('enterDAN')}" maxlength="12" required class="input-field" />
-                </div>
-                <button type="submit" class="btn btn-primary w-full"> ${t('login')} → </button>
-              </form>
+            <form onsubmit="handleFarmerLoginSubmit(event)" class="space-y-4">
+              <div>
+                <label class="block mb-2 font-semibold" style="color: ${window.elementSdk?.config?.text_color || defaultConfig.text_color}">
+                  🆔 ${t('enterDAN')}
+                </label>
+                <input type="text" id="danInput" placeholder="${t('enterDAN')}" maxlength="12" required class="input-field" />
+              </div>
+              <button type="submit" class="btn btn-primary w-full">
+                ${t('login')} →
+              </button>
+            </form>
             ` : `
-              <form onsubmit="handleAdminLoginSubmit(event)" class="space-y-4">
-                <div>
-                  <label class="block mb-2 font-semibold" style="color: ${window.elementSdk?.config?.text_color || defaultConfig.text_color}"> 🔐 ${t('password')} </label>
-                  <input type="password" id="adminPassword" placeholder="${t('enterPassword')}" required class="input-field" />
-                  <p class="text-xs text-gray-500 mt-1">Default: admin123</p>
-                </div>
-                <button type="submit" class="btn btn-primary w-full"> ${t('login')} → </button>
-              </form>
+            <form onsubmit="handleAdminLoginSubmit(event)" class="space-y-4">
+              <div>
+                <label class="block mb-2 font-semibold" style="color: ${window.elementSdk?.config?.text_color || defaultConfig.text_color}">
+                  🔐 ${t('password')}
+                </label>
+                <input type="password" id="adminPassword" placeholder="${t('enterPassword')}" required class="input-field" />
+                <p class="text-xs text-gray-500 mt-1">Default: admin123</p>
+              </div>
+              <button type="submit" class="btn btn-primary w-full">
+                ${t('login')} →
+              </button>
+            </form>
             `}
           </div>
         </div>
-      </div>`;
+      </div>
+    `;
     }
 
     function renderAdminDashboard() {
-      const farmers = currentData.filter(d => d.type === 'farmer');
-      const messages = currentData.filter(d => d.type === 'message');
-      const languageNames = { en: 'English', hi: 'हिंदी', kn: 'ಕನ್ನಡ', ml: 'മലയാളം', ta: 'தமிழ்', te: 'తెలుగు' };
-      return `<div class="min-h-full ${isDarkMode ? 'dark-mode' : 'gradient-bg-light'}">
-        <nav class="card mx-4 mt-4 p-4 flex justify-between items-center flex-wrap gap-4">
-          <h1 class="text-2xl font-bold" style="color: ${window.elementSdk?.config?.primary_color || defaultConfig.primary_color}"> ${window.elementSdk?.config?.app_title || defaultConfig.app_title} - Admin </h1>
+        const farmers = currentData.filter(d => d.type === 'farmer');
+        const messages = currentData.filter(d => d.type === 'message');
+        const languageNames = {
+            en: 'English',
+            hi: 'हिंदी',
+            kn: 'ಕನ್ನಡ',
+            ml: 'മലയാളം',
+            ta: 'தமிழ்',
+            te: 'తెలుగు'
+        };
+        return `
+      <div class="min-h-full ${isDarkMode ? 'dark-mode' : 'gradient-bg-light'}">
+        <nav class="card mx-4 mt-4 p-4 flex justify-between items-center flex-wrap gap-4" style="z-index: 10000; position: relative;">
+          <h1 class="text-2xl font-bold" style="color: ${window.elementSdk?.config?.primary_color || defaultConfig.primary_color}">
+            ${window.elementSdk?.config?.app_title || defaultConfig.app_title} - Admin
+          </h1>
           <div class="flex gap-3 items-center flex-wrap">
-            <button onclick="currentView='admin-dashboard'; render()" class="btn btn-secondary"> 📊 ${t('dashboard')} </button>
-            <button onclick="currentView='add-farmer'; render()" class="btn btn-secondary"> ➕ ${t('addFarmer')} </button>
-            <button onclick="currentView='marketplace'; render()" class="btn btn-secondary"> 🛒 Marketplace </button>
-            <button onclick="currentView='news'; render()" class="btn btn-secondary"> 📰 News </button>
+            <button onclick="currentView='admin-dashboard'; render()" class="btn btn-secondary">
+              📊 ${t('dashboard')}
+            </button>
+            <button onclick="currentView='add-farmer'; render()" class="btn btn-secondary">
+              ➕ ${t('addFarmer')}
+            </button>
             <div class="language-dropdown">
-              <button class="language-dropdown-button" id="langBtnAdmin" onclick="toggleLanguageDropdown(event)"> 🌐 ${languageNames[currentLanguage]} <span style="font-size: 10px;">▼</span> </button>
+              <button class="language-dropdown-button" onclick="toggleLanguageDropdown(event)">
+                🌐 ${languageNames[currentLanguage]}
+                <span style="font-size: 10px;">▼</span>
+              </button>
               <div class="language-dropdown-menu" id="languageMenu">
-                <div class="language-option ${currentLanguage === 'en' ? 'active' : ''}" onclick="setLanguageAndClose('en')"> 🇬🇧 English </div>
-                <div class="language-option ${currentLanguage === 'hi' ? 'active' : ''}" onclick="setLanguageAndClose('hi')"> 🇮🇳 हिंदी </div>
-                <div class="language-option ${currentLanguage === 'kn' ? 'active' : ''}" onclick="setLanguageAndClose('kn')"> 🇮🇳 ಕನ್ನಡ </div>
-                <div class="language-option ${currentLanguage === 'ml' ? 'active' : ''}" onclick="setLanguageAndClose('ml')"> 🇮🇳 മലയാളം </div>
-                <div class="language-option ${currentLanguage === 'ta' ? 'active' : ''}" onclick="setLanguageAndClose('ta')"> 🇮🇳 தமிழ் </div>
-                <div class="language-option ${currentLanguage === 'te' ? 'active' : ''}" onclick="setLanguageAndClose('te')"> 🇮🇳 తెలుగు </div>
+                <div class="language-option ${currentLanguage === 'en' ? 'active' : ''}" onclick="setLanguageAndClose('en')">
+                  🇬🇧 English
+                </div>
+                <div class="language-option ${currentLanguage === 'hi' ? 'active' : ''}" onclick="setLanguageAndClose('hi')">
+                  🇮🇳 हिंदी
+                </div>
+                <div class="language-option ${currentLanguage === 'kn' ? 'active' : ''}" onclick="setLanguageAndClose('kn')">
+                  🇮🇳 ಕನ್ನಡ
+                </div>
+                <div class="language-option ${currentLanguage === 'ml' ? 'active' : ''}" onclick="setLanguageAndClose('ml')">
+                  🇮🇳 മലയാളം
+                </div>
+                <div class="language-option ${currentLanguage === 'ta' ? 'active' : ''}" onclick="setLanguageAndClose('ta')">
+                  🇮🇳 தமிழ்
+                </div>
+                <div class="language-option ${currentLanguage === 'te' ? 'active' : ''}" onclick="setLanguageAndClose('te')">
+                  🇮🇳 తెలుగు
+                </div>
               </div>
             </div>
             <div class="theme-toggle" onclick="toggleDarkMode()">
-              <div class="theme-toggle-slider"> ${isDarkMode ? '🌙' : '☀️'} </div>
+              <div class="theme-toggle-slider">
+                ${isDarkMode ? '🌙' : '☀️'}
+              </div>
             </div>
-            <button onclick="handleLogout()" class="btn btn-primary"> 🚪 ${t('logout')} </button>
+            <button onclick="handleLogout()" class="btn btn-primary">
+              🚪 ${t('logout')}
+            </button>
           </div>
         </nav>
         <div class="p-6">
           ${currentView === 'admin-dashboard' ? renderAdminDashboardContent(farmers) : ''}
           ${currentView === 'add-farmer' ? renderAddFarmerForm() : ''}
-          ${currentView === 'marketplace' ? renderMarketplace() : ''}
-          ${currentView === 'news' ? renderNewsPage() : ''}
         </div>
         ${renderChatFAB(messages)}
         ${isChatOpen ? renderChatModal(messages) : ''}
-      </div>`;
+      </div>
+    `;
     }
 
     function renderAdminDashboardContent(farmers) {
-      return `<div class="space-y-6 fade-in">
+        return `
+      <div class="space-y-6 fade-in">
         <div class="card p-6" style="position: relative; overflow: visible;">
-          <div style="position: absolute; top: -15px; right: 15px; font-size: 50px; opacity: 0.15; animation: rotate-scale 4s ease-in-out infinite;"> 🌍 </div>
+          <div style="position: absolute; top: -15px; right: 15px; font-size: 50px; opacity: 0.15; animation: rotate-scale 4s ease-in-out infinite;">
+            🌍
+          </div>
           <h2 class="text-2xl font-bold mb-4">${window.elementSdk?.config?.admin_welcome || defaultConfig.admin_welcome}</h2>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="iot-card">
@@ -367,7 +1773,6 @@
             </div>
           </div>
         </div>
-
         <div class="card p-6">
           <h3 class="text-xl font-bold mb-4">${t('allFarmers')}</h3>
           <input type="text" id="searchInput" placeholder="${t('search')}" class="input-field mb-4" oninput="filterFarmers(this.value)" />
@@ -385,25 +1790,36 @@
               </thead>
               <tbody id="farmersTable">
                 ${farmers.map(f => {
-                  const status = getCropStatus(f);
-                  return `<tr class="border-b hover:bg-gray-50 transition-all duration-300" style="cursor: pointer;">
+            const status = getCropStatus(f);
+            return `
+                  <tr class="border-b hover:bg-gray-50 transition-all duration-300" style="cursor: pointer;">
                     <td class="p-3 font-mono text-sm">${f.dan}</td>
                     <td class="p-3 font-semibold">${f.name}</td>
                     <td class="p-3">📍 ${f.location}</td>
                     <td class="p-3">🌾 ${f.cropType}</td>
-                    <td class="p-3"> <div style="display: inline-block; padding: 4px 12px; background: rgba(107, 157, 62, 0.2); border-radius: 12px; font-weight: 600;"> 💧 ${f.soilMoisture}% </div> </td>
-                    <td class="p-3"> <span class="status-${status.status}" style="font-size: 20px;">●</span> <span style="font-weight: 600;">${status.text}</span> </td>
-                  </tr>`;
-                }).join('')}
+                    <td class="p-3">
+                      <div style="display: inline-block; padding: 4px 12px; background: rgba(107, 157, 62, 0.2); border-radius: 12px; font-weight: 600;">
+                        💧 ${f.soilMoisture}%
+                      </div>
+                    </td>
+                    <td class="p-3">
+                      <span class="status-${status.status}" style="font-size: 20px;">●</span>
+                      <span style="font-weight: 600;">${status.text}</span>
+                    </td>
+                  </tr>
+                `;
+        }).join('')}
               </tbody>
             </table>
           </div>
         </div>
-      </div>`;
+      </div>
+    `;
     }
 
     function renderAddFarmerForm() {
-      return `<div class="card p-6 max-w-2xl mx-auto fade-in">
+        return `
+      <div class="card p-6 max-w-2xl mx-auto fade-in">
         <h2 class="text-2xl font-bold mb-6">${t('addFarmer')}</h2>
         <form onsubmit="handleAddFarmerSubmit(event)" class="space-y-4">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -446,257 +1862,566 @@
           </div>
           <div class="flex gap-4 mt-6">
             <button type="submit" class="btn btn-primary flex-1">${t('save')}</button>
-            <button type="button" onclick="currentView='admin-dashboard'; render()" class="btn btn-secondary flex-1"> ${t('cancel')} </button>
+            <button type="button" onclick="currentView='admin-dashboard'; render()" class="btn btn-secondary flex-1">
+              ${t('cancel')}
+            </button>
           </div>
         </form>
-      </div>`;
+      </div>
+    `;
     }
 
-    // Marketplace views
-    function renderMarketplace() {
-      const items = currentData.filter(d => d.type === 'market_item');
-      return `<div class="space-y-6">
-        <div class="card p-4 flex justify-between items-center">
-          <h3 class="text-xl font-bold">Marketplace</h3>
-          <div>
-            <button class="btn btn-secondary mr-2" onclick="currentView='marketplace'; render()">Browse</button>
-            <button class="btn btn-primary" onclick="currentView='post-item'; render()">＋ Post Item</button>
-          </div>
-        </div>
-        ${currentView === 'post-item' ? renderPostItemForm() : ''}
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          ${items.length === 0 ? `<div class="card p-6">No items yet. Post something to get started.</div>` : items.map(it => {
-            return `<div class="card p-4">
-              <div style="height:160px; display:flex; align-items:center; justify-content:center; overflow:hidden; background:#f7f7f7; border-radius:8px;">
-                ${it.photo ? `<img src="${it.photo}" style="max-width:100%; max-height:160px; object-fit:cover;"/>` : '<div style="font-size:40px; opacity:0.4">🧾</div>'}
-              </div>
-              <h4 class="font-bold mt-3">${it.name}</h4>
-              <p class="text-sm text-gray-600">${it.details || ''}</p>
-              <div class="mt-2 flex items-center justify-between">
-                <div class="font-semibold">₹ ${it.price || '0'}</div>
-                <div>
-                  <button class="btn btn-secondary mr-2" onclick="handleBuyItem('${it.id}')">Buy</button>
-                </div>
-              </div>
-            </div>`;
-          }).join('')}
-        </div>
-      </div>`;
+    function renderChatFAB(messages) {
+        const pendingCount = messages.filter(m => m.status === 'pending').length;
+        return `
+      <div class="chat-fab" onclick="toggleChat()">
+        💬
+        ${pendingCount > 0 ? `<div class="chat-fab-badge">${pendingCount}</div>` : ''}
+      </div>
+    `;
     }
-
-    function renderPostItemForm() {
-      return `<div class="card p-6">
-        <h4 class="font-bold mb-4">Post item for sale</h4>
-        <form onsubmit="(function(e){ e.preventDefault(); handleCreateMarketItem(e.target); })(event)">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label class="block mb-2">Name</label>
-              <input name="item_name" required class="input-field" />
-            </div>
-            <div>
-              <label class="block mb-2">Price (INR)</label>
-              <input name="price" type="number" step="0.01" required class="input-field" />
-            </div>
-            <div>
-              <label class="block mb-2">Category</label>
-              <input name="category" class="input-field" />
-            </div>
-            <div>
-              <label class="block mb-2">Photo</label>
-              <input name="photo" type="file" accept="image/*" class="input-field" />
-            </div>
-            <div class="md:col-span-2">
-              <label class="block mb-2">Details</label>
-              <textarea name="details" rows="3" class="input-field"></textarea>
-            </div>
-          </div>
-          <div class="mt-4">
-            <button class="btn btn-primary" type="submit">Post Item</button>
-            <button type="button" class="btn btn-secondary ml-2" onclick="currentView='marketplace'; render()">Cancel</button>
-          </div>
-        </form>
-      </div>`;
-    }
-
-    // News page
-    function renderNewsPage() {
-      const news = getNews();
-      return `<div class="space-y-4">
-        <div class="card p-4 flex justify-between items-center">
-          <h3 class="text-xl font-bold">Agriculture News</h3>
-          <div><button class="btn btn-primary" onclick="currentView='news'; render()">Refresh</button></div>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          ${news.map(n => `<div class="card p-4">
-            <h4 class="font-bold">${n.title}</h4>
-            <p class="text-sm text-gray-600">${n.summary}</p>
-            <p class="text-xs opacity-70 mt-2">${new Date(n.date).toLocaleString()}</p>
-          </div>`).join('')}
-        </div>
-      </div>`;
-    }
-
-    // Chat / messages UI
-    function renderChatFAB(messages) { const pendingCount = messages.filter(m => m.status === 'pending').length; return `<div class="chat-fab" onclick="toggleChat()"> 💬 ${pendingCount > 0 ? `<div class="chat-fab-badge">${pendingCount}</div>` : ''} </div>`; }
 
     function renderChatModal(messages) {
-      const groupedMessages = {};
-      messages.forEach(msg => { if (!groupedMessages[msg.dan]) groupedMessages[msg.dan] = []; groupedMessages[msg.dan].push(msg); });
-      return `<div class="chat-modal">
-        <div class="chat-modal-header"><div><h3 class="font-bold text-lg">💬 ${t('chatSupport')}</h3><p class="text-xs opacity-80">${Object.keys(groupedMessages).length} conversation(s)</p></div><button class="chat-close-btn" onclick="toggleChat()">✕</button></div>
-        <div class="chat-modal-body">${Object.keys(groupedMessages).length === 0 ? `<p class="text-center text-gray-500 py-8">${t('noMessages')}</p>` : Object.entries(groupedMessages).map(([dan, msgs]) => { const farmer = currentData.find(d => d.type === 'farmer' && d.dan === dan); return `<div class="card p-3 mb-2"><h4 class="font-bold mb-2 text-sm">👨‍🌾 ${farmer?.name || 'Unknown'}</h4><div class="space-y-2">${msgs.map(msg => `<div class="border-l-4 border-green-500 pl-3 py-2"><p class="text-sm mb-1">${msg.message}</p><p class="text-xs text-gray-500">${new Date(msg.timestamp).toLocaleString()}</p>${msg.reply ? `<div class="mt-2 bg-green-50 p-2 rounded"><p class="text-xs"><strong>Admin:</strong> ${msg.reply}</p></div>` : `<div class="mt-2"><input type="text" id="reply-${msg.__backendId}" placeholder="${t('typeMessage')}" class="input-field text-sm mb-1" style="padding: 8px 12px;" /><button onclick="handleAdminReply('${msg.__backendId}')" class="btn btn-primary" style="padding: 6px 12px; font-size: 12px;" > ${t('reply')} </button></div>`}</div>`).join('')}</div></div>`; }).join('')}</div></div>`;
+        const groupedMessages = {};
+        messages.forEach(msg => {
+            if (!groupedMessages[msg.dan]) {
+                groupedMessages[msg.dan] = [];
+            }
+            groupedMessages[msg.dan].push(msg);
+        });
+        return `
+      <div class="chat-modal">
+        <div class="chat-modal-header">
+          <div>
+            <h3 class="font-bold text-lg">💬 ${t('chatSupport')}</h3>
+            <p class="text-xs opacity-80">${Object.keys(groupedMessages).length} conversation(s)</p>
+          </div>
+          <button class="chat-close-btn" onclick="toggleChat()">✕</button>
+        </div>
+        <div class="chat-modal-body">
+          ${Object.keys(groupedMessages).length === 0 ? `<p class="text-center text-gray-500 py-8">${t('noMessages')}</p>` :
+            `${Object.entries(groupedMessages).map(([dan, msgs]) => {
+                const farmer = currentData.find(d => d.type === 'farmer' && d.dan === dan);
+                return `
+              <div class="card p-3 mb-2">
+                <h4 class="font-bold mb-2 text-sm">👨‍🌾 ${farmer?.name || 'Unknown'}</h4>
+                <div class="space-y-2">
+                  ${msgs.map(msg => `
+                  <div class="border-l-4 border-green-500 pl-3 py-2">
+                    <p class="text-sm mb-1">${msg.message}</p>
+                    <p class="text-xs text-gray-500">${new Date(msg.timestamp).toLocaleString()}</p>
+                    ${msg.reply ? `
+                    <div class="mt-2 bg-green-50 p-2 rounded">
+                      <p class="text-xs"><strong>Admin:</strong> ${msg.reply}</p>
+                    </div>
+                    ` : `
+                    <div class="mt-2">
+                      <input type="text" id="reply-${msg.__backendId}" placeholder="${t('typeMessage')}" class="input-field text-sm mb-1" style="padding: 8px 12px;" />
+                      <button onclick="handleAdminReply('${msg.__backendId}')" class="btn btn-primary" style="padding: 6px 12px; font-size: 12px;">
+                        ${t('reply')}
+                      </button>
+                    </div>
+                    `}
+                  </div>
+                  `).join('')}
+                </div>
+              </div>
+            `;
+            }).join('')}
+          `}
+        </div>
+      </div>
+    `;
     }
 
     function renderFarmerChatModal(messages) {
-      const msgs = messages.filter(m => m.dan === currentUser.dan);
-      return `<div class="chat-modal"><div class="chat-modal-header"><div><h3 class="font-bold text-lg">💬 ${t('chatSupport')}</h3><p class="text-xs opacity-80">Chat with Admin</p></div><button class="chat-close-btn" onclick="toggleChat()">✕</button></div>
-        <div class="chat-modal-body">${msgs.length === 0 ? `<p class="text-center text-gray-500 py-4 text-sm">${t('noMessages')}</p>` : msgs.map(msg => `<div class="chat-bubble chat-bubble-farmer"><p class="mb-1 text-sm">${msg.message}</p><p class="text-xs opacity-70">${new Date(msg.timestamp).toLocaleString()}</p>${msg.reply ? `<div class="mt-2 pt-2 border-t"><p class="text-xs"><strong>Admin:</strong> ${msg.reply}</p></div>` : ''}</div>`).join('')}</div>
-        <div class="chat-modal-footer"><input type="text" id="chatInput" placeholder="${t('typeMessage')}" class="input-field flex-1" style="padding: 10px 12px;" /><button onclick="handleSendChatMessage()" class="btn btn-primary" style="padding: 10px 16px;"> ➤ </button></div></div>`;
+        return `
+      <div class="chat-modal">
+        <div class="chat-modal-header">
+          <div>
+            <h3 class="font-bold text-lg">💬 ${t('chatSupport')}</h3>
+            <p class="text-xs opacity-80">Chat with Admin</p>
+          </div>
+          <button class="chat-close-btn" onclick="toggleChat()">✕</button>
+        </div>
+        <div class="chat-modal-body">
+          ${messages.length === 0 ? `<p class="text-center text-gray-500 py-4 text-sm">${t('noMessages')}</p>` :
+            messages.map(msg => `
+            <div class="chat-bubble chat-bubble-farmer">
+              <p class="mb-1 text-sm">${msg.message}</p>
+              <p class="text-xs opacity-70">${new Date(msg.timestamp).toLocaleString()}</p>
+              ${msg.reply ? `
+              <div class="mt-2 pt-2 border-t">
+                <p class="text-xs"><strong>Admin:</strong> ${msg.reply}</p>
+              </div>
+              ` : ''}
+            </div>
+            `).join('')}
+        </div>
+        <div class="chat-modal-footer">
+          <input type="text" id="chatInput" placeholder="${t('typeMessage')}" class="input-field flex-1" style="padding: 10px 12px;" />
+          <button onclick="handleSendChatMessage()" class="btn btn-primary" style="padding: 10px 16px;">
+            ➤
+          </button>
+        </div>
+      </div>
+    `;
     }
 
     function renderFarmerDashboard() {
-      const status = getCropStatus(currentUser);
-      const messages = currentData.filter(d => d.type === 'message' && d.dan === currentUser.dan);
-      const languageNames = { en: 'English', hi: 'हिंदी', kn: 'ಕನ್ನಡ', ml: 'മലയാളം', ta: 'தமிழ்', te: 'తెలుగు' };
-      return `<div class="min-h-full ${isDarkMode ? 'dark-mode' : 'gradient-bg-light'}">
-        <nav class="card mx-4 mt-4 p-4 flex justify-between items-center flex-wrap gap-4">
-          <h1 class="text-2xl font-bold" style="color: ${window.elementSdk?.config?.primary_color || defaultConfig.primary_color}"> ${window.elementSdk?.config?.app_title || defaultConfig.app_title} </h1>
+        const messages = currentData.filter(d => d.type === 'message' && d.dan === currentUser.dan);
+        const languageNames = {
+            en: 'English',
+            hi: 'हिंदी',
+            kn: 'ಕನ್ನಡ',
+            ml: 'മലയാളം',
+            ta: 'தமிழ்',
+            te: 'తెలుగు'
+        };
+        return `
+      <div class="min-h-full ${isDarkMode ? 'dark-mode' : 'gradient-bg-light'}">
+        <nav class="card mx-4 mt-4 p-4 flex justify-between items-center flex-wrap gap-4" style="z-index: 10000; position: relative;">
+          <h1 class="text-2xl font-bold" style="color: ${window.elementSdk?.config?.primary_color || defaultConfig.primary_color}">
+            ${window.elementSdk?.config?.app_title || defaultConfig.app_title}
+          </h1>
           <div class="flex gap-3 items-center flex-wrap">
-            <div class="helpline-section">
-              <a href="tel:1800-180-1551" class="helpline-btn" title="Kisan Call Center"> 📞 1800-180-1551 </a>
-              <a href="mailto:support@krishisetu.gov.in" class="helpline-btn" title="Email Support"> ✉️ Support </a>
-            </div>
+            <button onclick="currentView='farmer-dashboard'; render()" class="btn btn-secondary">
+              📊 ${t('dashboard')}
+            </button>
+            <button onclick="currentView='marketplace'; render()" class="btn btn-secondary">
+              🛍️ ${t('marketplace')}
+            </button>
+            <button onclick="currentView='news'; render()" class="btn btn-secondary">
+              📰 ${t('news')}
+            </button>
             <div class="language-dropdown">
-              <button class="language-dropdown-button" id="langBtnFarmer" onclick="toggleLanguageDropdown(event)"> 🌐 ${languageNames[currentLanguage]} <span style="font-size: 10px;">▼</span> </button>
+              <button class="language-dropdown-button" onclick="toggleLanguageDropdown(event)">
+                🌐 ${languageNames[currentLanguage]}
+                <span style="font-size: 10px;">▼</span>
+              </button>
               <div class="language-dropdown-menu" id="languageMenu">
-                <div class="language-option ${currentLanguage === 'en' ? 'active' : ''}" onclick="setLanguageAndClose('en')"> 🇬🇧 English </div>
-                <div class="language-option ${currentLanguage === 'hi' ? 'active' : ''}" onclick="setLanguageAndClose('hi')"> 🇮🇳 हिंदी </div>
-                <div class="language-option ${currentLanguage === 'kn' ? 'active' : ''}" onclick="setLanguageAndClose('kn')"> 🇮🇳 ಕನ್ನಡ </div>
-                <div class="language-option ${currentLanguage === 'ml' ? 'active' : ''}" onclick="setLanguageAndClose('ml')"> 🇮🇳 മലയാളം </div>
-                <div class="language-option ${currentLanguage === 'ta' ? 'active' : ''}" onclick="setLanguageAndClose('ta')"> 🇮🇳 தமிழ் </div>
-                <div class="language-option ${currentLanguage === 'te' ? 'active' : ''}" onclick="setLanguageAndClose('te')"> 🇮🇳 తెలుగు </div>
+                <div class="language-option ${currentLanguage === 'en' ? 'active' : ''}" onclick="setLanguageAndClose('en')">
+                  🇬🇧 English
+                </div>
+                <div class="language-option ${currentLanguage === 'hi' ? 'active' : ''}" onclick="setLanguageAndClose('hi')">
+                  🇮🇳 हिंदी
+                </div>
+                <div class="language-option ${currentLanguage === 'kn' ? 'active' : ''}" onclick="setLanguageAndClose('kn')">
+                  🇮🇳 ಕನ್ನಡ
+                </div>
+                <div class="language-option ${currentLanguage === 'ml' ? 'active' : ''}" onclick="setLanguageAndClose('ml')">
+                  🇮🇳 മലയാളം
+                </div>
+                <div class="language-option ${currentLanguage === 'ta' ? 'active' : ''}" onclick="setLanguageAndClose('ta')">
+                  🇮🇳 தமிழ்
+                </div>
+                <div class="language-option ${currentLanguage === 'te' ? 'active' : ''}" onclick="setLanguageAndClose('te')">
+                  🇮🇳 తెలుగు
+                </div>
               </div>
             </div>
-            <button class="btn btn-secondary" onclick="currentView='marketplace'; render()"> 🛒 Marketplace </button>
-            <button class="btn btn-secondary" onclick="currentView='news'; render()"> 📰 News </button>
             <div class="theme-toggle" onclick="toggleDarkMode()">
-              <div class="theme-toggle-slider"> ${isDarkMode ? '🌙' : '☀️'} </div>
+              <div class="theme-toggle-slider">
+                ${isDarkMode ? '🌙' : '☀️'}
+              </div>
             </div>
-            <button onclick="handleLogout()" class="btn btn-primary"> 🚪 ${t('logout')} </button>
+            <button onclick="handleLogout()" class="btn btn-primary">
+              🚪 ${t('logout')}
+            </button>
           </div>
         </nav>
-        <div class="p-6 space-y-6 fade-in">
-          <div class="card p-6" style="position: relative; overflow: visible;">
-            <div style="position: absolute; top: -20px; right: 20px; font-size: 60px; opacity: 0.2; animation: bounce 3s ease-in-out infinite;"> 🚜 </div>
-            <h2 class="text-2xl font-bold mb-2">${window.elementSdk?.config?.farmer_welcome || defaultConfig.farmer_welcome}, ${currentUser.name}!</h2>
-            <p class="text-gray-600">DAN: ${currentUser.dan}</p>
-            <div class="mt-4 flex gap-2">
-              <svg width="40" height="40" viewBox="0 0 50 50" style="animation: bounce 2s ease-in-out infinite; animation-delay: 0.2s;"></svg>
-            </div>
-          </div>
-
-          <div class="card p-6">
-            <h3 class="text-xl font-bold mb-4">${t('cropCondition')}</h3>
-            <div class="flex items-center gap-4 mb-4">
-              <div class="crop-status-icon"> ${status.status === 'healthy' ? '✅' : status.status === 'warning' ? '⚠️' : '🚨'} </div>
-              <div>
-                <div class="text-2xl font-bold status-${status.status}">${status.text}</div>
-                <p class="text-sm text-gray-600">${currentUser.cropType} - ${currentUser.area} acres</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="iot-card"><div class="text-3xl mb-2">💧</div><div class="text-2xl font-bold">${currentUser.soilMoisture}%</div><div class="text-sm">${t('soilMoisture')}</div></div>
-            <div class="iot-card"><div class="text-3xl mb-2">🌡️</div><div class="text-2xl font-bold">${currentUser.temperature}°C</div><div class="text-sm">${t('temperature')}</div></div>
-            <div class="iot-card"><div class="text-3xl mb-2">💨</div><div class="text-2xl font-bold">${currentUser.humidity}%</div><div class="text-sm">${t('humidity')}</div></div>
-            <div class="iot-card"><div class="text-3xl mb-2">⚗️</div><div class="text-2xl font-bold">${currentUser.pH}</div><div class="text-sm">${t('pH')}</div></div>
-          </div>
+        <div class="p-6">
+          ${currentView === 'farmer-dashboard' ? renderFarmerDashboardContent() : ''}
+          ${currentView === 'marketplace' ? renderMarketplace() : ''}
+          ${currentView === 'news' ? renderNews() : ''}
         </div>
         ${renderChatFAB(messages)}
         ${isChatOpen ? renderFarmerChatModal(messages) : ''}
-      </div>`;
+      </div>
+    `;
     }
 
-    function renderLoadingScreen() { return `<div class="loading-screen"> <div class="tree-animation"> ... </div> <div class="loading-text">🌱 Growing your dashboard...</div></div>`; }
+    function renderFarmerDashboardContent() {
+        const status = getCropStatus(currentUser);
+        return `
+      <div class="space-y-6 fade-in">
+        <div class="card p-6" style="position: relative; overflow: visible;">
+          <div style="position: absolute; top: -20px; right: 20px; font-size: 60px; opacity: 0.2; animation: bounce 3s ease-in-out infinite;">
+            🚜
+          </div>
+          <h2 class="text-2xl font-bold mb-2">${window.elementSdk?.config?.farmer_welcome || defaultConfig.farmer_welcome}, ${currentUser.name}!</h2>
+          <p class="text-gray-600">DAN: ${currentUser.dan}</p>
+        </div>
+        <div class="card p-6">
+          <h3 class="text-xl font-bold mb-4">${t('cropCondition')}</h3>
+          <div class="flex items-center gap-4 mb-4">
+            <div class="crop-status-icon">
+              ${status.status === 'healthy' ? '✅' : status.status === 'warning' ? '⚠️' : '🚨'}
+            </div>
+            <div>
+              <div class="text-2xl font-bold status-${status.status}">${status.text}</div>
+              <p class="text-sm text-gray-600">${currentUser.cropType} - ${currentUser.area} acres</p>
+            </div>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="iot-card">
+            <div class="text-3xl mb-2">💧</div>
+            <div class="text-2xl font-bold">${currentUser.soilMoisture}%</div>
+            <div class="text-sm">${t('soilMoisture')}</div>
+          </div>
+          <div class="iot-card">
+            <div class="text-3xl mb-2">🌡️</div>
+            <div class="text-2xl font-bold">${currentUser.temperature}°C</div>
+            <div class="text-sm">${t('temperature')}</div>
+          </div>
+          <div class="iot-card">
+            <div class="text-3xl mb-2">💨</div>
+            <div class="text-2xl font-bold">${currentUser.humidity}%</div>
+            <div class="text-sm">${t('humidity')}</div>
+          </div>
+          <div class="iot-card">
+            <div class="text-3xl mb-2">⚗️</div>
+            <div class="text-2xl font-bold">${currentUser.pH}</div>
+            <div class="text-sm">${t('pH')}</div>
+          </div>
+        </div>
+      </div>
+    `;
+    }
 
-    function render() { const app = document.getElementById('app'); let html = ''; if (isLoading) { html = renderLoadingScreen(); } else if (currentView === 'login') { html = renderLoginView(); } else if (currentPortal === 'admin') { html = renderAdminDashboard(); } else if (currentPortal === 'farmer') { html = renderFarmerDashboard(); } app.innerHTML = html; }
+    function renderMarketplace() {
+        return `
+      <div class="space-y-6 fade-in">
+        <div class="card p-6">
+          <h2 class="text-2xl font-bold mb-4">🛍️ ${t('marketplace')}</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+              <h3 class="text-xl font-bold mb-4">${t('sellYourGoods')}</h3>
+              <form class="space-y-4">
+                <div>
+                  <label class="block mb-2 font-semibold">${t('productName')}</label>
+                  <input type="text" required class="input-field" />
+                </div>
+                <div>
+                  <label class="block mb-2 font-semibold">${t('price')}</label>
+                  <input type="number" step="0.01" required class="input-field" />
+                </div>
+                <div>
+                  <label class="block mb-2 font-semibold">${t('description')}</label>
+                  <textarea rows="3" class="input-field"></textarea>
+                </div>
+                <div>
+                  <label class="block mb-2 font-semibold">${t('uploadPhoto')}</label>
+                  <input type="file" class="input-field" />
+                </div>
+                <button type="submit" class="btn btn-primary w-full">${t('postAd')}</button>
+              </form>
+            </div>
+            <div>
+              <h3 class="text-xl font-bold mb-4">${t('buyGoods')}</h3>
+              <div class="space-y-4">
+                <div class="card p-4 flex gap-4 items-center">
+                  <img src="https://via.placeholder.com/80" alt="Product" class="rounded-lg" />
+                  <div>
+                    <h4 class="font-bold">Organic Fertilizers</h4>
+                    <p class="text-sm text-gray-600">High-quality compost for all crops.</p>
+                    <p class="font-bold mt-2">$20.00</p>
+                  </div>
+                </div>
+                <div class="card p-4 flex gap-4 items-center">
+                  <img src="https://via.placeholder.com/80" alt="Product" class="rounded-lg" />
+                  <div>
+                    <h4 class="font-bold">Hybrid Seeds</h4>
+                    <p class="text-sm text-gray-600">High-yield tomato seeds.</p>
+                    <p class="font-bold mt-2">$15.00</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    }
 
-    // LANGUAGE DROPDOWN: improved to avoid being clipped by parent overflow. We position the menu as fixed when opened and align it to the button.
+    function renderNews() {
+        return `
+      <div class="space-y-6 fade-in">
+        <div class="card p-6">
+          <h2 class="text-2xl font-bold mb-4">📰 ${t('latestNews')}</h2>
+          <div class="space-y-4">
+            <div class="card p-4">
+              <h3 class="font-bold">New Government Scheme for Farmers</h3>
+              <p class="text-sm text-gray-600 mb-2">The government announced a new subsidy scheme for small-scale farmers to promote organic farming...</p>
+              <a href="#" class="text-sm font-bold text-green-600">${t('readMore')}</a>
+            </div>
+            <div class="card p-4">
+              <h3 class="font-bold">Weather Alert: Heavy Rains Expected</h3>
+              <p class="text-sm text-gray-600 mb-2">The meteorological department has issued a warning for heavy rainfall in the northern regions over the next 48 hours...</p>
+              <a href="#" class="text-sm font-bold text-green-600">${t('readMore')}</a>
+            </div>
+            <div class="card p-4">
+              <h3 class="font-bold">Market Prices for Wheat on the Rise</h3>
+              <p class="text-sm text-gray-600 mb-2">An increase in demand has led to a sharp rise in the market price for wheat and other essential grains...</p>
+              <a href="#" class="text-sm font-bold text-green-600">${t('readMore')}</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    }
+
+    function renderLoadingScreen() {
+        return `
+      <div class="loading-screen">
+        <div class="tree-animation">
+          <div class="seedling-container">
+            <div class="soil-line"></div>
+            <div class="seed"></div>
+            <div class="sprout"></div>
+            <div class="first-leaves">
+              <div class="leaf-left"></div>
+              <div class="leaf-right"></div>
+            </div>
+            <div class="mature-plant">
+              <div class="plant-crown">
+                <div class="crown-leaf"></div>
+                <div class="crown-leaf"></div>
+                <div class="crown-leaf"></div>
+                <div class="crown-leaf"></div>
+                <div class="crown-leaf"></div>
+                <div class="flower-bloom">
+                  <div class="petal"></div>
+                  <div class="petal"></div>
+                  <div class="petal"></div>
+                  <div class="petal"></div>
+                  <div class="petal"></div>
+                  <div class="flower-center"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="loading-text">🌱 Growing your dashboard...</div>
+      </div>
+    `;
+    }
+
+    function render() {
+        const app = document.getElementById('app');
+        let html = '';
+        if (isLoading) {
+            html = renderLoadingScreen();
+        } else if (currentView === 'login') {
+            html = renderLoginView();
+        } else if (currentPortal === 'admin') {
+            html = renderAdminDashboard();
+        } else if (currentPortal === 'farmer') {
+            html = renderFarmerDashboard();
+        }
+        app.innerHTML = html;
+    }
+
+    window.togglePortalType = () => {
+        loginPortalType = loginPortalType === 'farmer' ? 'admin' : 'farmer';
+        render();
+    };
+    window.setLanguage = (lang) => {
+        currentLanguage = lang;
+        render();
+    };
     window.toggleLanguageDropdown = (event) => {
-      event.stopPropagation();
-      const menu = document.getElementById('languageMenu');
-      const btn = event.currentTarget || event.target;
-      if (!menu) return;
-      // if already open and floating, close it
-      if (menu.classList.contains('open')) { menu.classList.remove('open'); menu.classList.remove('language-floating'); menu.style.left = ''; menu.style.top = ''; menu.style.width = ''; return; }
-      // compute button rect and position menu fixed at the right place
-      const rect = btn.getBoundingClientRect();
-      menu.classList.add('open');
-      // apply fixed positioning so it's not clipped by overflow:hidden parents
-      menu.classList.add('language-floating');
-      // prefer showing below the button, adjust when near viewport edges
-      const left = rect.right - menu.offsetWidth;
-      const top = rect.bottom + 8;
-      menu.style.left = (Math.max(8, rect.right - menu.offsetWidth)) + 'px';
-      menu.style.top = (top) + 'px';
-      // ensure width fits comfortably
-      menu.style.width = Math.max(180, rect.width) + 'px';
+        event.stopPropagation();
+        const menu = document.getElementById('languageMenu');
+        if (menu) {
+            menu.classList.toggle('open');
+        }
     };
-
-    window.setLanguage = (lang) => { currentLanguage = lang; render(); };
-    window.setLanguageAndClose = (lang) => { currentLanguage = lang; const menu = document.getElementById('languageMenu'); if (menu) { menu.classList.remove('open'); menu.classList.remove('language-floating'); menu.style.left = ''; menu.style.top = ''; menu.style.width = ''; } render(); };
-
-    // click-away to close floating language menu
+    window.setLanguageAndClose = (lang) => {
+        currentLanguage = lang;
+        const menu = document.getElementById('languageMenu');
+        if (menu) {
+            menu.classList.remove('open');
+        }
+        render();
+    };
     document.addEventListener('click', (event) => {
-      const menu = document.getElementById('languageMenu');
-      if (menu && menu.classList.contains('open')) {
-        // if click target is inside menu or the language button, don't close
-        const btn = document.getElementById('langBtnAdmin') || document.getElementById('langBtnFarmer');
-        if (!menu.contains(event.target) && (!btn || !btn.contains(event.target))) {
-          menu.classList.remove('open'); menu.classList.remove('language-floating'); menu.style.left = ''; menu.style.top = ''; menu.style.width = '';
+        const menu = document.getElementById('languageMenu');
+        const dropdown = document.querySelector('.language-dropdown');
+        if (menu && dropdown && !dropdown.contains(event.target)) {
+            menu.classList.remove('open');
         }
-      }
     });
-
-    // other event handlers
-    window.togglePortalType = () => { loginPortalType = loginPortalType === 'farmer' ? 'admin' : 'farmer'; render(); };
-    window.handleAdminLoginSubmit = (e) => { e.preventDefault(); const password = document.getElementById('adminPassword').value; handleLogin('admin', null, password); };
-    window.handleFarmerLoginSubmit = (e) => { e.preventDefault(); const dan = document.getElementById('danInput').value; if (dan.length === 12) { handleLogin('farmer', dan); } else { showToast('Please enter a valid 12-digit DAN'); } };
-    window.handleAddFarmerSubmit = (e) => { e.preventDefault(); const formData = new FormData(e.target); const data = Object.fromEntries(formData); handleAddFarmer(data); };
-    window.handleSendChatMessage = () => { const input = document.getElementById('chatInput'); if (input && input.value.trim()) { handleSendMessage(input.value); input.value = ''; } };
-    window.filterFarmers = (searchTerm) => { const farmers = currentData.filter(d => d.type === 'farmer'); const filtered = farmers.filter(f => f.dan.includes(searchTerm) || (f.name && f.name.toLowerCase().includes(searchTerm.toLowerCase())) ); const tbody = document.getElementById('farmersTable'); if (tbody) { tbody.innerHTML = filtered.map(f => { const status = getCropStatus(f); return `<tr class="border-b hover:bg-gray-50"> <td class="p-3 font-mono text-sm">${f.dan}</td> <td class="p-3">${f.name}</td> <td class="p-3">${f.location}</td> <td class="p-3">${f.cropType}</td> <td class="p-3">${f.soilMoisture}%</td> <td class="p-3"> <span class="status-${status.status}">●</span> ${status.text} </td> </tr>`; }).join(''); } };
-
-    // Admin reply helper using backend id
-    window.handleAdminReply = async (messageId) => {
-      const input = document.getElementById(`reply-${messageId}`);
-      if (input && input.value.trim()) {
-        const message = currentData.find(d => d.__backendId === messageId || d.id === messageId);
-        if (message) {
-          message.reply = input.value; message.status = 'replied'; const result = await window.dataSdk.update(message); if (result.isOk) { showToast('Reply sent successfully!'); render(); } else { showToast('Error sending reply.'); }
+    window.handleAdminLoginSubmit = (e) => {
+        e.preventDefault();
+        const password = document.getElementById('adminPassword').value;
+        handleLogin('admin', null, password);
+    };
+    window.handleFarmerLoginSubmit = (e) => {
+        e.preventDefault();
+        const dan = document.getElementById('danInput').value;
+        if (dan.length === 12) {
+            handleLogin('farmer', dan);
+        } else {
+            showToast('Please enter a valid 12-digit DAN');
         }
-      }
+    };
+    window.handleFarmerLogin = () => {
+        const dan = document.getElementById('danInput').value;
+        if (dan.length === 12) {
+            handleLogin('farmer', dan);
+        } else {
+            showToast('Please enter a valid 12-digit DAN');
+        }
+    };
+    window.handleAddFarmerSubmit = (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData);
+        handleAddFarmer(data);
+    };
+    window.handleSendChatMessage = () => {
+        const input = document.getElementById('chatInput');
+        if (input && input.value.trim()) {
+            handleSendMessage(input.value);
+            input.value = '';
+        }
+    };
+    window.handleAdminReply = async (messageId) => {
+        const input = document.getElementById(`reply-${messageId}`);
+        if (input && input.value.trim()) {
+            const message = currentData.find(d => d.__backendId === messageId);
+            if (message) {
+                message.reply = input.value;
+                message.status = 'replied';
+                const result = await window.dataSdk.update(message);
+                if (result.isOk) {
+                    showToast('Reply sent successfully!');
+                } else {
+                    showToast('Error sending reply.');
+                }
+            }
+        }
+    };
+    window.filterFarmers = (searchTerm) => {
+        const farmers = currentData.filter(d => d.type === 'farmer');
+        const filtered = farmers.filter(f => f.dan.includes(searchTerm) || f.name.toLowerCase().includes(searchTerm.toLowerCase()));
+        const tbody = document.getElementById('farmersTable');
+        if (tbody) {
+            tbody.innerHTML = filtered.map(f => {
+                const status = getCropStatus(f);
+                return `
+              <tr class="border-b hover:bg-gray-50">
+                <td class="p-3 font-mono text-sm">${f.dan}</td>
+                <td class="p-3">${f.name}</td>
+                <td class="p-3">${f.location}</td>
+                <td class="p-3">${f.cropType}</td>
+                <td class="p-3">${f.soilMoisture}%</td>
+                <td class="p-3">
+                  <span class="status-${status.status}">●</span> ${status.text}
+                </td>
+              </tr>
+            `;
+            }).join('');
+        }
     };
 
-    // init
-    async function onConfigChange(config) { const titleElements = document.querySelectorAll('h1'); titleElements.forEach(el => { if (el.textContent.includes('KrishiSetu') || el.textContent.includes(defaultConfig.app_title)) { el.textContent = config.app_title || defaultConfig.app_title; } }); render(); }
+    async function onConfigChange(config) {
+        const titleElements = document.querySelectorAll('h1');
+        titleElements.forEach(el => {
+            if (el.textContent.includes('KrishiSetu') || el.textContent.includes(defaultConfig.app_title)) {
+                el.textContent = config.app_title || defaultConfig.app_title;
+            }
+        });
+        const primaryColorElements = document.querySelectorAll('[style*="color"]');
+        primaryColorElements.forEach(el => {
+            if (el.style.color === defaultConfig.primary_color || el.style.color === config.primary_color) {
+                el.style.color = config.primary_color || defaultConfig.primary_color;
+            }
+        });
+        render();
+    }
 
-    async function init() { const initResult = await window.dataSdk.init(dataHandler); if (!initResult.isOk) { console.error('Failed to initialize Data SDK'); /* still allow UI demo */ }
-      if (window.elementSdk) { window.elementSdk.init({ defaultConfig, onConfigChange, mapToCapabilities: (config) => ({ recolorables: [ { get: () => config.primary_color || defaultConfig.primary_color, set: (value) => { config.primary_color = value; window.elementSdk.setConfig({ primary_color: value }); } } ], borderables: [], fontEditable: undefined, fontSizeable: undefined }), mapToEditPanelValues: (config) => new Map([ ['app_title', config.app_title || defaultConfig.app_title], ['app_tagline', config.app_tagline || defaultConfig.app_tagline], ['admin_welcome', config.admin_welcome || defaultConfig.admin_welcome], ['farmer_welcome', config.farmer_welcome || defaultConfig.farmer_welcome] ]) }); }
-      // for demo: seed some market items and news into currentData if empty
-      if (!currentData || currentData.length === 0) {
-        currentData = [
-          { id: 'm1', type: 'market_item', name: 'Organic Fertilizer 5kg', price: 450, details: 'Slow release organic fertilizer', photo: '', sellerDan: 'admin' },
-          { id: 'm2', type: 'market_item', name: 'Hybrid Seed Pack', price: 250, details: 'High yield seeds - 1kg', photo: '', sellerDan: 'admin' }
-        ];
-      }
-      render();
+    async function init() {
+        if (typeof window.dataSdk === 'undefined') {
+            console.error('Data SDK not found. Using mock data.');
+            window.dataSdk = {
+                init: () => ({ isOk: true }),
+                create: (data) => {
+                    console.log('Mock create:', data);
+                    return { isOk: true };
+                },
+                update: (data) => {
+                    console.log('Mock update:', data);
+                    return { isOk: true };
+                }
+            };
+        }
+        const initResult = await window.dataSdk.init(dataHandler);
+        if (!initResult.isOk) {
+            console.error('Failed to initialize Data SDK');
+            return;
+        }
+        if (window.elementSdk) {
+            window.elementSdk.init({
+                defaultConfig,
+                onConfigChange,
+                mapToCapabilities: (config) => ({
+                    recolorables: [
+                        {
+                            get: () => config.primary_color || defaultConfig.primary_color,
+                            set: (value) => {
+                                config.primary_color = value;
+                                window.elementSdk.setConfig({primary_color: value});
+                            }
+                        },
+                        {
+                            get: () => config.secondary_color || defaultConfig.secondary_color,
+                            set: (value) => {
+                                config.secondary_color = value;
+                                window.elementSdk.setConfig({secondary_color: value});
+                            }
+                        },
+                        {
+                            get: () => config.background_color || defaultConfig.background_color,
+                            set: (value) => {
+                                config.background_color = value;
+                                window.elementSdk.setConfig({background_color: value});
+                            }
+                        },
+                        {
+                            get: () => config.text_color || defaultConfig.text_color,
+                            set: (value) => {
+                                config.text_color = value;
+                                window.elementSdk.setConfig({text_color: value});
+                            }
+                        },
+                        {
+                            get: () => config.accent_color || defaultConfig.accent_color,
+                            set: (value) => {
+                                config.accent_color = value;
+                                window.elementSdk.setConfig({accent_color: value});
+                            }
+                        }
+                    ],
+                    borderables: [],
+                    fontEditable: undefined,
+                    fontSizeable: undefined
+                }),
+                mapToEditPanelValues: (config) => new Map([
+                    ['app_title', config.app_title || defaultConfig.app_title],
+                    ['app_tagline', config.app_tagline || defaultConfig.app_tagline],
+                    ['admin_welcome', config.admin_welcome || defaultConfig.admin_welcome],
+                    ['farmer_welcome', config.farmer_welcome || defaultConfig.farmer_welcome]
+                ])
+            });
+        }
+        render();
     }
 
     init();
-  </script>
-
-  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99c5d97a337a29b7',t:'MTc2Mjc4MDg1MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+</script>
 </body>
 </html>
 
