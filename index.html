@@ -925,7 +925,6 @@
         .language-dropdown {
             position: relative;
             display: inline-block;
-            z-index: 9998;
         }
         .language-dropdown-button {
             padding: 8px 16px;
@@ -1056,11 +1055,7 @@
             color: #c8e6c9 !important;
         }
     </style>
-    <style>
-        @view-transition {
-            navigation: auto;
-        }
-    </style>
+    <style>@view-transition { navigation: auto; }</style>
 </head>
 <body>
 <div id="app"></div>
@@ -1416,6 +1411,7 @@
     }
 
     function getCropStatus(iotData) {
+        if (!iotData) return { status: 'unknown', text: 'N/A' };
         if (iotData.soilMoisture < 40 || iotData.temperature > 32) {
             return {status: 'critical', text: t('critical')};
         } else if (iotData.soilMoisture < 50 || iotData.temperature > 28) {
@@ -1484,7 +1480,7 @@
 
     async function handleAddFarmer(formData) {
         const iotData = generateIoTData();
-        const result = await window.dataSdk.create({
+        const newFarmer = {
             type: 'farmer',
             dan: generateDAN(),
             name: formData.name,
@@ -1498,10 +1494,15 @@
             irrigation: formData.irrigation,
             ...iotData,
             timestamp: new Date().toISOString()
-        });
+        };
+        const result = await window.dataSdk.create(newFarmer);
         if (result.isOk) {
+            // Manually add to local data for immediate UI update
+            currentData.push(newFarmer);
             showToast('Farmer added successfully!');
             currentView = 'admin-dashboard';
+            // Explicitly re-render to show the new farmer in the list
+            render();
         } else {
             showToast('Error adding farmer. Please try again.');
         }
@@ -1543,11 +1544,6 @@
         render();
     }
 
-    function toggleLanguage() {
-        currentLanguage = currentLanguage === 'en' ? 'hi' : 'en';
-        render();
-    }
-
     function toggleChat() {
         isChatOpen = !isChatOpen;
         render();
@@ -1565,7 +1561,7 @@
         padding: 16px 24px;
         border-radius: 8px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        z-index: 1000;
+        z-index: 10001;
         animation: fadeIn 0.3s ease;
       `;
         document.body.appendChild(toast);
@@ -1690,7 +1686,7 @@
         };
         return `
       <div class="min-h-full ${isDarkMode ? 'dark-mode' : 'gradient-bg-light'}">
-        <nav class="card mx-4 mt-4 p-4 flex justify-between items-center flex-wrap gap-4" style="z-index: 10000; position: relative;">
+        <nav class="card mx-4 mt-4 p-4 flex justify-between items-center flex-wrap gap-4" style="position: relative; z-index: 100;">
           <h1 class="text-2xl font-bold" style="color: ${window.elementSdk?.config?.primary_color || defaultConfig.primary_color}">
             ${window.elementSdk?.config?.app_title || defaultConfig.app_title} - Admin
           </h1>
@@ -1792,7 +1788,7 @@
                 ${farmers.map(f => {
             const status = getCropStatus(f);
             return `
-                  <tr class="border-b hover:bg-gray-50 transition-all duration-300" style="cursor: pointer;">
+                  <tr class="border-b hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300" style="cursor: pointer;">
                     <td class="p-3 font-mono text-sm">${f.dan}</td>
                     <td class="p-3 font-semibold">${f.name}</td>
                     <td class="p-3">📍 ${f.location}</td>
@@ -1980,7 +1976,7 @@
         };
         return `
       <div class="min-h-full ${isDarkMode ? 'dark-mode' : 'gradient-bg-light'}">
-        <nav class="card mx-4 mt-4 p-4 flex justify-between items-center flex-wrap gap-4" style="z-index: 10000; position: relative;">
+        <nav class="card mx-4 mt-4 p-4 flex justify-between items-center flex-wrap gap-4" style="position: relative; z-index: 100;">
           <h1 class="text-2xl font-bold" style="color: ${window.elementSdk?.config?.primary_color || defaultConfig.primary_color}">
             ${window.elementSdk?.config?.app_title || defaultConfig.app_title}
           </h1>
@@ -2098,18 +2094,18 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
               <h3 class="text-xl font-bold mb-4">${t('sellYourGoods')}</h3>
-              <form class="space-y-4">
+              <form class="space-y-4" onsubmit="event.preventDefault(); showToast('Advertisement posted successfully!');">
                 <div>
                   <label class="block mb-2 font-semibold">${t('productName')}</label>
-                  <input type="text" required class="input-field" />
+                  <input type="text" required class="input-field" placeholder="e.g., Fresh Tomatoes"/>
                 </div>
                 <div>
                   <label class="block mb-2 font-semibold">${t('price')}</label>
-                  <input type="number" step="0.01" required class="input-field" />
+                  <input type="number" step="0.01" required class="input-field" placeholder="e.g., 2.50"/>
                 </div>
                 <div>
                   <label class="block mb-2 font-semibold">${t('description')}</label>
-                  <textarea rows="3" class="input-field"></textarea>
+                  <textarea rows="3" class="input-field" placeholder="Describe your product..."></textarea>
                 </div>
                 <div>
                   <label class="block mb-2 font-semibold">${t('uploadPhoto')}</label>
@@ -2122,7 +2118,7 @@
               <h3 class="text-xl font-bold mb-4">${t('buyGoods')}</h3>
               <div class="space-y-4">
                 <div class="card p-4 flex gap-4 items-center">
-                  <img src="https://via.placeholder.com/80" alt="Product" class="rounded-lg" />
+                  <img src="https://i.imgur.com/8aL3d2E.png" alt="Product" class="w-20 h-20 object-cover rounded-lg" />
                   <div>
                     <h4 class="font-bold">Organic Fertilizers</h4>
                     <p class="text-sm text-gray-600">High-quality compost for all crops.</p>
@@ -2130,7 +2126,7 @@
                   </div>
                 </div>
                 <div class="card p-4 flex gap-4 items-center">
-                  <img src="https://via.placeholder.com/80" alt="Product" class="rounded-lg" />
+                  <img src="https://i.imgur.com/TUa82wK.png" alt="Product" class="w-20 h-20 object-cover rounded-lg" />
                   <div>
                     <h4 class="font-bold">Hybrid Seeds</h4>
                     <p class="text-sm text-gray-600">High-yield tomato seeds.</p>
@@ -2221,6 +2217,12 @@
             html = renderFarmerDashboard();
         }
         app.innerHTML = html;
+        // After rendering, apply dark mode if it's active
+        if (isDarkMode) {
+            document.body.classList.add('dark-mode');
+        } else {
+            document.body.classList.remove('dark-mode');
+        }
     }
 
     window.togglePortalType = () => {
@@ -2229,6 +2231,7 @@
     };
     window.setLanguage = (lang) => {
         currentLanguage = lang;
+        localStorage.setItem('krishiSetuLang', lang); // Save to localStorage
         render();
     };
     window.toggleLanguageDropdown = (event) => {
@@ -2240,6 +2243,7 @@
     };
     window.setLanguageAndClose = (lang) => {
         currentLanguage = lang;
+        localStorage.setItem('krishiSetuLang', lang); // Save to localStorage
         const menu = document.getElementById('languageMenu');
         if (menu) {
             menu.classList.remove('open');
@@ -2260,14 +2264,6 @@
     };
     window.handleFarmerLoginSubmit = (e) => {
         e.preventDefault();
-        const dan = document.getElementById('danInput').value;
-        if (dan.length === 12) {
-            handleLogin('farmer', dan);
-        } else {
-            showToast('Please enter a valid 12-digit DAN');
-        }
-    };
-    window.handleFarmerLogin = () => {
         const dan = document.getElementById('danInput').value;
         if (dan.length === 12) {
             handleLogin('farmer', dan);
@@ -2312,14 +2308,19 @@
             tbody.innerHTML = filtered.map(f => {
                 const status = getCropStatus(f);
                 return `
-              <tr class="border-b hover:bg-gray-50">
+              <tr class="border-b hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300" style="cursor: pointer;">
                 <td class="p-3 font-mono text-sm">${f.dan}</td>
-                <td class="p-3">${f.name}</td>
-                <td class="p-3">${f.location}</td>
-                <td class="p-3">${f.cropType}</td>
-                <td class="p-3">${f.soilMoisture}%</td>
+                <td class="p-3 font-semibold">${f.name}</td>
+                <td class="p-3">📍 ${f.location}</td>
+                <td class="p-3">🌾 ${f.cropType}</td>
                 <td class="p-3">
-                  <span class="status-${status.status}">●</span> ${status.text}
+                  <div style="display: inline-block; padding: 4px 12px; background: rgba(107, 157, 62, 0.2); border-radius: 12px; font-weight: 600;">
+                    💧 ${f.soilMoisture}%
+                  </div>
+                </td>
+                <td class="p-3">
+                  <span class="status-${status.status}" style="font-size: 20px;">●</span>
+                  <span style="font-weight: 600;">${status.text}</span>
                 </td>
               </tr>
             `;
@@ -2328,36 +2329,16 @@
     };
 
     async function onConfigChange(config) {
-        const titleElements = document.querySelectorAll('h1');
-        titleElements.forEach(el => {
-            if (el.textContent.includes('KrishiSetu') || el.textContent.includes(defaultConfig.app_title)) {
-                el.textContent = config.app_title || defaultConfig.app_title;
-            }
-        });
-        const primaryColorElements = document.querySelectorAll('[style*="color"]');
-        primaryColorElements.forEach(el => {
-            if (el.style.color === defaultConfig.primary_color || el.style.color === config.primary_color) {
-                el.style.color = config.primary_color || defaultConfig.primary_color;
-            }
-        });
         render();
     }
 
     async function init() {
-        if (typeof window.dataSdk === 'undefined') {
-            console.error('Data SDK not found. Using mock data.');
-            window.dataSdk = {
-                init: () => ({ isOk: true }),
-                create: (data) => {
-                    console.log('Mock create:', data);
-                    return { isOk: true };
-                },
-                update: (data) => {
-                    console.log('Mock update:', data);
-                    return { isOk: true };
-                }
-            };
+        // Check for saved language in local storage
+        const savedLang = localStorage.getItem('krishiSetuLang');
+        if (savedLang && translations[savedLang]) {
+            currentLanguage = savedLang;
         }
+
         const initResult = await window.dataSdk.init(dataHandler);
         if (!initResult.isOk) {
             console.error('Failed to initialize Data SDK');
@@ -2369,41 +2350,11 @@
                 onConfigChange,
                 mapToCapabilities: (config) => ({
                     recolorables: [
-                        {
-                            get: () => config.primary_color || defaultConfig.primary_color,
-                            set: (value) => {
-                                config.primary_color = value;
-                                window.elementSdk.setConfig({primary_color: value});
-                            }
-                        },
-                        {
-                            get: () => config.secondary_color || defaultConfig.secondary_color,
-                            set: (value) => {
-                                config.secondary_color = value;
-                                window.elementSdk.setConfig({secondary_color: value});
-                            }
-                        },
-                        {
-                            get: () => config.background_color || defaultConfig.background_color,
-                            set: (value) => {
-                                config.background_color = value;
-                                window.elementSdk.setConfig({background_color: value});
-                            }
-                        },
-                        {
-                            get: () => config.text_color || defaultConfig.text_color,
-                            set: (value) => {
-                                config.text_color = value;
-                                window.elementSdk.setConfig({text_color: value});
-                            }
-                        },
-                        {
-                            get: () => config.accent_color || defaultConfig.accent_color,
-                            set: (value) => {
-                                config.accent_color = value;
-                                window.elementSdk.setConfig({accent_color: value});
-                            }
-                        }
+                        { get: () => config.primary_color || defaultConfig.primary_color, set: (value) => { window.elementSdk.setConfig({ primary_color: value }); } },
+                        { get: () => config.secondary_color || defaultConfig.secondary_color, set: (value) => { window.elementSdk.setConfig({ secondary_color: value }); } },
+                        { get: () => config.background_color || defaultConfig.background_color, set: (value) => { window.elementSdk.setConfig({ background_color: value }); } },
+                        { get: () => config.text_color || defaultConfig.text_color, set: (value) => { window.elementSdk.setConfig({ text_color: value }); } },
+                        { get: () => config.accent_color || defaultConfig.accent_color, set: (value) => { window.elementSdk.setConfig({ accent_color: value }); } }
                     ],
                     borderables: [],
                     fontEditable: undefined,
@@ -2424,4 +2375,3 @@
 </script>
 </body>
 </html>
-
