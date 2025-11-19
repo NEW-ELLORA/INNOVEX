@@ -1,5 +1,4 @@
 
-    <script>
         // --- I18N & TRANSLATIONS ---
         const translations = {
             en: {
@@ -487,4 +486,4 @@
 
         // Expose functions for inline onclick
         Object.assign(window, { returnHome, showLoginSelection, showAdminAuth, showFarmerAuth, verifyAdminPassword, verifyFarmerLogin, logoutFromFarmer, viewFarmerDetails, deleteFarmer, closeDanModal, toggleChat, sendUserMessage, openSellModal, closeSellModal, submitSellOffer, acceptSellOffer, declineSellOffer, renderAdminSellOffers, refreshFarmerOffersUI, updateSellBadges, handleFormSubmit, handleProductFormSubmit, deleteAdminProduct, buyProduct, changeLanguage, toggleNews });
-    </script>
+
