@@ -925,7 +925,7 @@
 
     <script>
         // --- GLOBAL SCOPE VARIABLES ---
-        let supabaseClient; 
+        let supabaseClient;
         let farmersList = [];
         let currentFarmer = null;
         let globalChatMessages = [];
@@ -1028,11 +1028,11 @@
             document.getElementById('language-selector').value = lang;
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
-                if (translations[lang] && translations[lang][key]) el.textContent = translations[lang][key];
+                if (translations.en[key]) el.textContent = (translations[lang] && translations[lang][key]) || translations.en[key];
             });
             document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
                 const key = el.getAttribute('data-i18n-placeholder');
-                 if (translations[lang] && translations[lang][key]) el.placeholder = translations[lang][key];
+                 if (translations.en[key]) el.placeholder = (translations[lang] && translations[lang][key]) || translations.en[key];
             });
         }
         
@@ -1388,9 +1388,45 @@
             if(ctx2El) charts[moistCanvasId] = new Chart(ctx2El.getContext('2d'), { type: 'bar', data: { labels: ['Jan','Feb','Mar','Apr','May','Jun'], datasets: [{ label: 'Moisture', data: moistureData, backgroundColor: '#60a5fa', borderRadius: 4 }] }, options });
         }
         function toggleChat() { document.getElementById('chat-window').classList.toggle('hidden'); if (!document.getElementById('chat-window').classList.contains('hidden')) document.getElementById('user-chat-input').focus(); }
-        async function sendUserMessage(e) { e.preventDefault(); /* ... same ... */ }
-        async function renderAdminInbox() { /* ... same ... */ }
-        async function refreshChatWindowMessages() { /* ... same ... */ }
+        async function sendUserMessage(e) {
+            e.preventDefault();
+            const input = document.getElementById('user-chat-input'); const msg = input.value.trim(); if(!msg) return;
+            const currentDan = (chatWidget.dataset.currentDan && chatWidget.dataset.currentDan.length>0) ? chatWidget.dataset.currentDan : null;
+            const sender = currentDan ? ("Farmer (" + document.getElementById('dash-farmer-name').textContent + ")") : "Visitor";
+            const { error } = await supabaseClient.from('messages').insert([{ sender, text: msg, time: new Date().toLocaleTimeString(), type: "user", dan: currentDan }]);
+            if(error) { console.error("Error sending message:", error); return; }
+            input.value = '';
+            setTimeout(async () => {
+                await supabaseClient.from('messages').insert([{ sender: "KrishiSetu Bot", text: "Message received. Admin will contact you.", time: new Date().toLocaleTimeString(), type: "bot", dan: currentDan }]);
+            }, 700);
+        }
+        async function renderAdminInbox() {
+            const list = document.getElementById('admin-chat-list'); if(!list) return;
+            const { data, error } = await supabaseClient.from('messages').select('*').eq('type', 'user').order('created_at', { ascending: false });
+            if (error) { console.error("Error fetching admin inbox:", error); return; }
+            const userMessages = data || [];
+            if(userMessages.length === 0) { list.innerHTML = '<div class="text-center text-gray-500 text-sm py-4">No new messages.</div>'; return; }
+            list.innerHTML = '';
+            userMessages.forEach((m) => {
+                const displayDan = m.dan ? formatDanDisplay(m.dan) : 'Visitor';
+                list.innerHTML += `<div class="bg-white/5 p-3 rounded-lg border border-white/10 flex justify-between items-start mb-2"> <div style="flex:1"> <div class="flex items-center gap-2 mb-1"><span class="text-green-400 text-sm font-bold">${escapeHtml(displayDan)}</span><span class="text-gray-500 text-xs ml-2">${m.time}</span></div> <p class="text-gray-300 text-sm">${escapeHtml(m.text)}</p> </div> </div>`;
+            });
+        }
+        async function refreshChatWindowMessages() {
+            const list = document.getElementById('chat-messages'); if (!list) return; 
+            const currentDan = (chatWidget.dataset.currentDan || '').replace(/\s/g,'');
+            const query = supabaseClient.from('messages').select('*');
+            if(currentDan) { query.eq('dan', currentDan); } else { query.is('dan', null); }
+            const { data, error } = await query.order('created_at', { ascending: true });
+            if (error) { console.error("Error fetching chat messages:", error); return; }
+            globalChatMessages = data || [];
+            list.innerHTML = '';
+            if(globalChatMessages.length === 0) { list.innerHTML = '<div class="chat-bubble-bot">Namaste! How can I help you?</div>'; return; }
+            globalChatMessages.forEach(m => { 
+                list.innerHTML += `<div class="${(m.type === 'user') ? 'chat-bubble-user' : 'chat-bubble-bot'}">${escapeHtml(m.text)}</div>`;
+            });
+            list.scrollTop = list.scrollHeight;
+        }
         function toggleNews() { newsPanel.classList.toggle('open'); if(newsPanel.classList.contains('open')) renderNews('all'); }
         function renderNews(filter = 'all') {
             const newsListEl = document.getElementById('newsList'); if (!newsListEl) return;
@@ -1427,9 +1463,22 @@
 
             document.getElementById('current-year').textContent = new Date().getFullYear();
             new Chart(document.getElementById('cropHealthChart').getContext('2d'), { type: 'line', data: { labels: ['J','F','M','A','M','J'], datasets: [{ data: [12,15,14,18,20,22], borderColor: '#4ade80', backgroundColor: 'rgba(74,222,128,0.1)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins:{legend:{display:false}}, scales:{x:{display:false},y:{display:true, grid:{color:'rgba(255,255,255,0.05)'}}} } });
+            
             const observer = new IntersectionObserver((entries) => { entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('is-visible'); }); });
             document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
             
+            // FIX: Attach event listeners for news panel here
+            document.getElementById('closeNewsBtn').addEventListener('click', () => newsPanel.classList.remove('open'));
+            document.getElementById('refreshNewsBtn').addEventListener('click', () => renderNews(currentFilter));
+            document.querySelectorAll('.news-filter').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.news-filter').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentFilter = btn.dataset.filter;
+                    renderNews(currentFilter);
+                });
+            });
+
             await checkSession();
             
             renderNews('all');
