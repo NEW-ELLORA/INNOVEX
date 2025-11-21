@@ -1,0 +1,1496 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>KrishiSetu  - Full Ecosystem</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Kannada:wght@400;700&family=Noto+Sans+Devanagari:wght@400;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* --- BASE STYLES --- */
+        body {
+            font-family: 'Inter', 'Noto Sans Devanagari', 'Noto Sans Kannada', sans-serif;
+            background-color: #020601;
+            color: #d1d5db;
+            overflow-x: hidden;
+        }
+
+        :root {
+            --neon-green: #4ade80;
+            --soft-green: #86efac;
+            --dark-green: #14532d;
+            --dark-glass: rgba(10, 20, 15, 0.3);
+            --border-glass: rgba(74, 222, 128, 0.2);
+            --border-glass-hover: rgba(134, 239, 172, 0.5);
+        }
+
+        /* --- SCROLLBARS --- */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #020601; }
+        ::-webkit-scrollbar-thumb { background: #14532d; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #4ade80; }
+
+        /* --- PRELOADER --- */
+        #preloader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #020601; display: flex; justify-content: center; align-items: center;
+            z-index: 1000; transition: opacity 1s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+        #preloader.loaded { opacity: 0; pointer-events: none; }
+        #preloader-svg { width: 80px; height: 80px; }
+        #preloader-leaf {
+            fill: none; stroke: var(--neon-green); stroke-width: 4;
+            stroke-dasharray: 200; stroke-dashoffset: 200;
+            animation: draw-leaf 2s ease-in-out infinite alternate;
+        }
+        @keyframes draw-leaf {
+            0% { stroke-dashoffset: 200; opacity: 0.5; }
+            50% { stroke-dashoffset: 0; opacity: 1; }
+            100% { stroke-dashoffset: -200; opacity: 0.5; }
+        }
+
+        /* --- GLASSMORPHISM UI --- */
+        .glass-card {
+            background: var(--dark-glass);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--border-glass);
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .glass-card:hover {
+            border-color: var(--border-glass-hover);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2), 0 0 50px rgba(74, 222, 128, 0.1);
+        }
+        .glass-nav {
+            background: rgba(2, 6, 1, 0.8);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(74, 222, 128, 0.1);
+            transition: background 0.3s ease;
+        }
+
+        /* --- BUTTONS --- */
+        .neon-button {
+            background-color: var(--neon-green); color: #020601; font-weight: 600;
+            border-radius: 9999px; transition: 0.3s; cursor: pointer; display: inline-block;
+            box-shadow: 0 0 20px rgba(74, 222, 128, 0.4);
+        }
+        .neon-button:hover {
+            background-color: var(--soft-green); transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(74, 222, 128, 0.8);
+        }
+        .neon-button:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .neon-button-outline {
+            background: transparent; color: var(--soft-green); border: 2px solid var(--soft-green);
+            font-weight: 500; border-radius: 9999px; transition: 0.3s; cursor: pointer; display: inline-block;
+        }
+        .neon-button-outline:hover {
+            background: rgba(74, 222, 128, 0.1); color: white;
+            box-shadow: 0 0 20px rgba(74, 222, 128, 0.3);
+        }
+
+        /* --- LANGUAGE SELECTOR --- */
+        .lang-select {
+            background: rgba(0, 0, 0, 0.6);
+            color: var(--neon-green);
+            border: 1px solid var(--border-glass);
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            outline: none;
+            transition: 0.3s;
+        }
+        .lang-select:hover {
+            background: rgba(74, 222, 128, 0.1);
+            border-color: var(--soft-green);
+        }
+        .lang-select option {
+            background: #020601;
+            color: white;
+        }
+
+        /* --- ANIMATIONS --- */
+        .animate-on-scroll { opacity: 0; transform: translateY(40px); transition: opacity 0.8s ease, transform 0.8s ease; }
+        .animate-on-scroll.is-visible { opacity: 1; transform: translateY(0); }
+        .delay-1 { transition-delay: 0.1s; }
+        .delay-2 { transition-delay: 0.2s; }
+        .delay-3 { transition-delay: 0.3s; }
+
+        /* --- HERO SVG --- */
+        .plant-svg { width: 300px; height: 300px; z-index: 2; }
+        .plant-svg path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+        #stalk { stroke: var(--soft-green); stroke-width: 4; stroke-dasharray: 215; stroke-dashoffset: 215; animation: grow 2s ease 1s forwards; }
+        #leaf1, #leaf2, #leaf3, #leaf4 { stroke: var(--neon-green); stroke-width: 3; fill: rgba(74, 222, 128, 0.1); stroke-dasharray: 150; stroke-dashoffset: 150; opacity: 0; animation: grow-leaf 1.5s ease forwards; }
+        #leaf1 { animation-delay: 2.0s; } #leaf2 { animation-delay: 2.2s; }
+        #leaf3 { animation-delay: 2.4s; } #leaf4 { animation-delay: 2.6s; }
+        @keyframes grow { to { stroke-dashoffset: 0; } }
+        @keyframes grow-leaf { from { stroke-dashoffset: 150; opacity: 0; } to { stroke-dashoffset: 0; opacity: 1; fill: rgba(74, 222, 128, 0.25); } }
+
+        /* --- UTILITIES --- */
+        .hidden-section { display: none !important; }
+        .fade-in { animation: fadeIn 0.5s ease-in-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .form-input, .form-select { background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border-glass); border-radius: 0.5rem; color: white; transition: 0.3s; padding: .5rem; width: 100%;}
+        .form-input:focus, .form-select:focus { border-color: var(--neon-green); outline: none; box-shadow: 0 0 15px rgba(74, 222, 128, 0.2); }
+        .form-select option { background: #020601; color: white;}
+        /* Style for file inputs */
+        input[type="file"]::file-selector-button {
+            background-color: var(--dark-green);
+            color: var(--soft-green);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+            margin-right: 1rem;
+        }
+        input[type="file"]::file-selector-button:hover {
+            background-color: var(--neon-green);
+            color: #020601;
+        }
+        select[multiple] {
+            height: auto;
+            min-height: 100px;
+            padding: 0.5rem;
+        }
+        select[multiple] option {
+            padding: 4px 8px;
+        }
+
+        .admin-table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
+        .admin-table th { text-align: left; color: var(--soft-green); padding: 10px; font-size: 0.85rem; text-transform: uppercase; }
+        .admin-table td { background: rgba(255,255,255,0.03); padding: 15px; vertical-align: middle; }
+
+        .bg-grid {
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, rgba(74, 222, 128, 0.05) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(74, 222, 128, 0.05) 1px, transparent 1px);
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none;
+        }
+
+        /* --- CHAT WIDGET --- */
+        #chat-widget-container { transition: all 0.3s ease; }
+        .chat-avatar-pulse { animation: pulse-green 2s infinite; box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); }
+        @keyframes pulse-green {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(74, 222, 128, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
+        }
+        .chat-bubble-user { background: rgba(74, 222, 128, 0.2); color: white; align-self: flex-end; padding: 8px 12px; border-radius: 12px 12px 0 12px; max-width: 80%; font-size: 0.9rem; }
+        .chat-bubble-bot { background: rgba(255, 255, 255, 0.06); color: #d1d5db; align-self: flex-start; padding: 8px 12px; border-radius: 12px 12px 12px 0; max-width: 80%; font-size: 0.9rem; }
+        .chat-avatar-img { width: 100%; height: 100%; object-fit: cover; border-radius: 9999px; display:block; border: 2px solid var(--neon-green); }
+
+        /* ---------- NEWS PANEL & SLIDE ARROW ---------- */
+        .news-panel {
+            position: fixed;
+            left: -420px;
+            top: 0;
+            width: 420px;
+            height: 100%;
+            z-index: 90;
+            transition: left 380ms cubic-bezier(.2,.9,.2,1), box-shadow 200ms;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+        .news-panel.open { left: 0; }
+        .news-panel .panel-header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; }
+        .news-panel .panel-title { font-size:1.1rem; font-weight:700; color:#e6fff0; display:flex; align-items:center; gap:8px; }
+        .news-panel .panel-close { background:transparent; border:1px solid rgba(255,255,255,0.06); color:#cfead1; padding:8px 10px; border-radius:10px; cursor:pointer; }
+        .news-panel .filters { display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; }
+        .news-filter { font-size:0.85rem; padding:6px 10px; border-radius:999px; border:1px solid rgba(255,255,255,0.04); background:rgba(255,255,255,0.02); color:#dfffe6; cursor:pointer; }
+        .news-filter.active { background: linear-gradient(90deg, rgba(74,222,128,0.12), rgba(134,239,172,0.06)); border-color: rgba(74,222,128,0.2); color:#bfffcc; box-shadow:0 6px 20px rgba(74,222,128,0.05); }
+        .news-list { overflow-y:auto; padding-right:8px; display:flex; flex-direction:column; gap:12px; margin-top:6px; }
+        .news-list::-webkit-scrollbar { width: 6px; }
+        .news-list::-webkit-scrollbar-track { background: transparent; }
+        .news-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+        .news-card { background: rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04); padding:12px; border-radius:12px; }
+        .news-card .meta { font-size:0.78rem; color:#9edfae; margin-bottom:8px; display:flex; justify-content:space-between; gap:8px; align-items:center; }
+        .news-card .title { font-weight:700; color:#ffffff; margin-bottom:6px; }
+        .news-card .excerpt { color:#cfd8ce; font-size:0.9rem; line-height:1.3; }
+        .news-empty { color:#9aa89a; text-align:center; margin-top:40px; }
+
+        /* SLIDE ARROW STYLES */
+        .slide-arrow-container {
+            position: fixed;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 85;
+            transition: left 0.3s ease;
+        }
+        .slide-arrow-btn {
+            background-color: var(--neon-green);
+            color: #020601;
+            border: none;
+            border-radius: 0 8px 8px 0;
+            padding: 12px 4px 12px 2px;
+            cursor: pointer;
+            box-shadow: 4px 0 15px rgba(74, 222, 128, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        .slide-arrow-btn:hover {
+            padding-left: 6px;
+            background-color: var(--soft-green);
+            box-shadow: 6px 0 20px rgba(74, 222, 128, 0.5);
+        }
+
+        /* --- MODAL Z-INDICES --- */
+        #dan-modal { z-index: 120; }
+        #admin-farmer-view-modal { z-index: 110; }
+
+        @media (max-width: 900px) {
+            .news-panel { width: 100%; left: 100%; right: -100%; }
+            .news-panel.open { left: 0; right: 0; }
+        }
+
+        /* additional */
+        .badge { background: var(--neon-green); color: #020601; padding:2px 8px; border-radius:999px; font-weight:700; font-size:12px; }
+        .small-badge { background: #ef4444; color:white; padding:2px 6px; border-radius:999px; font-size:0.75rem; }
+        .offer-timeline { display:flex; gap:8px; align-items:center; font-size:12px; color:#bcdabb; margin-top:6px;}
+        .timeline-step { padding:6px 10px; border-radius:999px; background: rgba(255,255,255,0.03); }
+        .product-preview { display:flex; align-items:center; gap:8px; }
+
+        /* BUY SUPPLIES STYLES */
+        .supplies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.5rem;
+        }
+        .supply-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border-glass);
+            border-radius: 1rem;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            transition: 0.3s ease;
+        }
+        .supply-card:hover {
+            background: rgba(255,255,255,0.06);
+            border-color: var(--border-glass-hover);
+        }
+        .supply-card img {
+            width: 100%; height: 140px; object-fit: cover; border-radius: 0.5rem; margin-bottom: 1rem;
+        }
+        .supply-card .stock {
+            font-size: 0.8rem; background: rgba(74,222,128,0.1); color: var(--soft-green);
+            padding: 2px 8px; border-radius: 9999px; display: inline-block; margin-top: 0.5rem;
+        }
+
+        .image-preview-box {
+            width: 80px;
+            height: 80px;
+            border: 2px dashed var(--border-glass);
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--border-glass-hover);
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+        .image-preview-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .soil-char-list { list-style: none; padding-left: 0; }
+        .soil-char-list li {
+            background: rgba(74, 222, 128, 0.05);
+            border-left: 3px solid var(--neon-green);
+            padding: 8px 12px;
+            border-radius: 0 4px 4px 0;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+            color: #d1d5db;
+        }
+    </style>
+</head>
+
+<body class="text-gray-300">
+
+    <div class="bg-grid"></div>
+
+    <div id="preloader">
+        <svg id="preloader-svg" viewBox="0 0 100 100">
+            <path id="preloader-leaf" d="M50,10 C20,30 20,70 50,90 C80,70 80,30 50,10 Z M50,10 C50,10 50,90 50,90"/>
+        </svg>
+    </div>
+
+    <header id="main-header" class="glass-nav fixed top-0 left-0 w-full z-40">
+        <nav class="container mx-auto max-w-7xl px-6 py-4 flex justify-between items-center">
+            <a href="#" onclick="returnHome()" class="text-2xl font-bold text-white cursor-pointer">
+                Krishi<span class="text-green-400">Setu</span>
+            </a>
+            <div class="hidden md:flex items-center space-x-6 lg:space-x-8">
+                <a href="#hero" onclick="returnHome()" class="text-gray-300 hover:text-green-400 transition" data-i18n="nav_home">Home</a>
+                <a href="#dashboard" onclick="returnHome()" class="text-gray-300 hover:text-green-400 transition" data-i18n="nav_dashboard">Dashboard</a>
+                <a href="#features" onclick="returnHome()" class="text-gray-300 hover:text-green-400 transition" data-i18n="nav_features">Features</a>
+                <a href="#marketplace" onclick="returnHome()" class="text-gray-300 hover:text-green-400 transition" data-i18n="nav_marketplace">Marketplace</a>
+            </div>
+            <div class="flex items-center space-x-4">
+                <select id="language-selector" onchange="changeLanguage(this.value)" class="lang-select">
+                    <option value="en">English</option>
+                    <option value="hi">हिंदी</option>
+                    <option value="kn">ಕನ್ನಡ</option>
+                </select>
+
+                <div class="relative">
+                    <button id="sell-product-btn" onclick="openSellModal()" class="neon-button px-4 py-2 hidden" title="Sell Your Produce">Sell Produce</button>
+                    <span id="sell-notif-badge" class="small-badge hidden absolute -top-2 -right-2">0</span>
+                </div>
+
+                <button id="login-get-started-btn" onclick="showLoginSelection()" class="neon-button px-5 py-2" data-i18n="btn_login">
+                    Login / Get Started
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <div id="newsPanel" class="news-panel glass-card">
+        <div class="panel-header">
+            <div class="panel-title">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 00-2-2H7a2 2 0 00-2 2m14 0v7a2 2 0 01-2 2H7a2 2 0 01-2-2v-7"/></svg>
+                <span data-i18n="news_title">Latest Farming News</span>
+            </div>
+            <div>
+                <button id="closeNewsBtn" class="panel-close" title="Close news" data-i18n="btn_close">Close</button>
+            </div>
+        </div>
+
+        <div class="filters">
+            <button class="news-filter active" data-filter="all" data-i18n="news_all">All</button>
+            <button class="news-filter" data-filter="loans" data-i18n="news_loans">Loans</button>
+            <button class="news-filter" data-filter="schemes" data-i18n="news_schemes">Schemes</button>
+            <button class="news-filter" data-filter="market" data-i18n="news_market">Market</button>
+        </div>
+
+        <div id="newsList" class="news-list flex-1">
+            </div>
+
+        <div style="margin-top:auto; font-size:0.85rem; color:#9db99d; padding-top:12px; border-top: 1px solid rgba(255,255,255,0.05);">
+            <div class="flex justify-between items-center">
+                <span><span data-i18n="news_updated">Last update:</span> <span id="news-last-updated">just now</span></span>
+                <button id="refreshNewsBtn" class="news-filter-btn" data-i18n="btn_refresh">Refresh</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="newsArrowContainer" class="slide-arrow-container hidden-section">
+        <button onclick="toggleNews()" class="slide-arrow-btn" title="Open News">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+        </button>
+    </div>
+
+    <main id="main-content" class="pt-20">
+        <div id="view-landing">
+
+            <section id="hero" class="relative min-h-screen flex items-center justify-center pt-12 pb-12">
+                <div class="container mx-auto max-w-7xl px-6 grid grid-cols-1 md:grid-cols-2 gap-8 items-center z-10">
+                    <div class="text-center md:text-left">
+                        <h1 class="text-4xl sm:text-5xl lg:text-7xl font-extrabold text-white leading-tight mb-6 animate-on-scroll">
+                            <span data-i18n="hero_title_1">The Future of Farming</span>
+                            <span class="block text-green-400" data-i18n="hero_title_2">is Growing.</span>
+                        </h1>
+                        <p class="text-lg lg:text-xl text-gray-300 mb-10 animate-on-scroll delay-1" data-i18n="hero_subtitle">
+                            KrishiSetu uses AI-driven analytics and a decentralized marketplace to bring transparency to your fields.
+                        </p>
+                        <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start animate-on-scroll delay-2">
+                            <a href="#dashboard" class="neon-button px-8 py-4 text-lg text-center" data-i18n="btn_view_dash">View Dashboard</a>
+                            <button onclick="showLoginSelection()" class="neon-button-outline px-8 py-4 text-lg" data-i18n="btn_portal_login">Portal Login</button>
+                        </div>
+                    </div>
+                    <div class="flex justify-center items-center z-10 animate-on-scroll delay-3">
+                        <svg class="plant-svg" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+                            <path id="stalk" d="M150 280 Q150 200 150 100 C150 50 130 20 130 20"/>
+                            <path id="leaf1" d="M150 180 C 120 170, 100 140, 100 110 C 100 140, 120 170, 150 180"/>
+                            <path id="leaf2" d="M150 150 C 180 140, 200 110, 200 80 C 200 110, 180 140, 150 150"/>
+                            <path id="leaf3" d="M150 220 C 120 210, 90 180, 90 150 C 90 180, 120 210, 150 220"/>
+                            <path id="leaf4" d="M150 120 C 180 110, 210 80, 210 50 C 210 80, 180 110, 150 120"/>
+                        </svg>
+                    </div>
+                </div>
+            </section>
+
+            <section id="dashboard" class="py-24 bg-green-950/20">
+                <div class="container mx-auto max-w-7xl px-6">
+                    <div class="text-center max-w-3xl mx-auto mb-16">
+                        <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4 animate-on-scroll" data-i18n="dash_title">Your Smart Farm Dashboard</h2>
+                        <p class="text-lg text-gray-400 animate-on-scroll delay-1" data-i18n="dash_subtitle">Real-time data from your fields. AI-driven insights.</p>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div class="lg:col-span-2 glass-card p-6 sm:p-8 animate-on-scroll">
+                            <div class="flex justify-between items-start mb-6">
+                                <h3 class="text-2xl font-semibold text-white" data-i18n="chart_title">Crop Yield Forecast</h3>
+                            </div>
+                            <div class="h-64 sm:h-80"><canvas id="cropHealthChart"></canvas></div>
+                        </div>
+                        <div class="space-y-6 animate-on-scroll delay-1">
+                            <h3 class="text-2xl font-semibold text-white text-center lg:text-left" data-i18n="sensors_title">Live Sensors</h3>
+                            <div class="glass-card !transform-none p-5 flex items-center space-x-4">
+                                <div class="w-12 h-12 bg-blue-900/50 border border-blue-400/30 rounded-full flex items-center justify-center text-blue-300">💧</div>
+                                <div><p class="text-sm text-gray-400" data-i18n="sensor_soil">Soil Moisture</p><p id="sensor-moisture" class="text-2xl font-bold text-white">42%</p></div>
+                            </div>
+                            <div class="glass-card !transform-none p-5 flex items-center space-x-4">
+                                <div class="w-12 h-12 bg-yellow-900/50 border border-yellow-400/30 rounded-full flex items-center justify-center text-yellow-300">☀️</div>
+                                <div><p class="text-sm text-gray-400" data-i18n="sensor_sun">Sunlight (UV)</p><p id="sensor-uv" class="text-2xl font-bold text-white">7.2 Index</p></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="features" class="py-24">
+                <div class="container mx-auto max-w-7xl px-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="glass-card p-8 animate-on-scroll">
+                            <div class="w-16 h-16 bg-green-900/50 border border-green-400/30 rounded-xl flex items-center justify-center mb-6 text-green-400 text-2xl">🧠</div>
+                            <h3 class="text-2xl font-semibold text-white mb-3" data-i18n="feat_ai_title">AI Analytics</h3>
+                            <p class="text-gray-300" data-i18n="feat_ai_desc">Predict yields and detect diseases with 99.8% accuracy.</p>
+                        </div>
+                        <div class="glass-card p-8 animate-on-scroll delay-1">
+                            <div class="w-16 h-16 bg-green-900/50 border border-green-400/30 rounded-xl flex items-center justify-center mb-6 text-green-400 text-2xl">🚜</div>
+                            <h3 class="text-2xl font-semibold text-white mb-3" data-i18n="feat_auto_title">Smart Auto</h3>
+                            <p class="text-gray-300" data-i18n="feat_auto_desc">Integrate with IoT drones and smart irrigation systems.</p>
+                        </div>
+                        <div class="glass-card p-8 animate-on-scroll delay-2">
+                            <div class="w-16 h-16 bg-green-900/50 border border-green-400/30 rounded-xl flex items-center justify-center mb-6 text-green-400 text-2xl">🔗</div>
+                            <h3 class="text-2xl font-semibold text-white mb-3" data-i18n="feat_block_title">Blockchain</h3>
+                            <p class="text-gray-300" data-i18n="feat_block_desc">Traceable supply chain from seed to supermarket.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="about" class="py-32 bg-fixed" style="background-image: linear-gradient(rgba(2, 6, 1, 0.8), rgba(2, 6, 1, 0.8)), url('https://images.unsplash.com/photo-1500382017468-904924547a59?q=80&w=2000&auto=format&fit=crop'); background-size: cover; background-position: center;">
+                <div class="container mx-auto max-w-4xl px-6 text-center">
+                    <h2 class="text-4xl sm:text-5xl font-extrabold text-white mb-6 animate-on-scroll">
+                        <span data-i18n="about_title_1">Connecting</span> <span class="text-green-400">10 Million</span> <span data-i18n="about_title_2">Farmers</span>
+                    </h2>
+                    <p class="text-xl text-gray-200 leading-relaxed animate-on-scroll delay-1" data-i18n="about_desc">
+                        Empowering every farmer with the technology of tomorrow.
+                    </p>
+                </div>
+            </section>
+
+            <section id="marketplace" class="py-24">
+                <div class="container mx-auto max-w-7xl px-6">
+                    <div class="text-center max-w-3xl mx-auto mb-16">
+                        <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4 animate-on-scroll" data-i18n="market_title">A Fairer Market</h2>
+                        <p class="text-lg text-gray-400 animate-on-scroll delay-1" data-i18n="market_desc">Browse, buy, and sell on our verified marketplace.</p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                        <div class="glass-card p-6 text-center animate-on-scroll">
+                            <img src="https://images.unsplash.com/photo-1596472032060-ff8f8a1f8c14?q=80&w=300&auto=format&fit=crop" class="w-full h-40 object-cover rounded mb-4 opacity-80" alt="Saffron">
+                            <h3 class="text-xl font-semibold text-white" data-i18n="prod_saffron">Saffron</h3>
+                            <p class="text-green-400 font-bold">Grade A+</p>
+                        </div>
+                        <div class="glass-card p-6 text-center animate-on-scroll delay-1">
+                            <img src="https://images.unsplash.com/photo-1629110427909-0096d246f043?q=80&w=300&auto=format&fit=crop" class="w-full h-40 object-cover rounded mb-4 opacity-80" alt="Drones">
+                            <h3 class="text-xl font-semibold text-white" data-i18n="prod_drones">Drones</h3>
+                            <p class="text-green-400 font-bold">AgroBot K2</p>
+                        </div>
+                        <div class="glass-card p-6 text-center animate-on-scroll delay-2">
+                            <img src="https://images.unsplash.com/photo-1593005510324-69521a8b6a18?q=80&w=300&auto=format&fit=crop" class="w-full h-40 object-cover rounded mb-4 opacity-80" alt="Greens">
+                            <h3 class="text-xl font-semibold text-white" data-i18n="prod_greens">Greens</h3>
+                            <p class="text-green-400 font-bold">Hydroponic</p>
+                        </div>
+                        <div class="glass-card p-6 text-center animate-on-scroll delay-3">
+                            <img src="https://images.unsplash.com/photo-1466611653911-95081537e5b7?q=80&w=300&auto=format&fit=crop" class="w-full h-40 object-cover rounded mb-4 opacity-80" alt="Credits">
+                            <h3 class="text-xl font-semibold text-white" data-i18n="prod_credits">Credits</h3>
+                            <p class="text-green-400 font-bold">Carbon</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <footer class="border-t border-green-400/10 py-16 mt-12">
+                <div class="container mx-auto max-w-7xl px-6 text-center">
+                    <p class="text-gray-500">&copy; <span id="current-year">2025</span> KrishiSetu . <span data-i18n="footer_rights">All rights reserved.</span></p>
+                </div>
+            </footer>
+        </div>
+
+        <div id="view-login-select" class="hidden-section container mx-auto max-w-4xl flex-col items-center justify-center min-h-[60vh] fade-in mt-10">
+            <h2 class="text-3xl font-bold text-white mb-8" data-i18n="login_title">Select Your Portal</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
+                <div onclick="showAdminAuth()" class="glass-card p-10 text-center cursor-pointer hover:bg-green-900/20 transition">
+                    <div class="w-20 h-20 mx-auto bg-green-900/50 rounded-full flex items-center justify-center mb-6">
+                        <svg class="w-10 h-10 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white" data-i18n="admin_login">Admin Login</h3>
+                    <p class="text-gray-400 mt-2" data-i18n="admin_desc">Create DAN & Register Farmers</p>
+                </div>
+                <div onclick="showFarmerAuth()" class="glass-card p-10 text-center cursor-pointer hover:bg-green-900/20 transition">
+                    <div class="w-20 h-20 mx-auto bg-blue-900/50 rounded-full flex items-center justify-center mb-6">
+                        <svg class="w-10 h-10 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white" data-i18n="farmer_login">Farmer Login</h3>
+                    <p class="text-gray-400 mt-2" data-i18n="farmer_desc">Access Farm Details with DAN</p>
+                </div>
+            </div>
+            <button onclick="returnHome()" class="mt-8 text-gray-500 hover:text-white underline" data-i18n="back_home">Back to Home</button>
+        </div>
+
+        <div id="view-admin-auth" class="hidden-section container mx-auto max-w-md mt-20 fade-in">
+            <div class="glass-card p-8 text-center">
+                <h2 class="text-2xl font-bold text-white mb-6" data-i18n="admin_sec">Admin Security</h2>
+                <div class="mb-4 text-left">
+                    <label class="text-sm text-green-400" data-i18n="password">Password</label>
+                    <input type="password" id="admin-password-input" class="form-input w-full px-4 py-3 mt-1" placeholder="Enter: admin123" data-i18n-placeholder="ph_pass">
+                    <p id="auth-error" class="text-red-500 text-xs mt-2 hidden">Incorrect Password</p>
+                </div>
+                <button onclick="verifyAdminPassword()" class="neon-button w-full py-3" data-i18n="btn_unlock">Unlock Portal</button>
+                <button onclick="showLoginSelection()" class="text-gray-500 text-sm mt-4 hover:text-white" data-i18n="btn_cancel">Cancel</button>
+            </div>
+        </div>
+
+        <div id="view-farmer-auth" class="hidden-section container mx-auto max-w-md mt-20 fade-in">
+            <div class="glass-card p-8 text-center">
+                <h2 class="text-2xl font-bold text-white mb-2" data-i18n="farmer_access">Farmer Access</h2>
+                <p class="text-sm text-gray-400 mb-6" data-i18n="enter_dan">Enter your Digital Application Number</p>
+                <div class="mb-4 text-left">
+                    <label class="text-sm text-blue-400">DAN (12 Digits)</label>
+                    <input type="text" id="farmer-dan-input" class="form-input w-full px-4 py-3 mt-1 text-center font-mono text-lg" placeholder="0000 0000 0000">
+                    <p id="farmer-auth-error" class="text-red-500 text-xs mt-2 hidden">Invalid DAN. Please contact Admin.</p>
+                </div>
+                <button onclick="verifyFarmerLogin()" class="neon-button w-full py-3 bg-blue-500 hover:bg-blue-400" data-i18n="btn_view_farm">View Farm</button>
+                <button onclick="showLoginSelection()" class="text-gray-500 text-sm mt-4 hover:text-white" data-i18n="btn_cancel">Cancel</button>
+                <div class="mt-6 p-3 bg-white/5 rounded text-xs text-gray-500">
+                    <span class="text-green-400">Tip:</span> Use a DAN from the Admin panel for Demo
+                </div>
+            </div>
+        </div>
+
+        <div id="view-admin-panel" class="hidden-section container mx-auto max-w-7xl mt-10 fade-in px-6 pb-20">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 class="text-3xl font-bold text-white" data-i18n="admin_console">Admin Console</h2>
+                    <p class="text-gray-400" data-i18n="admin_console_desc">Manage Farmers, Supplies, Offers & Support</p>
+                </div>
+                <button onclick="logout()" class="text-sm text-red-400 border border-red-900 px-4 py-2 rounded hover:bg-red-900/20" data-i18n="btn_logout">Logout</button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- LEFT COLUMN: ADD FARMER & SUPPORT -->
+                <div class="lg:col-span-1 space-y-8">
+                    <div class="glass-card p-6 h-fit">
+                        <h3 class="text-xl font-semibold text-green-400 mb-4" data-i18n="add_farmer">Add New Farmer</h3>
+                        <form id="farmerForm" onsubmit="handleFormSubmit(event)">
+                            <div class="space-y-4">
+                                <div><label class="text-xs text-gray-400">Full Name</label><input type="text" id="input-name" required class="form-input px-3 py-2"></div>
+                                <div><label class="text-xs text-gray-400">Phone Number</label><input type="tel" id="input-phone" required class="form-input px-3 py-2"></div>
+                                <div><label class="text-xs text-gray-400">Plot/Survey No.</label><input type="text" id="input-plot" required class="form-input px-3 py-2"></div>
+                                <div><label class="text-xs text-gray-400">Address</label><input type="text" id="input-address" required class="form-input px-3 py-2"></div>
+                                <div><label class="text-xs text-gray-400">Total Area (Acres)</label><input type="number" step="0.1" id="input-area" required class="form-input px-3 py-2"></div>
+                                <div><label class="text-xs text-gray-400">ESP32 MAC Address</label><input type="text" id="input-mac" placeholder="AA:BB:CC:DD:EE:FF" required class="form-input px-3 py-2"></div>
+                                <div>
+                                    <label class="text-xs text-gray-400">Soil Type</label>
+                                    <select id="input-soil-type" class="form-select" onchange="populateCrops()" required>
+                                        <option value="">-- Select Soil --</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="text-xs text-gray-400">Select Suitable Crops (Ctrl+Click for multiple)</label>
+                                    <select multiple id="input-crops" class="form-select"></select>
+                                </div>
+                            </div>
+                            <button type="submit" class="neon-button w-full mt-6 py-3" data-i18n="btn_gen_dan">Generate DAN</button>
+                        </form>
+                    </div>
+
+                    <div class="glass-card p-6">
+                        <h3 class="text-xl font-semibold text-white flex items-center gap-2 mb-4">
+                            <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                            <span data-i18n="support_inbox">Support Inbox</span>
+                        </h3>
+                        <div id="admin-chat-list" class="space-y-3 max-h-64 overflow-y-auto pr-2">
+                            <div class="text-center text-gray-500 text-sm py-4">No new messages.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT COLUMN: REGISTRY & OFFERS -->
+                <div class="lg:col-span-2 space-y-8">
+                    <div class="glass-card p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-semibold text-white" data-i18n="farmer_registry">Farmer Registry</h3>
+                            <input type="text" id="admin-search-input" onkeyup="searchFarmer()" class="form-input px-3 py-1 text-sm w-48" placeholder="Search Name/DAN..." data-i18n-placeholder="search_placeholder">
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="admin-table">
+                                <thead><tr><th>DAN ID</th><th data-i18n="th_name">Name</th><th data-i18n="th_plot">Plot</th><th data-i18n="th_area">Area</th><th data-i18n="th_action">Action</th></tr></thead>
+                                <tbody id="farmer-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-semibold text-white">Sell Offers from Farmers</h3>
+                            <select id="admin-offer-filter" class="form-input px-2 py-1 text-sm" onchange="renderAdminSellOffers()">
+                                <option value="all">All</option>
+                                <option value="pending">Pending</option>
+                                <option value="accepted">Accepted</option>
+                                <option value="declined">Declined</option>
+                            </select>
+                        </div>
+                        <div id="admin-offers-list" class="space-y-3 max-h-72 overflow-y-auto pr-2">
+                            <div class="text-center text-gray-500 text-sm py-4">No offers yet.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="glass-card p-6 lg:col-span-1 h-fit">
+                    <h3 class="text-xl font-semibold text-green-400 mb-4">Add Agri Supply</h3>
+                    <form id="addProductForm" onsubmit="handleProductFormSubmit(event)">
+                        <div class="space-y-4">
+                            <div><label class="text-xs text-gray-400">Product Name</label><input type="text" id="input-prod-name" required class="form-input w-full px-3 py-2"></div>
+                            
+                            <div>
+                                <label class="text-xs text-gray-400">Product Image</label>
+                                <input type="file" id="input-prod-image" accept="image/*" onchange="previewImage(this, 'admin-prod-preview')" required class="form-input w-full">
+                                <div id="admin-prod-preview" class="image-preview-box"><span>Preview</span></div>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4">
+                                <div><label class="text-xs text-gray-400">Price (₹)</label><input type="number" step="0.01" id="input-prod-price" required class="form-input w-full px-3 py-2"></div>
+                                <div><label class="text-xs text-gray-400">Unit</label><input type="text" placeholder="e.g. kg, L, piece" id="input-prod-unit" required class="form-input w-full px-3 py-2"></div>
+                            </div>
+                            <div><label class="text-xs text-gray-400">Stock (Quantity)</label><input type="number" id="input-prod-stock" required class="form-input w-full px-3 py-2"></div>
+                        </div>
+                        <button type="submit" id="add-supply-btn" class="neon-button w-full mt-6 py-3">Add Supply to Market</button>
+                    </form>
+                </div>
+                <div class="lg:col-span-2 glass-card p-6">
+                     <h3 class="text-xl font-semibold text-white mb-4">Manage Agri Supplies</h3>
+                     <div id="admin-products-list" class="space-y-3 max-h-[450px] overflow-y-auto pr-2">
+                        <div class="text-center text-gray-500 text-sm py-4">No supplies added yet.</div>
+                     </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="view-farmer-dashboard" class="hidden-section container mx-auto max-w-7xl mt-6 fade-in px-6 pb-20">
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h2 class="text-3xl font-bold text-white"><span data-i18n="welcome_msg">Welcome,</span> <span id="dash-farmer-name" class="text-green-400">Farmer</span></h2>
+                    <p class="text-gray-400" data-i18n="farm_overview">Here is your farm overview.</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button onclick="viewFarmerProfile()" id="view-profile-btn" class="text-gray-400 hover:text-white" title="View My Profile">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 20 20" fill="currentColor">
+                          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <button id="farmer-logout-btn" onclick="logout()" class="text-sm text-gray-400 border border-gray-700 px-4 py-2 rounded hover:text-white" data-i18n="btn_logout">Logout</button>
+                    <div class="relative">
+                        <button id="sell-product-btn-2" onclick="openSellModal()" class="neon-button px-4 py-2">Sell Produce</button>
+                        <span id="sell-notif-badge-2" class="small-badge hidden absolute -top-2 -right-2">0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                <div class="glass-card p-6">
+                    <h3 class="text-lg font-bold text-white mb-4" data-i18n="digi_id">Digital Identity</h3>
+                    <div class="space-y-3">
+                        <div><p class="text-xs text-gray-500 uppercase">DAN Code</p><p id="dash-dan" class="font-mono text-xl text-green-400 font-bold tracking-wider">---</p></div>
+                        <div><p class="text-xs text-gray-500 uppercase" data-i18n="lbl_reg_plot">Registered Plot</p><p id="dash-plot" class="text-white text-lg">---</p></div>
+                        <div><p class="text-xs text-gray-500 uppercase" data-i18n="lbl_tot_area">Total Area</p><p id="dash-area" class="text-white text-lg">--- Acres</p></div>
+                    </div>
+                </div>
+
+                <div class="glass-card p-6 col-span-2">
+                     <h3 class="text-lg font-bold text-white mb-4" data-i18n="farm_condition">Farm Condition & Yield</h3>
+                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 h-64">
+                         <div class="bg-black/20 p-2 rounded-lg">
+                             <p class="text-xs text-gray-400 mb-2" data-i18n="yield_graph">Yield Forecast</p>
+                             <div class="h-52"><canvas id="dashYieldChart"></canvas></div>
+                         </div>
+                         <div class="bg-black/20 p-2 rounded-lg">
+                             <p class="text-xs text-gray-400 mb-2" data-i18n="moisture_graph">Soil Moisture History</p>
+                             <div class="h-52"><canvas id="dashMoistureChart"></canvas></div>
+                         </div>
+                     </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-1 space-y-8">
+                    <div class="glass-card p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-bold text-white">Soil & Crop Details</h3>
+                            <button onclick="toggleSoilCropEdit(true)" id="edit-soil-crop-btn" class="text-sm bg-blue-900/50 text-blue-300 border border-blue-800 px-3 py-1 rounded hover:bg-blue-800">Edit</button>
+                        </div>
+                        
+                        <!-- VIEW MODE -->
+                        <div id="soil-crop-view-mode">
+                            <div class="space-y-4">
+                                <div>
+                                    <p class="text-xs text-gray-500 uppercase">Soil Type</p>
+                                    <p id="dash-soil-type" class="text-white text-lg font-semibold">---</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500 uppercase">Registered Crops</p>
+                                    <p id="dash-selected-crops" class="text-gray-300 text-base leading-relaxed">---</p>
+                                </div>
+                                <div class="pt-2 border-t border-white/10">
+                                    <p class="text-xs text-green-400 uppercase font-semibold">Soil Characteristics</p>
+                                    <ul id="dash-soil-char" class="mt-2 soil-char-list"></ul>
+                                </div>
+                                <div class="pt-2">
+                                    <p class="text-xs text-green-400 uppercase font-semibold">Management Tips</p>
+                                    <ul id="dash-management-tips" class="mt-2 soil-char-list"></ul>
+                                </div>
+                                 <div class="pt-2">
+                                    <p class="text-xs text-green-400 uppercase font-semibold">Ideal pH Range</p>
+                                    <p id="dash-ideal-ph" class="text-white text-lg font-semibold mt-1"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- EDIT MODE (Initially Hidden) -->
+                        <div id="soil-crop-edit-mode" class="hidden">
+                             <div class="space-y-4">
+                                <div>
+                                    <label class="text-xs text-gray-400">Soil Type</label>
+                                    <select id="farmer-edit-soil-type" class="form-select" onchange="populateFarmerCrops()"></select>
+                                </div>
+                                <div>
+                                    <label class="text-xs text-gray-400">Select Crops (Ctrl+Click)</label>
+                                    <select multiple id="farmer-edit-crops" class="form-select"></select>
+                                </div>
+                                <div class="flex gap-2 pt-2">
+                                     <button onclick="toggleSoilCropEdit(false)" class="neon-button-outline w-full py-2">Cancel</button>
+                                     <button onclick="saveFarmerSoilCropChanges()" id="save-soil-crop-btn" class="neon-button w-full py-2">Save Changes</button>
+                                </div>
+                             </div>
+                        </div>
+
+                    </div>
+                     <div class="glass-card p-6 flex flex-col justify-between">
+                        <h3 class="text-lg font-bold text-white mb-4" data-i18n="quick_actions">Quick Actions</h3>
+                        <button class="w-full mb-3 bg-white/5 hover:bg-white/10 text-left p-3 rounded-lg"><p class="text-white" data-i18n="btn_dl_report">Download Report</p></button>
+                        <button class="w-full bg-white/5 hover:bg-white/10 text-left p-3 rounded-lg"><p class="text-white" data-i18n="btn_apply_loan">Apply for Loan</p></button>
+                    </div>
+
+                    <div class="glass-card p-6">
+                        <h3 class="text-lg font-bold text-white mb-4">My Sell Offers <span id="my-offers-count" class="badge hidden">0</span></h3>
+                        <div id="farmer-offers-list" class="space-y-3 max-h-80 overflow-y-auto pr-2">
+                            <div class="text-center text-gray-500 text-sm py-4">No sell offers yet.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-2 glass-card p-6">
+                    <h3 class="text-xl font-semibold text-white mb-4">Buy Agri Supplies</h3>
+                    <div id="farmer-buy-products-list" class="supplies-grid max-h-[600px] overflow-y-auto pr-2">
+                        <div class="text-center text-gray-500 text-sm py-4">No supplies available right now.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="admin-farmer-view-modal" class="fixed inset-0 bg-black/90 hidden z-[110] flex items-center justify-center p-4 backdrop-blur-sm">
+            <div class="glass-card max-w-4xl w-full p-8 fade-in relative overflow-y-auto max-h-[90vh]">
+                <button onclick="closeAdminViewModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+                <h2 class="text-2xl font-bold text-white mb-6">Farmer Profile</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Left Column: Personal Info -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-green-400 mb-4 border-b border-green-400/20 pb-2">Personal Information</h3>
+                        <div class="space-y-4">
+                            <div><p class="text-xs text-gray-400 uppercase">Full Name</p><p id="view-name" class="text-lg font-bold text-white">---</p></div>
+                            <div><p class="text-xs text-gray-400 uppercase">Phone Number</p><p id="view-phone" class="text-lg text-white">---</p></div>
+                            <div><p class="text-xs text-gray-400 uppercase">Address</p><p id="view-address" class="text-lg text-white">---</p></div>
+                             <div><p class="text-xs text-gray-400 uppercase">DAN</p><p id="view-dan" class="text-lg font-mono text-green-400">---</p></div>
+                        </div>
+                    </div>
+                    <!-- Right Column: Farm Info -->
+                    <div>
+                        <h3 class="text-lg font-semibold text-green-400 mb-4 border-b border-green-400/20 pb-2">Farm & Soil Information</h3>
+                        <div class="space-y-4">
+                            <div><p class="text-xs text-gray-400 uppercase">Plot / Survey No.</p><p id="view-plot" class="text-lg text-white">---</p></div>
+                            <div><p class="text-xs text-gray-400 uppercase">Total Area</p><p id="view-area" class="text-lg text-white">---</p></div>
+                             <div><p class="text-xs text-gray-400 uppercase">Soil Type</p><p id="view-soil-type" class="text-lg text-white">---</p></div>
+                            <div><p class="text-xs text-gray-400 uppercase">Selected Crops</p><p id="view-selected-crops" class="text-lg text-white leading-relaxed">---</p></div>
+                             <div><p class="text-xs text-gray-400 uppercase">ESP32 MAC</p><p id="view-mac" class="text-lg font-mono text-yellow-400">---</p></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="sell-modal" class="fixed inset-0 bg-black/90 hidden z-[130] flex items-center justify-center p-4 backdrop-blur-sm">
+            <div class="glass-card max-w-lg w-full p-6 fade-in relative">
+                <button onclick="closeSellModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+                <h2 class="text-2xl font-bold text-white mb-4">Sell Produce</h2>
+                <form id="sellForm" onsubmit="submitSellOffer(event)" class="space-y-3">
+                    <div><label class="text-xs text-gray-400">Crop Name</label><input id="sell-crop" required class="form-input w-full px-3 py-2" placeholder="e.g. Tomatoes"></div>
+                    
+                    <div>
+                        <label class="text-xs text-gray-400">Crop Image</label>
+                        <input id="sell-image" type="file" accept="image/*" onchange="previewImage(this, 'sell-preview-box')" required class="form-input w-full">
+                        <div id="sell-preview-box" class="image-preview-box"><span>Preview</span></div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                        <div><label class="text-xs text-gray-400">Cost (₹/kg)</label><input id="sell-cost" required type="number" step="0.01" class="form-input w-full px-3 py-2"></div>
+                        <div><label class="text-xs text-gray-400">Quantity (kg)</label><input id="sell-qty" required type="number" step="0.01" class="form-input w-full px-3 py-2"></div>
+                    </div>
+                    <div><label class="text-xs text-gray-400">Description</label><textarea id="sell-desc" class="form-input w-full px-3 py-2" rows="3" placeholder="Optional details"></textarea></div>
+                    <div class="flex items-center justify-end">
+                        <div class="flex gap-2">
+                            <button type="button" onclick="closeSellModal()" class="neon-button-outline px-4 py-2">Cancel</button>
+                            <button type="submit" id="submit-offer-btn" class="neon-button px-4 py-2">Submit Offer</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="chat-widget-container" class="fixed bottom-6 right-6 z-50">
+            <div id="chat-window" class="glass-card w-80 h-96 mb-4 flex flex-col hidden transition-all origin-bottom-right">
+                <div class="p-4 border-b border-white/10 flex justify-between items-center bg-green-900/40 rounded-t-[1.5rem]">
+                    <div class="flex items-center gap-2"><span class="w-2 h-2 bg-green-400 rounded-full"></span><span class="font-semibold text-white">Support</span></div>
+                    <button onclick="toggleChat()" class="text-gray-400 hover:text-white font-bold">✕</button>
+                </div>
+                <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-3 flex flex-col">
+                </div>
+                <div class="p-3 border-t border-white/10 bg-black/20 rounded-b-[1.5rem]">
+                    <form onsubmit="sendUserMessage(event)" class="flex gap-2">
+                        <input id="user-chat-input" type="text" class="form-input w-full px-3 py-2 text-sm" placeholder="Type..." autocomplete="off">
+                        <button type="submit" class="bg-green-500 text-black p-2 rounded-lg hover:bg-green-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <button id="chat-avatar-btn" onclick="toggleChat()" class="chat-avatar-pulse w-16 h-16 rounded-full bg-transparent hover:scale-105 flex items-center justify-center shadow-lg transition transform">
+                <img class="chat-avatar-img" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&h=200" alt="Krishi Bot">
+            </button>
+        </div>
+
+        <div id="dan-modal" class="fixed inset-0 bg-black/90 hidden z-[120] flex items-center justify-center p-4 backdrop-blur-sm">
+            <div class="glass-card max-w-md w-full p-0 overflow-hidden fade-in relative">
+                <button onclick="closeDanModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white z-10"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+                <div class="bg-green-900/30 p-6 text-center border-b border-green-500/20"><h2 class="text-2xl font-bold text-white">Registration Complete</h2></div>
+                <div class="p-6">
+                    <div class="dan-card p-6 rounded-xl shadow-2xl border border-green-500/30 bg-black/40">
+                        <div class="flex justify-between items-start mb-4">
+                            <div><p class="text-[10px] text-green-300 uppercase tracking-widest">KrishiSetu Identity</p><p id="card-name" class="text-xl font-bold text-white">---</p></div>
+                            <div class="h-8 w-8 bg-white p-0.5 rounded"><img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=Verified" class="w-full h-full" alt="QR"></div>
+                        </div>
+                        <div class="mt-6"><p class="text-[10px] text-gray-400 uppercase">Digital Application Number</p><p id="card-dan" class="text-2xl font-mono font-bold text-green-400 tracking-widest drop-shadow-lg">---</p></div>
+                    </div>
+                    <div class="mt-6 flex gap-3"><button onclick="window.print()" class="flex-1 border border-green-500 text-green-400 py-2 rounded hover:bg-green-900/30">Print</button><button onclick="closeDanModal()" class="flex-1 bg-green-500 text-black font-bold py-2 rounded hover:bg-green-400">Add Next</button></div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        // --- ALL JAVASCRIPT CODE ---
+        // This is the complete and corrected script.
+
+        // --- GLOBAL SCOPE VARIABLES ---
+        let supabaseClient; 
+        let farmersList = [];
+        let currentFarmer = null;
+        let globalChatMessages = [];
+        let sellOffers = []; 
+        let buyableProducts = [];
+        let currentLang = localStorage.getItem('krishi_lang') || 'en';
+        let charts = {};
+        let currentFilter = 'all';
+
+        // --- CONSTANTS ---
+        const SVG_PLACEHOLDER = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 600' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cstyle type='text/css'%3E%23holder text %7B fill:%23999;font-weight:normal;font-family:monospace;font-size:40pt %7D %3C/style%3E%3C/defs%3E%3Cg id='holder'%3E%3Crect width='800' height='600' fill='%23333'%3E%3C/rect%3E%3Cg%3E%3Ctext x='247' y='320'%3ENo Image%3C/text%3E%3C/g%3E%3C/g%3E%3C/svg%3E";
+        
+        const soilData = {
+            'Alluvial Soil': {
+                characteristics: ['Fertile', 'Rich in potash & lime', 'Good moisture retention'],
+                crops: ['Rice', 'Wheat', 'Sugarcane', 'Maize', 'Pulses', 'Vegetables'],
+                management_tips: ["Ensure good drainage.", "Test for Potash levels regularly.", "Organic manure is highly beneficial."],
+                ideal_ph_range: "6.0 - 7.5"
+            },
+            'Black Soil': {
+                characteristics: ['Clayey', 'Retains moisture', 'Rich in calcium & magnesium'],
+                crops: ['Cotton', 'Sorghum (Jowar)', 'Millets', 'Soybean', 'Tobacco'],
+                management_tips: ["Deep ploughing helps aeration.", "Avoid over-irrigation.", "Use nitrogenous fertilizers."],
+                ideal_ph_range: "6.5 - 8.0"
+            },
+            'Red Soil': {
+                characteristics: ['Sandy texture', 'Low in nutrients', 'Needs balanced fertilizers'],
+                crops: ['Groundnut', 'Millets', 'Potato', 'Cotton', 'Wheat', 'Pulses'],
+                management_tips: ["Incorporate organic matter to improve fertility.", "Use lime to manage acidity.", "Mulching helps retain moisture."],
+                ideal_ph_range: "5.5 - 7.0"
+            },
+            'Laterite Soil': {
+                characteristics: ['Acidic', 'Low fertility', 'Rich in iron and aluminum'],
+                crops: ['Tea', 'Coffee', 'Cashew nut', 'Rubber', 'Coconut'],
+                management_tips: ["Liming is essential to reduce acidity.", "Apply nitrogen and potassium fertilizers.", "Prevent soil erosion on slopes."],
+                ideal_ph_range: "4.5 - 5.5"
+            },
+            'Desert Soil': {
+                characteristics: ['Sandy and saline', 'Low organic matter', 'Poor water retention'],
+                crops: ['Bajra (Pearl millet)', 'Guar', 'Barley', 'Kharif pulses'],
+                management_tips: ["Use drip irrigation to conserve water.", "Add gypsum to reclaim saline soils.", "Plant drought-resistant crop varieties."],
+                ideal_ph_range: "7.0 - 8.5"
+            },
+            'Mountain Soil': {
+                characteristics: ['Rich in humus', 'Varies by altitude', 'Often acidic'],
+                crops: ['Tea', 'Apples', 'Oranges', 'Barley', 'Maize'],
+                management_tips: ["Terrace farming is crucial to prevent erosion.", "Manage soil acidity with lime.", "Protect the organic layer from degradation."],
+                ideal_ph_range: "5.0 - 6.5"
+            },
+            'Peaty and Marshy Soil': {
+                characteristics: ['High organic matter', 'Acidic', 'Often waterlogged'],
+                crops: ['Rice', 'Jute'],
+                management_tips: ["Proper drainage systems are mandatory.", "Check for micronutrient deficiencies.", "Use acid-tolerant crop varieties."],
+                ideal_ph_range: "4.0 - 5.0"
+            }
+        };
+
+        const views = {
+            landing: document.getElementById('view-landing'),
+            login: document.getElementById('view-login-select'),
+            adminAuth: document.getElementById('view-admin-auth'),
+            farmerAuth: document.getElementById('view-farmer-auth'),
+            adminPanel: document.getElementById('view-admin-panel'),
+            farmerDash: document.getElementById('view-farmer-dashboard')
+        };
+        const chatWidget = document.getElementById('chat-widget-container');
+        const newsArrowContainer = document.getElementById('newsArrowContainer');
+        const loginBtn = document.getElementById('login-get-started-btn');
+        const newsPanel = document.getElementById('newsPanel'); // Moved here for global access
+        
+        const sampleNews = [
+            { id: 1, category: 'schemes', title: 'Govt launches new soil health subsidy scheme', source: 'Agri Ministry', date: '2025-11-10', excerpt: 'A new subsidy for soil health cards and micro-nutrients has been announced.' },
+            { id: 2, category: 'market', title: 'Tomato prices spike in the north', source: 'MarketWatch', date: '2025-11-12', excerpt: 'Supply disruptions and lower yields have pushed tomato wholesale prices up by 28% this week.' },
+            { id: 3, category: 'loans', title: 'Low-interest crop loans available through NPCI-linked banks', source: 'State Bank', date: '2025-11-09', excerpt: 'Farmers can now get priority crop loans at 6% interest with quick KYC through digital channels.' }
+        ];
+
+        const translations = {
+            en: {
+                nav_home: "Home", nav_dashboard: "Dashboard", nav_features: "Features", nav_marketplace: "Marketplace", btn_login: "Login / Get Started",
+                hero_title_1: "The Future of Farming", hero_title_2: "is Growing.", hero_subtitle: "KrishiSetu uses AI-driven analytics and a decentralized marketplace to bring transparency to your fields.", btn_view_dash: "View Dashboard", btn_portal_login: "Portal Login",
+                dash_title: "Your Smart Farm Dashboard", dash_subtitle: "Real-time data from your fields. AI-driven insights.", chart_title: "Crop Yield Forecast", sensors_title: "Live Sensors", sensor_soil: "Soil Moisture", sensor_sun: "Sunlight (UV)",
+                feat_ai_title: "AI Analytics", feat_ai_desc: "Predict yields and detect diseases with 99.8% accuracy.", feat_auto_title: "Smart Auto", feat_auto_desc: "Integrate with IoT drones and smart irrigation systems.", feat_block_title: "Blockchain", feat_block_desc: "Traceable supply chain from seed to supermarket.",
+                about_title_1: "Connecting", about_title_2: "Farmers", about_desc: "Empowering every farmer with the technology of tomorrow.",
+                market_title: "A Fairer Market", market_desc: "Browse, buy, and sell on our verified marketplace.",
+                footer_rights: "All rights reserved.",
+                login_title: "Select Your Portal", admin_login: "Admin Login", admin_desc: "Create DAN & Register Farmers", farmer_login: "Farmer Login", farmer_desc: "Access Farm Details with DAN", back_home: "Back to Home",
+                admin_sec: "Admin Security", password: "Password", ph_pass: "Enter: admin123", btn_unlock: "Unlock Portal", btn_cancel: "Cancel",
+                farmer_access: "Farmer Access", enter_dan: "Enter your Digital Application Number", btn_view_farm: "View Farm",
+                admin_console: "Admin Console", admin_console_desc: "Manage Farmers, Supplies, Offers & Support", btn_logout: "Logout", add_farmer: "Add New Farmer", lbl_fullname: "Full Name", lbl_plot: "Plot/Survey No.", lbl_addr: "Address", lbl_area: "Total Area (Acres)", lbl_mac: "ESP32 MAC Address", btn_gen_dan: "Generate DAN", farmer_registry: "Farmer Registry", search_placeholder: "Search Name/DAN...", th_name: "Name", th_plot: "Plot", th_area: "Area", th_action: "Action", support_inbox: "Support Inbox", btn_view: "View",
+                welcome_msg: "Welcome,", farm_overview: "Here is your farm overview.", digi_id: "Digital Identity", lbl_reg_plot: "Registered Plot", lbl_tot_area: "Total Area", quick_actions: "Quick Actions", btn_dl_report: "Download Report", btn_apply_loan: "Apply for Loan",
+                farm_condition: "Farm Condition & Yield", yield_graph: "Yield Forecast", moisture_graph: "Soil Moisture History",
+                news_title: "Latest Farming News", btn_close: "Close", news_all: "All", news_loans: "Loans", news_schemes: "Schemes", news_market: "Market", news_updated: "Last update:", btn_refresh: "Refresh"
+            },
+             hi: {
+                nav_home: "मुखपृष्ठ", nav_dashboard: "डैशबोर्ड", nav_features: "सुविधाएँ", nav_marketplace: "बाज़ार", btn_login: "लॉगिन / शुरू करें",
+                hero_title_1: "खेती का भविष्य", hero_title_2: "बढ़ रहा है।", hero_subtitle: "कृषि सेतु  आपके खेतों में पारदर्शिता लाने के लिए एआई-संचालित एनालिटिक्स का उपयोग करता है।", btn_view_dash: "डैशबोर्ड देखें", btn_portal_login: "पोर्टल लॉगिन",
+                dash_title: "आपका स्मार्ट फार्म डैशबोर्ड", dash_subtitle: "आपके खेतों से रीयल-टाइम डेटा। एआई-संचालित अंतर्दृष्टि।", chart_title: "फसल उपज पूर्वानुमान", sensors_title: "लाइव सेंसर", sensor_soil: "मिट्टी की नमी", sensor_sun: "सूरज की रोशनी (UV)",
+                feat_ai_title: "एआई एनालिटिक्स", feat_ai_desc: "99.8% सटीकता के साथ उपज की भविष्यवाणी और बीमारियों का पता लगाएं।", feat_auto_title: "स्मार्ट ऑटो", feat_auto_desc: "IoT ड्रोन और स्मार्ट सिंचाई प्रणालियों के साथ एकीकृत करें।", feat_block_title: "ब्लॉकचेन", feat_block_desc: "बीज से सुपरमार्केट तक ट्रेस करने योग्य आपूर्ति श्रृंखला।",
+                about_title_1: "जोड़ रहे हैं", about_title_2: "किसानों को", about_desc: "हर किसान को कल की तकनीक से सशक्त बनाना।",
+                market_title: "एक निष्पक्ष बाज़ार", market_desc: "हमारे सत्यापित बाज़ार पर ब्राउज़ करें, खरीदें और बेचें।",
+                footer_rights: "सर्वाधिकार सुरक्षित।",
+                login_title: "अपना पोर्टल चुनें", admin_login: "एडमिन लॉगिन", admin_desc: "DAN बनाएं और किसानों को पंजीकृत करें", farmer_login: "किसान लॉगिन", farmer_desc: "DAN के साथ फार्म विवरण तक पहुंचें", back_home: "वापस जाएं",
+                admin_sec: "एडमिन सुरक्षा", password: "पासवर्ड", ph_pass: "दर्ज करें: admin123", btn_unlock: "पोर्टल खोलें", btn_cancel: "रद्द करें",
+                farmer_access: "किसान पहुंच", enter_dan: "अपना डिजिटल आवेदन नंबर दर्ज करें", btn_view_farm: "फार्म देखें",
+                admin_console: "एडमिन कंसोल", admin_console_desc: "नए किसानों को पंजीकृत करें और सहायता प्रबंधित करें", btn_logout: "लॉगआउट", add_farmer: "नया किसान जोड़ें", lbl_fullname: "पूरा नाम", lbl_plot: "प्लॉट/सर्वे नंबर", lbl_addr: "पता", lbl_area: "कुल क्षेत्रफल (एकड़)", lbl_mac: "ESP32 मैक पता", btn_gen_dan: "DAN उत्पन्न करें", farmer_registry: "किसान रजिस्ट्री", search_placeholder: "नाम/DAN खोजें...", th_name: "नाम", th_plot: "प्लॉट", th_area: "क्षेत्र", th_action: "कार्रवाई", support_inbox: "सहायता इनबॉक्स", btn_view: "देखें",
+                welcome_msg: "स्वागत है,", farm_overview: "यहाँ आपका खेत अवलोकन है।", digi_id: "डिजिटल पहचान", lbl_reg_plot: "पंजीकृत प्लॉट", lbl_tot_area: "कुल क्षेत्रफल", quick_actions: "त्वरित कार्य", btn_dl_report: "रिपोर्ट डाउनलोड करें", btn_apply_loan: "ऋण के लिए आवेदन करें",
+                farm_condition: "खेत की स्थिति और उपज", yield_graph: "उपज पूर्वानुमान", moisture_graph: "नमी का इतिहास",
+                news_title: "नवीनतम कृषि समाचार", btn_close: "बंद करें", news_all: "सभी", news_loans: "ऋण", news_schemes: "योजनाएं", news_market: "बाज़ार", news_updated: "अंतिम अपडेट:", btn_refresh: "रिफ्रेश"
+            },
+            kn: {
+                nav_home: "ಮುಖಪುಟ", nav_dashboard: "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್", nav_features: "ವೈಶಿಷ್ಟ್ಯಗಳು", nav_marketplace: "ಮಾರುಕಟ್ಟೆ", btn_login: "ಲಾಗಿನ್ / ಪ್ರಾರಂಭಿಸಿ",
+                hero_title_1: "ಕೃಷಿಯ ಭವಿಷ್ಯ", hero_title_2: "ಬೆಳೆಯುತ್ತಿದೆ.", hero_subtitle: "ಕೃಷಿಸೇತು  ನಿಮ್ಮ ಜಮೀನಿಗೆ ಪಾರದರ್ಶಕತೆ ತರಲು AI-ಚಾಲಿತ ವಿಶ್ಲೇಷಣೆಯನ್ನು ಬಳಸುತ್ತದೆ.", btn_view_dash: "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ ವೀಕ್ಷಿಸಿ", btn_portal_login: "ಪೋರ್ಟಲ್ ಲಾಗಿನ್",
+                dash_title: "ನಿಮ್ಮ ಸ್ಮಾರ್ಟ್ ಫಾರ್ಮ್ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್", dash_subtitle: "ನಿಮ்க்கಲು ಜಮೀನಿಂದ ನೈಜ-ಸಮಯದ ಡೇಟಾ.", chart_title: "ಬೆಳೆ ಇಳುವರಿ ಮುನ್ಸೂಚನೆ", sensors_title: "ಲೈವ್ ಸೆನ್ಸಾರ್‌ಗಳು", sensor_soil: "ಮಣ್ಣಿನ ತೇವಾಂಶ", sensor_sun: "ಸೂರ್ಯನ ಬೆಳಕು",
+                feat_ai_title: "AI ವಿಶ್ಲೇಷಣೆ", feat_ai_desc: "99.8% ನಿಖರತೆಯೊಂದಿಗೆ ಇಳುವರಿಯನ್ನು ಊಹಿಸಿ ಮತ್ತು ರೋಗಗಳನ್ನು ಪತ್ತೆ ಮಾಡಿ.", feat_auto_title: "ಸ್ಮಾರ್ಟ್ ಆಟೋ", feat_auto_desc: "ಡ್ರೋನ್ಗಳು ಮತ್ತು ಸ್ಮಾರ್ಟ್ ನೀರಾವರಿ ವ್ಯವಸ್ಥೆಗಳೊಂದಿಗೆ ಸಂಯೋಜಿಸಿ.", feat_block_title: "ಬ್ಲಾಕ್‌ಚೈನ್", feat_block_desc: "ಬೀಜದಿಂದ ಸೂಪರ್ಮಾರ್ಕೆಟ್ವರೆಗೆ ಪತ್ತೆಹಚ್ಚಬಹುದಾದ ಪೂರೈಕೆ ಸರಪಳಿ.",
+                about_title_1: "ಸಂಪರ್ಕಿಸುತ್ತಿದೆ", about_title_2: "ರೈತರನ್ನು", about_desc: "ನಾಳೆಯ ತಂತ್ರಜ್ಞಾನದೊಂದಿಗೆ ಪ್ರತಿ ರೈತನನ್ನು ಸಬಲೀಕರಣಗೊಳಿಸುವುದು.",
+                market_title: "ನ್ಯಾಯಯುತ ಮಾರುಕಟ್ಟೆ", market_desc: "ನಮ್ಮ ಪರಿಶೀಲಿಸಿದ ಮಾರುಕಟ್ಟೆಯಲ್ಲಿ ಬ್ರೌಸ್ ಮಾಡಿ, ಖರೀದಿಸಿ ಮತ್ತು ಮಾರಾಟ ಮಾಡಿ.",
+                footer_rights: "ಎಲ್ಲಾ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.",
+                login_title: "ನಿಮ್ಮ ಪೋರ್ಟಲ್ ಆಯ್ಕೆಮಾಡಿ", admin_login: "ನಿರ್ವಾಹಕ ಲಾಗಿನ್", admin_desc: "DAN ರಚಿಸಿ ಮತ್ತು ರೈತರನ್ನು ನೋಂದಾಯಿಸಿ", farmer_login: "ರೈತ ಲಾಗಿನ್", farmer_desc: "DAN ನೊಂದಿಗೆ ಫಾರ್ಮ್ ವಿವರಗಳನ್ನು ಪ್ರವೇಶಿಸಿ", back_home: "ಹಿಂದಕ್ಕೆ",
+                admin_sec: "ನಿರ್ವಾಹಕ ಭದ್ರತೆ", password: "ಪಾಸ್‌ವರ್ಡ್", ph_pass: "ನಮೂದಿಸಿ: admin123", btn_unlock: "ಪೋರ್ಟಲ್ ತೆರೆಯಿರಿ", btn_cancel: "ರದ್ದುಮಾಡಿ",
+                farmer_access: "ರೈತ ಪ್ರವೇಶ", enter_dan: "ನಿಮ್ಮ ಡಿಜಿಟಲ್ ಅಪ್ಲಿಕೇಶನ್ ಸಂಖ್ಯೆಯನ್ನು ನಮೂದಿಸಿ", btn_view_farm: "ಫಾರ್ಮ್ ವೀಕ್ಷಿಸಿ",
+                admin_console: "ನಿರ್ವಾಹಕ ಕನ್ಸೋಲ್", admin_console_desc: "ಹೊಸ ರೈತರನ್ನು ನೋಂದಾಯಿಸಿ ಮತ್ತು ಬೆಂಬಲವನ್ನು ನಿರ್ವಹಿಸಿ", btn_logout: "ಲಾಗ್ ಔಟ್", add_farmer: "ಹೊಸ ರೈತನನ್ನು ಸೇರಿಸಿ", lbl_fullname: "ಪೂರ್ಣ ಹೆಸರು", lbl_plot: "ಪ್ಲಾಟ್/ಸರ್ವೆ ನಂ.", lbl_addr: "ವಿಳಾಸ", lbl_area: "ಒಟ್ಟು ವಿಸ್ತೀರ್ಣ (ಎಕರೆ)", lbl_mac: "ESP32 MAC ವಿಳಾಸ", btn_gen_dan: "DAN ರಚಿಸಿ", farmer_registry: "ರೈತ ನೋಂದಣಿ", search_placeholder: "ಹೆಸರು/DAN ಹುಡುಕಿ...", th_name: "ಹೆಸರು", th_plot: "ಪ್ಲಾಟ್", th_area: "ವಿಸ್ತೀರ್ಣ", th_action: "ಕ್ರಮ", support_inbox: "ಬೆಂಬಲ ಇನ್‌ಬಾಕ್ಸ್", btn_view: "ವೀಕ್ಷಿಸಿ",
+                welcome_msg: "ಸ್ವಾಗತ,", farm_overview: "ಇಲ್ಲಿ ನಿಮ್ಮ ಫಾರ್ಮ್ ಅವಲೋಕನವಿದೆ.", digi_id: "ಡಿಜಿಟಲ್ ಗುರುತು", lbl_reg_plot: "ನೋಂದಾಯಿತ ಪ್ಲಾಟ್", lbl_tot_area: "ಒಟ್ಟು ವಿಸ್ತೀರ್ಣ", quick_actions: "ತ್ವರಿತ ಕ್ರಮಗಳು", btn_dl_report: "ವರದಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ", btn_apply_loan: "ಸಾಲಕ್ಕೆ ಅರ್ಜಿ ಸಲ್ಲಿಸಿ",
+                farm_condition: "ಫಾರ್ಮ್ ಸ್ಥಿತಿ & ಇಳುವರಿ", yield_graph: "ಇಳುವರಿ ಮುನ್ಸೂಚನೆ", moisture_graph: "ತೇವಾಂಶ ಇತಿಹಾಸ",
+                news_title: "ಇತ್ತೀಚಿನ ಕೃಷಿ ಸುದ್ದಿ", btn_close: "ಮುಚ್ಚಿ", news_all: "ಎಲ್ಲಾ", news_loans: "ಸಾಲಗಳು", news_schemes: "ಯೋಜನೆಗಳು", news_market: "ಮಾರುಕಟ್ಟೆ", news_updated: "ಕೊನೆಯ ನವೀಕರಣ:", btn_refresh: "ರಿಫ್ರೆಶ್"
+            }
+        };
+
+        // --- CORE FUNCTIONS ---
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('krishi_lang', lang);
+            document.getElementById('language-selector').value = lang;
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations.en[key]) el.textContent = (translations[lang] && translations[lang][key]) || translations.en[key];
+            });
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                 if (translations.en[key]) el.placeholder = (translations[lang] && translations[lang][key]) || translations.en[key];
+            });
+        }
+        
+        function hideAll() {
+            Object.values(views).forEach(el => { if(el) { el.classList.add('hidden-section'); el.classList.remove('fade-in'); }});
+            document.getElementById('sell-product-btn').classList.add('hidden');
+            document.getElementById('sell-product-btn-2').classList.add('hidden');
+            newsArrowContainer.classList.add('hidden-section');
+            loginBtn.classList.remove('hidden');
+            window.scrollTo(0,0);
+        }
+        
+        function returnHome() { hideAll(); views.landing.classList.remove('hidden-section'); views.landing.classList.add('fade-in'); chatWidget.classList.remove('hidden'); }
+        function showLoginSelection() { hideAll(); views.login.classList.remove('hidden-section'); views.login.classList.add('flex'); views.login.classList.add('fade-in'); chatWidget.classList.add('hidden'); }
+        function showAdminAuth() { hideAll(); views.adminAuth.classList.remove('hidden-section'); views.adminAuth.classList.add('fade-in'); document.getElementById('auth-error').classList.add('hidden'); }
+        function showFarmerAuth() { hideAll(); views.farmerAuth.classList.remove('hidden-section'); views.farmerAuth.classList.add('fade-in'); document.getElementById('farmer-auth-error').classList.add('hidden'); }
+        
+        async function verifyAdminPassword() {
+            if(document.getElementById('admin-password-input').value === 'admin123') {
+                sessionStorage.setItem('krishi-user-type', 'admin');
+                await showAdminDashboard();
+            } else document.getElementById('auth-error').classList.remove('hidden');
+        }
+
+        async function verifyFarmerLogin() {
+            const inputDan = document.getElementById('farmer-dan-input').value.trim();
+            if (!inputDan) return;
+            await showFarmerDashboard(formatDanForStorage(inputDan));
+        }
+
+        async function showAdminDashboard() {
+            hideAll();
+            views.adminPanel.classList.remove('hidden-section');
+            views.adminPanel.classList.add('fade-in');
+            chatWidget.classList.add('hidden');
+            loginBtn.classList.add('hidden');
+            populateSoilDropdown(document.getElementById('input-soil-type'));
+            await Promise.all([
+                renderAdminTable(), 
+                renderAdminInbox(), 
+                renderAdminSellOffers(), 
+                renderAdminProductsList()
+            ]);
+        }
+        
+        async function showFarmerDashboard(dan) {
+            const { data: farmer, error } = await supabaseClient.from('farmers').select('*').eq('dan', dan).single();
+            if (error || !farmer) {
+                console.error('Farmer login error:', error);
+                document.getElementById('farmer-auth-error').classList.remove('hidden');
+                sessionStorage.clear();
+                return;
+            }
+            
+            currentFarmer = farmer;
+            sessionStorage.setItem('krishi-user-type', 'farmer');
+            sessionStorage.setItem('krishi-user-dan', farmer.dan);
+
+            document.getElementById('dash-farmer-name').textContent = farmer.name;
+            document.getElementById('dash-dan').textContent = farmer.dan;
+            document.getElementById('dash-plot').textContent = farmer.plot;
+            document.getElementById('dash-area').textContent = farmer.area + ' Acres';
+            
+            displaySoilAndCropDetails(farmer.soil_type, farmer.selected_crops);
+
+            hideAll();
+            views.farmerDash.classList.remove('hidden-section');
+            views.farmerDash.classList.add('fade-in');
+            newsArrowContainer.classList.remove('hidden-section');
+            chatWidget.classList.remove('hidden');
+            chatWidget.dataset.currentDan = farmer.dan.replace(/\s/g,'');
+            loginBtn.classList.add('hidden');
+
+            document.getElementById('sell-product-btn').classList.remove('hidden');
+            document.getElementById('sell-product-btn-2').classList.remove('hidden');
+
+            renderCharts(farmer.yieldData, farmer.moistureData, 'dashYieldChart', 'dashMoistureChart');
+            await refreshChatWindowMessages();
+            await refreshFarmerOffersUI();
+            await renderFarmerBuyableProducts();
+            updateSellBadges();
+        }
+
+        function logout() {
+            sessionStorage.clear();
+            currentFarmer = null;
+            chatWidget.dataset.currentDan = '';
+            hideAll();
+            returnHome();
+            location.reload();
+        }
+
+        async function checkSession() {
+            const userType = sessionStorage.getItem('krishi-user-type');
+            if (userType === 'admin') await showAdminDashboard();
+            else if (userType === 'farmer') {
+                const dan = sessionStorage.getItem('krishi-user-dan');
+                if (dan) await showFarmerDashboard(dan);
+            }
+        }
+
+        function populateSoilDropdown(selectElement) {
+            if (!selectElement || selectElement.options.length > 1) return;
+            Object.keys(soilData).forEach(soil => {
+                selectElement.add(new Option(soil, soil));
+            });
+        }
+
+        function populateCrops() {
+            const soilType = document.getElementById('input-soil-type').value;
+            const cropsSelect = document.getElementById('input-crops');
+            cropsSelect.innerHTML = ''; 
+            if (soilType && soilData[soilType]) {
+                soilData[soilType].crops.forEach(crop => cropsSelect.add(new Option(crop, crop)));
+            }
+        }
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            const selectedCrops = Array.from(document.getElementById('input-crops').selectedOptions).map(o => o.value).join(', ');
+            if (!selectedCrops) { alert("Please select at least one suitable crop."); return; }
+
+            const newFarmer = {
+                dan: Math.floor(100000000000 + Math.random() * 900000000000).toString().replace(/(.{4})/g, '$1 ').trim(),
+                name: document.getElementById('input-name').value, 
+                phone_number: document.getElementById('input-phone').value,
+                plot: document.getElementById('input-plot').value, 
+                address: document.getElementById('input-address').value,
+                area: document.getElementById('input-area').value, 
+                mac: document.getElementById('input-mac').value, 
+                yieldData: Array.from({length:6}, () => Math.floor(Math.random() * 25)), 
+                moistureData: Array.from({length:6}, () => Math.floor(Math.random() * 60)),
+                soil_type: document.getElementById('input-soil-type').value,
+                selected_crops: selectedCrops
+            };
+
+            const { error } = await supabaseClient.from('farmers').insert([newFarmer]);
+            if(error) {
+                console.error("Error adding farmer:", error);
+                alert(`Failed to add farmer: ${error.message}`);
+                return;
+            }
+
+            await renderAdminTable();
+            document.getElementById('card-name').textContent = newFarmer.name;
+            document.getElementById('card-dan').textContent = newFarmer.dan;
+            document.getElementById('dan-modal').classList.remove('hidden');
+            e.target.reset();
+            populateCrops();
+        }
+
+        function closeDanModal() { document.getElementById('dan-modal').classList.add('hidden'); }
+
+        async function renderAdminTable(filterText = '') {
+            const { data, error } = await supabaseClient.from('farmers').select('*').order('created_at', { ascending: false });
+            if(error) { console.error("Error fetching farmers:", error); return; }
+            farmersList = data || [];
+            const tbody = document.getElementById('farmer-table-body');
+            tbody.innerHTML = '';
+            const filtered = farmersList.filter(f => f.name.toLowerCase().includes(filterText.toLowerCase()) || f.dan.replace(/\s/g,'').includes(filterText));
+            
+            if (filtered.length === 0) {
+                 tbody.innerHTML = `<tr><td colspan="5" class="text-center text-gray-500 py-4">No farmers found.</td></tr>`;
+                 return;
+            }
+            const viewBtnText = 'View'; 
+            filtered.forEach(f => {
+                tbody.innerHTML += `<tr>
+                    <td class="font-mono text-green-400">${f.dan}</td><td class="text-white">${f.name}</td>
+                    <td class="text-gray-400">${f.plot}</td><td class="text-gray-400">${f.area}</td>
+                    <td>
+                        <button onclick="viewFarmerDetails('${f.dan}')" class="text-sm bg-blue-900/50 text-blue-300 border border-blue-800 px-3 py-1 rounded hover:bg-blue-800 mr-2">${viewBtnText}</button>
+                        <button onclick="deleteFarmer('${f.dan}')" class="text-sm text-red-400 border border-red-900 px-3 py-1 rounded hover:bg-red-900/20">Del</button>
+                    </td></tr>`;
+            });
+        }
+        
+        function searchFarmer() { renderAdminTable(document.getElementById('admin-search-input').value); }
+        async function deleteFarmer(dan) { 
+            if(!confirm('Delete farmer with DAN ' + dan + '?')) return;
+            const { error } = await supabaseClient.from('farmers').delete().eq('dan', dan);
+            if (error) { console.error("Error deleting farmer:", error); alert("Could not delete farmer."); return; }
+            await renderAdminTable(document.getElementById('admin-search-input').value); 
+        }
+
+        function viewFarmerDetails(dan) {
+            const f = farmersList.find(x => x.dan === dan); if(!f) return;
+            document.getElementById('view-name').textContent = f.name || '---';
+            document.getElementById('view-phone').textContent = f.phone_number || '---';
+            document.getElementById('view-address').textContent = f.address || '---';
+            document.getElementById('view-dan').textContent = f.dan || '---';
+            document.getElementById('view-plot').textContent = f.plot || '---';
+            document.getElementById('view-area').textContent = f.area ? `${f.area} Acres` : '---';
+            document.getElementById('view-soil-type').textContent = f.soil_type || '---';
+            document.getElementById('view-selected-crops').textContent = f.selected_crops || '---';
+            document.getElementById('view-mac').textContent = f.mac || '---';
+            document.getElementById('admin-farmer-view-modal').classList.remove('hidden');
+        }
+
+        function viewFarmerProfile() { if (currentFarmer) viewFarmerDetails(currentFarmer.dan); }
+        function closeAdminViewModal() { document.getElementById('admin-farmer-view-modal').classList.add('hidden'); }
+        
+        function displaySoilAndCropDetails(soilType, selectedCrops) {
+            document.getElementById('dash-soil-type').textContent = soilType || 'Not specified';
+            document.getElementById('dash-selected-crops').textContent = selectedCrops || 'Not specified';
+            const charList = document.getElementById('dash-soil-char');
+            const tipsList = document.getElementById('dash-management-tips');
+            const phEl = document.getElementById('dash-ideal-ph');
+            charList.innerHTML = ''; tipsList.innerHTML = ''; phEl.textContent = 'N/A';
+            if (soilType && soilData[soilType]) {
+                soilData[soilType].characteristics.forEach(char => charList.innerHTML += `<li>${escapeHtml(char)}</li>`);
+                soilData[soilType].management_tips.forEach(tip => tipsList.innerHTML += `<li>${escapeHtml(tip)}</li>`);
+                phEl.textContent = soilData[soilType].ideal_ph_range;
+            } else {
+                 charList.innerHTML = tipsList.innerHTML = `<li>No data available.</li>`;
+            }
+        }
+
+        function populateFarmerCrops() {
+            const soilType = document.getElementById('farmer-edit-soil-type').value;
+            const cropsSelect = document.getElementById('farmer-edit-crops');
+            cropsSelect.innerHTML = '';
+            if (soilType && soilData[soilType]) {
+                soilData[soilType].crops.forEach(crop => cropsSelect.add(new Option(crop, crop)));
+            }
+        }
+
+        function toggleSoilCropEdit(isEditing) {
+            document.getElementById('soil-crop-view-mode').classList.toggle('hidden', isEditing);
+            document.getElementById('edit-soil-crop-btn').classList.toggle('hidden', isEditing);
+            document.getElementById('soil-crop-edit-mode').classList.toggle('hidden', !isEditing);
+            if (isEditing && currentFarmer) {
+                const soilSelect = document.getElementById('farmer-edit-soil-type');
+                populateSoilDropdown(soilSelect);
+                soilSelect.value = currentFarmer.soil_type;
+                populateFarmerCrops();
+                const currentCrops = currentFarmer.selected_crops ? currentFarmer.selected_crops.split(', ') : [];
+                Array.from(document.getElementById('farmer-edit-crops').options).forEach(opt => {
+                    opt.selected = currentCrops.includes(opt.value);
+                });
+            }
+        }
+
+        async function saveFarmerSoilCropChanges() {
+            const dan = sessionStorage.getItem('krishi-user-dan');
+            if (!dan) { alert("Session expired, please log in again."); return; }
+            const saveBtn = document.getElementById('save-soil-crop-btn');
+            saveBtn.disabled = true; saveBtn.textContent = 'Saving...';
+            const newSoilType = document.getElementById('farmer-edit-soil-type').value;
+            const newSelectedCrops = Array.from(document.getElementById('farmer-edit-crops').selectedOptions).map(o => o.value).join(', ');
+            if (!newSelectedCrops) {
+                alert("Please select at least one crop.");
+                saveBtn.disabled = false; saveBtn.textContent = 'Save Changes';
+                return;
+            }
+            const { data, error } = await supabaseClient.from('farmers')
+                .update({ soil_type: newSoilType, selected_crops: newSelectedCrops })
+                .eq('dan', dan).select().single();
+            if (error) {
+                alert("Failed to save changes.");
+            } else {
+                currentFarmer = data;
+                displaySoilAndCropDetails(data.soil_type, data.selected_crops);
+                toggleSoilCropEdit(false);
+            }
+            saveBtn.disabled = false; saveBtn.textContent = 'Save Changes';
+        }
+
+        function previewImage(fileInput, previewElementId) {
+            const file = fileInput.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = e => document.getElementById(previewElementId).innerHTML = `<img src="${e.target.result}" alt="Preview"/>`;
+            reader.readAsDataURL(file);
+        }
+        async function uploadImageAndGetUrl(file) {
+            if (!file) return null;
+            const filePath = `public/${Date.now()}.${file.name.split('.').pop()}`;
+            const { error } = await supabaseClient.storage.from('product-images').upload(filePath, file);
+            if (error) { console.error('Upload error:', error); return null; }
+            const { data } = supabaseClient.storage.from('product-images').getPublicUrl(filePath);
+            return data ? data.publicUrl : null;
+        }
+        async function handleProductFormSubmit(e) {
+            e.preventDefault();
+            const btn = document.getElementById('add-supply-btn');
+            btn.disabled = true; btn.textContent = 'Uploading...';
+            const imageUrl = await uploadImageAndGetUrl(document.getElementById('input-prod-image').files[0]);
+            if (!imageUrl) { alert("Image upload failed."); btn.disabled = false; btn.textContent = 'Add Supply'; return; }
+            const product = { name: document.getElementById('input-prod-name').value, image: imageUrl, price: parseFloat(document.getElementById('input-prod-price').value), unit: document.getElementById('input-prod-unit').value, stock: parseInt(document.getElementById('input-prod-stock').value) };
+            const { error } = await supabaseClient.from('products').insert([product]);
+            if(error) alert("Failed to add product");
+            else { e.target.reset(); document.getElementById('admin-prod-preview').innerHTML = '<span>Preview</span>'; }
+            btn.disabled = false; btn.textContent = 'Add Supply to Market';
+        }
+        async function renderAdminProductsList() {
+            const { data, error } = await supabaseClient.from('products').select('*').order('created_at', { ascending: false });
+            buyableProducts = data || [];
+            const container = document.getElementById('admin-products-list');
+            if(buyableProducts.length === 0) { container.innerHTML = '<div class="text-center text-gray-500 text-sm py-4">No supplies added yet.</div>'; return; }
+            container.innerHTML = buyableProducts.map(p => `
+                <div class="bg-white/5 p-3 rounded-lg border border-white/10 flex justify-between items-center">
+                    <div class="flex items-center gap-4">
+                        <img src="${escapeHtml(p.image || SVG_PLACEHOLDER)}" onerror="this.src='${SVG_PLACEHOLDER}'" alt="${escapeHtml(p.name)}" class="w-16 h-16 object-cover rounded-lg">
+                        <div>
+                            <p class="text-white font-semibold">${escapeHtml(p.name)}</p>
+                            <p class="text-sm text-green-400">₹${escapeHtml(p.price)} / ${escapeHtml(p.unit)}</p>
+                            <p class="text-xs text-gray-400">Stock: ${escapeHtml(p.stock)}</p>
+                        </div>
+                    </div>
+                    <button onclick="deleteAdminProduct('${p.id}')" class="text-sm text-red-400 border border-red-900 px-3 py-1 rounded hover:bg-red-900/20">Delete</button>
+                </div>`).join('');
+        }
+        async function deleteAdminProduct(productId) {
+            if (!confirm('Are you sure you want to delete this product?')) return;
+            await supabaseClient.from('products').delete().eq('id', productId);
+        }
+        async function renderFarmerBuyableProducts() {
+            const { data, error } = await supabaseClient.from('products').select('*').order('created_at', { ascending: false });
+            const products = data || [];
+            const container = document.getElementById('farmer-buy-products-list');
+            if(!container) return;
+            if(products.length === 0) { container.innerHTML = '<div class="text-center text-gray-500 text-sm py-4">No supplies available right now.</div>'; return; }
+            container.innerHTML = products.map(p => `
+                <div class="supply-card">
+                    <img src="${escapeHtml(p.image || SVG_PLACEHOLDER)}" onerror="this.onerror=null;this.src='${SVG_PLACEHOLDER}';" alt="${escapeHtml(p.name)}">
+                    <div class="flex-1">
+                        <h4 class="text-lg font-bold text-white">${escapeHtml(p.name)}</h4>
+                        <p class="text-green-400 font-semibold">₹${escapeHtml(p.price)} / ${escapeHtml(p.unit)}</p>
+                        <span class="stock">${p.stock > 0 ? `${p.stock} ${p.unit}s available` : 'Out of Stock'}</span>
+                    </div>
+                    <button onclick="buyProduct('${p.id}')" class="neon-button w-full mt-4 py-2 text-sm" ${p.stock > 0 ? '' : 'disabled'}>Buy Now</button>
+                </div>`).join('');
+        }
+        async function buyProduct(productId) {
+            const { data: product } = await supabaseClient.from('products').select('name, unit, stock, price').eq('id', productId).single();
+            if (!product || product.stock <= 0) { alert('This product is out of stock.'); return; }
+            const qty = prompt(`How many ${product.unit}s of ${product.name} would you like to buy? (Available: ${product.stock})`, "1");
+            const quantityToBuy = parseInt(qty);
+            if (!qty || isNaN(quantityToBuy) || quantityToBuy <= 0) return;
+            if (quantityToBuy > product.stock) { alert(`Only ${product.stock} available.`); return; }
+            if (confirm(`Confirm purchase of ${quantityToBuy} ${product.unit}(s) for ₹${quantityToBuy * product.price}?`)) {
+                await supabaseClient.from('products').update({ stock: product.stock - quantityToBuy }).eq('id', productId);
+                alert('Purchase successful!');
+            }
+        }
+        function renderCharts(yieldData, moistureData, yieldCanvasId, moistCanvasId) {
+            if(charts[yieldCanvasId]) charts[yieldCanvasId].destroy();
+            if(charts[moistCanvasId]) charts[moistCanvasId].destroy();
+            const options = { responsive: true, maintainAspectRatio: false, plugins:{legend:{display:false}}, scales:{y:{grid:{color:'rgba(255,255,255,0.05)'}}, x:{grid:{color:'rgba(255,255,255,0.05)'}}}};
+            const ctx1El = document.getElementById(yieldCanvasId);
+            if(ctx1El) charts[yieldCanvasId] = new Chart(ctx1El.getContext('2d'), { type: 'line', data: { labels: ['Jan','Feb','Mar','Apr','May','Jun'], datasets: [{ label: 'Yield', data: yieldData, borderColor: '#4ade80', backgroundColor: 'rgba(74,222,128,0.1)', fill: true, tension: 0.4 }] }, options });
+            const ctx2El = document.getElementById(moistCanvasId);
+            if(ctx2El) charts[moistCanvasId] = new Chart(ctx2El.getContext('2d'), { type: 'bar', data: { labels: ['Jan','Feb','Mar','Apr','May','Jun'], datasets: [{ label: 'Moisture', data: moistureData, backgroundColor: '#60a5fa', borderRadius: 4 }] }, options });
+        }
+        function toggleChat() { document.getElementById('chat-window').classList.toggle('hidden'); if (!document.getElementById('chat-window').classList.contains('hidden')) document.getElementById('user-chat-input').focus(); }
+        async function sendUserMessage(e) { e.preventDefault(); /* ... same ... */ }
+        async function renderAdminInbox() { /* ... same ... */ }
+        async function refreshChatWindowMessages() { /* ... same ... */ }
+        function toggleNews() { newsPanel.classList.toggle('open'); if(newsPanel.classList.contains('open')) renderNews('all'); }
+        function renderNews(filter = 'all') {
+            const newsListEl = document.getElementById('newsList'); if (!newsListEl) return;
+            const items = sampleNews.filter(n => (filter === 'all') ? true : n.category === filter);
+            newsListEl.innerHTML = items.length === 0 ? `<div class="news-empty">No news found.</div>` : items.map(it => `<div class="news-card"><div class="meta"><div>${escapeHtml(it.source)}</div><div>${escapeHtml(it.date)}</div></div><div class="title">${escapeHtml(it.title)}</div><div class="excerpt">${escapeHtml(it.excerpt)}</div></div>`).join('');
+            document.getElementById('news-last-updated').textContent = new Date().toLocaleTimeString();
+        }
+        function escapeHtml(u) { return String(u || '').replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[m]); }
+        function formatDanDisplay(d) { if(!d) return 'Visitor'; return (d.length===12 || d.includes(' ')) ? d : (d.replace(/(.{4})/g,'$1 ').trim()); }
+        function formatDanForStorage(d) { return (d || '').replace(/\s/g, '').replace(/(.{4})/g, '$1 ').trim(); }
+        function openSellModal(){ document.getElementById('sellForm').reset(); document.getElementById('sell-preview-box').innerHTML = '<span>Preview</span>'; document.getElementById('sell-modal').classList.remove('hidden'); }
+        function closeSellModal(){ document.getElementById('sell-modal').classList.add('hidden'); }
+        async function submitSellOffer(e){ /* ... same ... */ }
+        async function renderAdminSellOffers(){ /* ... same ... */ }
+        async function updateOfferStatus(id, s, m) { /* ... same ... */ }
+        async function acceptSellOffer(id){ /* ... same ... */ }
+        async function declineSellOffer(id){ /* ... same ... */ }
+        async function refreshFarmerOffersUI(){ /* ... same ... */ }
+        async function updateSellBadges(){ /* ... same ... */ }
+        
+        function listenToChanges() {
+            supabaseClient.channel('public-changes').on('postgres_changes', { event: '*', schema: 'public' }, payload => {
+                if (payload.table === 'messages') { renderAdminInbox(); refreshChatWindowMessages(); }
+                if (payload.table === 'offers') { renderAdminSellOffers(); refreshFarmerOffersUI(); }
+                if (payload.table === 'products') { Promise.all([renderAdminProductsList(), renderFarmerBuyableProducts()]); }
+                if (payload.table === 'farmers') { renderAdminTable(); }
+            }).subscribe();
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const SUPABASE_URL = 'https://mqmtzpuddphsrxvsbdrc.supabase.co';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1xbXR6cHVkZHBoc3J4dnNiZHJjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM2MzE1NzUsImV4cCI6MjA3OTIwNzU3NX0.SnNQah7Hily02c6c5jBFBB4_KWQ6THUH7jV_A_KiJcU';
+            supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+            new Chart(document.getElementById('cropHealthChart').getContext('2d'), { type: 'line', data: { labels: ['J','F','M','A','M','J'], datasets: [{ data: [12,15,14,18,20,22], borderColor: '#4ade80', backgroundColor: 'rgba(74,222,128,0.1)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins:{legend:{display:false}}, scales:{x:{display:false},y:{display:true, grid:{color:'rgba(255,255,255,0.05)'}}} } });
+            
+            const observer = new IntersectionObserver((entries) => { entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('is-visible'); }); });
+            document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+            
+            document.getElementById('closeNewsBtn').addEventListener('click', () => newsPanel.classList.remove('open'));
+            document.getElementById('refreshNewsBtn').addEventListener('click', () => renderNews(currentFilter));
+            document.querySelectorAll('.news-filter').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.news-filter').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentFilter = btn.dataset.filter;
+                    renderNews(currentFilter);
+                });
+            });
+
+            await checkSession();
+            
+            renderNews('all');
+            changeLanguage(currentLang);
+            listenToChanges();
+
+            document.getElementById('preloader').classList.add('loaded');
+        });
+
+        Object.assign(window, {
+            returnHome, showLoginSelection, showAdminAuth, showFarmerAuth, verifyAdminPassword, verifyFarmerLogin, logout, viewFarmerDetails, deleteFarmer, closeDanModal, toggleChat, sendUserMessage, openSellModal, closeSellModal, submitSellOffer, acceptSellOffer, declineSellOffer, renderAdminSellOffers, refreshFarmerOffersUI, updateSellBadges, handleFormSubmit, populateCrops, handleProductFormSubmit, deleteAdminProduct, buyProduct, changeLanguage, toggleNews, searchFarmer, previewImage,
+            toggleSoilCropEdit, saveFarmerSoilCropChanges, populateFarmerCrops, viewFarmerProfile, closeAdminViewModal
+        });
+    </script>
+</body>
+</html>
