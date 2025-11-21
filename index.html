@@ -969,97 +969,83 @@
         // --- AUTHENTICATION & LOGOUT (WITH SESSION PERSISTENCE) ---
         async function verifyAdminPassword() {
             if(document.getElementById('admin-password-input').value === 'admin123') {
-                // Save session state
                 sessionStorage.setItem('krishi-user-type', 'admin');
-
-                hideAll();
-                views.adminPanel.classList.remove('hidden-section');
-                views.adminPanel.classList.add('fade-in');
-                chatWidget.classList.add('hidden');
-                loginBtn.classList.add('hidden');
-                await Promise.all([
-                    renderAdminTable(), 
-                    renderAdminInbox(), 
-                    renderAdminSellOffers(), 
-                    renderAdminProductsList()
-                ]);
+                await showAdminDashboard();
             } else document.getElementById('auth-error').classList.remove('hidden');
         }
 
         async function verifyFarmerLogin() {
-            const input = document.getElementById('farmer-dan-input').value.replace(/\s/g, '');
-            
-            const { data: farmer, error } = await supabaseClient
-                .from('farmers')
-                .select('*')
-                .eq('dan', formatDanForStorage(input))
-                .single();
+            const inputDan = document.getElementById('farmer-dan-input').value.trim();
+            if (!inputDan) return;
+            await showFarmerDashboard(formatDanForStorage(inputDan));
+        }
 
+        async function showAdminDashboard() {
+            hideAll();
+            views.adminPanel.classList.remove('hidden-section');
+            views.adminPanel.classList.add('fade-in');
+            chatWidget.classList.add('hidden');
+            loginBtn.classList.add('hidden');
+            await Promise.all([
+                renderAdminTable(), 
+                renderAdminInbox(), 
+                renderAdminSellOffers(), 
+                renderAdminProductsList()
+            ]);
+        }
+        
+        async function showFarmerDashboard(dan) {
+            const { data: farmer, error } = await supabaseClient.from('farmers').select('*').eq('dan', dan).single();
             if (error || !farmer) {
                 console.error('Farmer login error:', error);
                 document.getElementById('farmer-auth-error').classList.remove('hidden');
+                sessionStorage.clear(); // Clear bad session data
                 return;
             }
 
-            if(farmer) {
-                // Save session state
-                sessionStorage.setItem('krishi-user-type', 'farmer');
-                sessionStorage.setItem('krishi-user-dan', farmer.dan);
+            sessionStorage.setItem('krishi-user-type', 'farmer');
+            sessionStorage.setItem('krishi-user-dan', farmer.dan);
 
-                document.getElementById('dash-farmer-name').textContent = farmer.name;
-                document.getElementById('dash-dan').textContent = farmer.dan;
-                document.getElementById('dash-plot').textContent = farmer.plot;
-                document.getElementById('dash-area').textContent = farmer.area + ' Acres';
+            document.getElementById('dash-farmer-name').textContent = farmer.name;
+            document.getElementById('dash-dan').textContent = farmer.dan;
+            document.getElementById('dash-plot').textContent = farmer.plot;
+            document.getElementById('dash-area').textContent = farmer.area + ' Acres';
 
-                hideAll();
-                views.farmerDash.classList.remove('hidden-section');
-                views.farmerDash.classList.add('fade-in');
-                newsArrowContainer.classList.remove('hidden-section');
-                chatWidget.classList.remove('hidden');
-                chatWidget.dataset.currentDan = farmer.dan.replace(/\s/g,'');
-                loginBtn.classList.add('hidden');
+            hideAll();
+            views.farmerDash.classList.remove('hidden-section');
+            views.farmerDash.classList.add('fade-in');
+            newsArrowContainer.classList.remove('hidden-section');
+            chatWidget.classList.remove('hidden');
+            chatWidget.dataset.currentDan = farmer.dan.replace(/\s/g,'');
+            loginBtn.classList.add('hidden');
 
-                document.getElementById('sell-product-btn').classList.remove('hidden');
-                document.getElementById('sell-product-btn-2').classList.remove('hidden');
+            document.getElementById('sell-product-btn').classList.remove('hidden');
+            document.getElementById('sell-product-btn-2').classList.remove('hidden');
 
-                renderCharts(farmer.yieldData, farmer.moistureData, 'dashYieldChart', 'dashMoistureChart');
-                await refreshChatWindowMessages();
-                await refreshFarmerOffersUI();
-                await renderFarmerBuyableProducts();
-                updateSellBadges();
-            } else document.getElementById('farmer-auth-error').classList.remove('hidden');
+            renderCharts(farmer.yieldData, farmer.moistureData, 'dashYieldChart', 'dashMoistureChart');
+            await refreshChatWindowMessages();
+            await refreshFarmerOffersUI();
+            await renderFarmerBuyableProducts();
+            updateSellBadges();
         }
 
         function logout() {
-            // Clear session state
             sessionStorage.removeItem('krishi-user-type');
             sessionStorage.removeItem('krishi-user-dan');
-            
             chatWidget.dataset.currentDan = '';
             hideAll();
             returnHome();
+            location.reload(); // Force a clean reload to clear all states
         }
 
-        // --- SESSION CHECK ON PAGE LOAD ---
         async function checkSession() {
             const userType = sessionStorage.getItem('krishi-user-type');
             if (userType === 'admin') {
-                hideAll();
-                views.adminPanel.classList.remove('hidden-section');
-                views.adminPanel.classList.add('fade-in');
-                chatWidget.classList.add('hidden');
-                loginBtn.classList.add('hidden');
-                await Promise.all([
-                    renderAdminTable(),
-                    renderAdminInbox(),
-                    renderAdminSellOffers(),
-                    renderAdminProductsList()
-                ]);
+                await showAdminDashboard();
             } else if (userType === 'farmer') {
                 const dan = sessionStorage.getItem('krishi-user-dan');
                 if (dan) {
-                    document.getElementById('farmer-dan-input').value = dan;
-                    await verifyFarmerLogin();
+                    await showFarmerDashboard(dan);
                 }
             }
         }
@@ -1159,23 +1145,33 @@
             reader.readAsDataURL(file);
         }
 
+        // --- FIX: MORE ROBUST IMAGE UPLOAD FUNCTION ---
         async function uploadImageAndGetUrl(file) {
             if (!file) return null;
-            const fileName = `public/${Date.now()}_${file.name}`;
-            const { data, error } = await supabaseClient.storage
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Date.now()}.${fileExt}`;
+            const filePath = `public/${fileName}`;
+
+            const { error: uploadError } = await supabaseClient.storage
                 .from('product-images')
-                .upload(fileName, file);
-            
-            if (error) {
-                console.error('Error uploading image:', error);
+                .upload(filePath, file);
+
+            if (uploadError) {
+                console.error('Error uploading image:', uploadError);
+                return null;
+            }
+
+            const { data } = supabaseClient.storage
+                .from('product-images')
+                .getPublicUrl(filePath);
+
+            if (!data || !data.publicUrl) {
+                console.error('Could not get public URL for the uploaded image.');
                 return null;
             }
             
-            const { data: publicUrlData } = supabaseClient.storage
-                .from('product-images')
-                .getPublicUrl(fileName);
-            
-            return publicUrlData.publicUrl;
+            console.log('Successfully uploaded image. Public URL:', data.publicUrl);
+            return data.publicUrl;
         }
 
 
@@ -1189,7 +1185,7 @@
             const imageFile = document.getElementById('input-prod-image').files[0];
             const imageUrl = await uploadImageAndGetUrl(imageFile);
             if (!imageUrl) {
-                alert("Image upload failed. Please try again.");
+                alert("Image upload failed. Please check the console for errors and try again.");
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Add Supply to Market';
                 return;
@@ -1222,13 +1218,14 @@
             buyableProducts = data || [];
             
             const container = document.getElementById('admin-products-list');
+            const placeholder = 'https://via.placeholder.com/64x64.png?text=No+Img';
             if(buyableProducts.length === 0) { container.innerHTML = '<div class="text-center text-gray-500 text-sm py-4">No supplies added yet.</div>'; return; }
             container.innerHTML = '';
             buyableProducts.forEach(p => {
                 container.innerHTML += `
                     <div class="bg-white/5 p-3 rounded-lg border border-white/10 flex justify-between items-center">
                         <div class="flex items-center gap-4">
-                            <img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.name)}" class="w-16 h-16 object-cover rounded-lg">
+                            <img src="${escapeHtml(p.image || placeholder)}" onerror="this.src='${placeholder}'" alt="${escapeHtml(p.name)}" class="w-16 h-16 object-cover rounded-lg">
                             <div>
                                 <p class="text-white font-semibold">${escapeHtml(p.name)}</p>
                                 <p class="text-sm text-green-400">₹${escapeHtml(p.price)} / ${escapeHtml(p.unit)}</p>
@@ -1265,7 +1262,6 @@
             }
             
             const products = data || [];
-            console.log("Products fetched for farmer view:", products); // For debugging
             
             if(products.length === 0) { 
                 container.innerHTML = '<div class="text-center text-gray-500 text-sm py-4">No supplies available right now.</div>'; 
@@ -1275,12 +1271,11 @@
             products.forEach(p => {
                 const stockInfo = p.stock > 0 ? `${p.stock} ${p.unit}s available` : 'Out of Stock';
                 const buttonDisabled = p.stock > 0 ? '' : 'disabled';
-                // FIX: Use a placeholder if image URL is missing
-                const imageUrl = p.image ? escapeHtml(p.image) : 'https://via.placeholder.com/220x140.png?text=No+Image';
+                const placeholder = 'https://via.placeholder.com/220x140.png?text=No+Image';
                 
                 container.innerHTML += `
                     <div class="supply-card">
-                        <img src="${imageUrl}" alt="${escapeHtml(p.name)}">
+                        <img src="${escapeHtml(p.image || placeholder)}" onerror="this.onerror=null;this.src='${placeholder}';" alt="${escapeHtml(p.name)}">
                         <div class="flex-1">
                             <h4 class="text-lg font-bold text-white">${escapeHtml(p.name)}</h4>
                             <p class="text-green-400 font-semibold">₹${escapeHtml(p.price)} / ${escapeHtml(p.unit)}</p>
@@ -1490,10 +1485,11 @@
             sellOffers = data || [];
             
             const container = document.getElementById('admin-offers-list');
+            const placeholder = 'https://via.placeholder.com/56x56.png?text=No+Img';
             if(sellOffers.length === 0){ container.innerHTML = '<div class="text-center text-gray-500 text-sm py-4">No offers found.</div>'; return; }
             container.innerHTML = '';
             sellOffers.forEach(o => {
-                container.innerHTML += `<div class="bg-white/5 p-3 rounded-lg border border-white/10 flex justify-between items-start mb-2"> <div style="flex:1"> <div class="flex items-center gap-2 mb-1"><span class="text-green-400 text-sm font-bold">${escapeHtml(o.dan)}</span><span class="text-gray-500 text-xs ml-2">${escapeHtml(o.time)}</span></div> <div class="flex gap-3 items-center"> <img src="${escapeHtml(o.image || 'https://via.placeholder.com/56')}" alt="${escapeHtml(o.crop)}" style="width:56px;height:56px;object-fit:cover;border-radius:8px;"> <div> <div class="text-white font-semibold">${escapeHtml(o.crop)}</div> <div class="text-gray-300 text-sm">${escapeHtml(o.qty)} kg • ₹${escapeHtml(o.cost)}</div> <div class="offer-timeline mt-2"> <div class="timeline-step">${o.status === 'pending' ? '<span class="text-yellow-300">Pending</span>' : escapeHtml(o.status.charAt(0).toUpperCase()+o.status.slice(1))}</div> </div> </div> </div> </div> <div class="ml-3 flex flex-col gap-2"> ${ o.status === 'pending' ? `<button onclick="acceptSellOffer('${o.id}')" class="text-sm bg-green-500 text-black px-3 py-1 rounded hover:bg-green-400">Accept</button><button onclick="declineSellOffer('${o.id}')" class="text-sm bg-red-700 text-white px-3 py-1 rounded hover:bg-red-600">Decline</button>` : `<div class="text-xs text-gray-400 px-3 py-1 rounded">${escapeHtml(o.status)}</div>` } </div> </div>`;
+                container.innerHTML += `<div class="bg-white/5 p-3 rounded-lg border border-white/10 flex justify-between items-start mb-2"> <div style="flex:1"> <div class="flex items-center gap-2 mb-1"><span class="text-green-400 text-sm font-bold">${escapeHtml(o.dan)}</span><span class="text-gray-500 text-xs ml-2">${escapeHtml(o.time)}</span></div> <div class="flex gap-3 items-center"> <img src="${escapeHtml(o.image || placeholder)}" onerror="this.src='${placeholder}'" alt="${escapeHtml(o.crop)}" style="width:56px;height:56px;object-fit:cover;border-radius:8px;"> <div> <div class="text-white font-semibold">${escapeHtml(o.crop)}</div> <div class="text-gray-300 text-sm">${escapeHtml(o.qty)} kg • ₹${escapeHtml(o.cost)}</div> <div class="offer-timeline mt-2"> <div class="timeline-step">${o.status === 'pending' ? '<span class="text-yellow-300">Pending</span>' : escapeHtml(o.status.charAt(0).toUpperCase()+o.status.slice(1))}</div> </div> </div> </div> </div> <div class="ml-3 flex flex-col gap-2"> ${ o.status === 'pending' ? `<button onclick="acceptSellOffer('${o.id}')" class="text-sm bg-green-500 text-black px-3 py-1 rounded hover:bg-green-400">Accept</button><button onclick="declineSellOffer('${o.id}')" class="text-sm bg-red-700 text-white px-3 py-1 rounded hover:bg-red-600">Decline</button>` : `<div class="text-xs text-gray-400 px-3 py-1 rounded">${escapeHtml(o.status)}</div>` } </div> </div>`;
             });
         }
 
@@ -1554,7 +1550,6 @@
         
         // --- REALTIME SUBSCRIPTIONS ---
         function listenToChanges() {
-            // Listen for new messages
             supabaseClient.channel('public:messages')
               .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
                 console.log('New message received!', payload.new);
@@ -1563,7 +1558,6 @@
               })
               .subscribe();
 
-            // Listen for offer changes (new offers or status updates)
             supabaseClient.channel('public:offers')
               .on('postgres_changes', { event: '*', schema: 'public', table: 'offers' }, payload => {
                 console.log('Offer changed!', payload);
@@ -1573,7 +1567,6 @@
               })
               .subscribe();
               
-            // Listen for product changes
             supabaseClient.channel('public:products')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, payload => {
                     console.log('Product list changed!', payload);
@@ -1595,11 +1588,11 @@
             const observer = new IntersectionObserver((entries) => { entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('is-visible'); }); });
             document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
             
-            await checkSession(); // Check for existing session on page load
+            await checkSession();
 
             renderNews('all');
             changeLanguage(currentLang);
-            listenToChanges(); // Start listening for realtime updates
+            listenToChanges();
         });
 
         // Expose functions for inline onclick
