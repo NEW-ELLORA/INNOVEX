@@ -147,9 +147,8 @@
         .fade-in { animation: fadeIn 0.5s ease-in-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        .form-input, .form-select { background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border-glass); border-radius: 0.5rem; color: white; transition: 0.3s; padding: .5rem; width: 100%;}
-        .form-input:focus, .form-select:focus { border-color: var(--neon-green); outline: none; box-shadow: 0 0 15px rgba(74, 222, 128, 0.2); }
-        .form-select option { background: #020601; color: white;}
+        .form-input { background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border-glass); border-radius: 0.5rem; color: white; transition: 0.3s; padding: .5rem; }
+        .form-input:focus { border-color: var(--neon-green); outline: none; box-shadow: 0 0 15px rgba(74, 222, 128, 0.2); }
         /* Style for file inputs */
         input[type="file"]::file-selector-button {
             background-color: var(--dark-green);
@@ -164,14 +163,6 @@
         input[type="file"]::file-selector-button:hover {
             background-color: var(--neon-green);
             color: #020601;
-        }
-        select[multiple] {
-            height: auto;
-            min-height: 100px;
-            padding: 0.5rem;
-        }
-        select[multiple] option {
-            padding: 4px 8px;
         }
 
         .admin-table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
@@ -296,7 +287,7 @@
         }
         .supply-card .stock {
             font-size: 0.8rem; background: rgba(74,222,128,0.1); color: var(--soft-green);
-            padding: 2px 8px; border-radius: 9999px; display: inline-block; margin-top: 0.5rem;
+            padding: 2px 8px; border-radius: 999px; display: inline-block; margin-top: 0.5rem;
         }
 
         .image-preview-box {
@@ -315,16 +306,6 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-        }
-        .soil-char-list { list-style: none; padding-left: 0; }
-        .soil-char-list li {
-            background: rgba(74, 222, 128, 0.05);
-            border-left: 3px solid var(--neon-green);
-            padding: 8px 12px;
-            border-radius: 0 4px 4px 0;
-            margin-bottom: 6px;
-            font-size: 0.9rem;
-            color: #d1d5db;
         }
     </style>
 </head>
@@ -602,20 +583,37 @@
                         <h3 class="text-xl font-semibold text-green-400 mb-4" data-i18n="add_farmer">Add New Farmer</h3>
                         <form id="farmerForm" onsubmit="handleFormSubmit(event)">
                             <div class="space-y-4">
-                                <div><label class="text-xs text-gray-400" data-i18n="lbl_fullname">Full Name</label><input type="text" id="input-name" required class="form-input px-3 py-2"></div>
-                                <div><label class="text-xs text-gray-400" data-i18n="lbl_plot">Plot/Survey No.</label><input type="text" id="input-plot" required class="form-input px-3 py-2"></div>
-                                <div><label class="text-xs text-gray-400" data-i18n="lbl_addr">Address</label><input type="text" id="input-address" required class="form-input px-3 py-2"></div>
-                                <div><label class="text-xs text-gray-400" data-i18n="lbl_area">Total Area (Acres)</label><input type="number" step="0.1" id="input-area" required class="form-input px-3 py-2"></div>
-                                <div><label class="text-xs text-gray-400" data-i18n="lbl_mac">ESP32 MAC Address</label><input type="text" id="input-mac" placeholder="AA:BB:CC:DD:EE:FF" required class="form-input px-3 py-2"></div>
+                                <div><label class="text-xs text-gray-400" data-i18n="lbl_fullname">Full Name</label><input type="text" id="input-name" required class="form-input w-full px-3 py-2"></div>
+                                <div><label class="text-xs text-gray-400" data-i18n="lbl_plot">Plot/Survey No.</label><input type="text" id="input-plot" required class="form-input w-full px-3 py-2"></div>
+                                <div><label class="text-xs text-gray-400" data-i18n="lbl_addr">Address</label><input type="text" id="input-address" required class="form-input w-full px-3 py-2"></div>
+                                <div><label class="text-xs text-gray-400" data-i18n="lbl_area">Total Area (Acres)</label><input type="number" step="0.1" id="input-area" required class="form-input w-full px-3 py-2"></div>
+                                <div><label class="text-xs text-gray-400" data-i18n="lbl_mac">ESP32 MAC Address</label><input type="text" id="input-mac" placeholder="AA:BB:CC:DD:EE:FF" required class="form-input w-full px-3 py-2"></div>
+
+                                <!-- NEW: Soil Type and Suitable Crops Fields -->
                                 <div>
                                     <label class="text-xs text-gray-400">Soil Type</label>
-                                    <select id="input-soil-type" class="form-select" onchange="populateCrops()" required>
-                                        <option value="">-- Select Soil --</option>
+                                    <select id="input-soil-type" required class="form-input w-full px-3 py-2 bg-gray-900 text-white">
+                                        <option value="Alluvial Soil">Alluvial Soil</option>
+                                        <option value="Black Soil">Black Soil</option>
+                                        <option value="Red and Yellow Soil">Red and Yellow Soil</option>
+                                        <option value="Laterite Soil">Laterite Soil</option>
+                                        <option value="Arid Soil">Arid Soil</option>
+                                        <option value="Saline Soil">Saline Soil</option>
                                     </select>
                                 </div>
                                 <div>
                                     <label class="text-xs text-gray-400">Select Suitable Crops (Ctrl+Click for multiple)</label>
-                                    <select multiple id="input-crops" class="form-select"></select>
+                                    <select id="input-suitable-crops" multiple required class="form-input w-full h-32 px-3 py-2 bg-gray-900 text-white">
+                                        <option>Cotton</option>
+                                        <option>Sorghum (Jowar)</option>
+                                        <option>Millets</option>
+                                        <option>Soybean</option>
+                                        <option>Wheat</option>
+                                        <option>Rice</option>
+                                        <option>Maize</option>
+                                        <option>Sugarcane</option>
+                                        <option>Groundnut</option>
+                                    </select>
                                 </div>
                             </div>
                             <button type="submit" class="neon-button w-full mt-6 py-3" data-i18n="btn_gen_dan">Generate DAN</button>
@@ -665,6 +663,7 @@
                 </div>
             </div>
 
+            <!-- NEW SECTION: MANAGE BUYABLE PRODUCTS -->
             <div class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="glass-card p-6 lg:col-span-1 h-fit">
                     <h3 class="text-xl font-semibold text-green-400 mb-4">Add Agri Supply</h3>
@@ -672,6 +671,7 @@
                         <div class="space-y-4">
                             <div><label class="text-xs text-gray-400">Product Name</label><input type="text" id="input-prod-name" required class="form-input w-full px-3 py-2"></div>
                             
+                            <!-- Image Upload Input -->
                             <div>
                                 <label class="text-xs text-gray-400">Product Image</label>
                                 <input type="file" id="input-prod-image" accept="image/*" onchange="previewImage(this, 'admin-prod-preview')" required class="form-input w-full">
@@ -736,59 +736,10 @@
                 </div>
             </div>
 
+            <!-- Farmer Main Content Area -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Left Column: Quick Actions & Offers -->
                 <div class="lg:col-span-1 space-y-8">
-                    <div class="glass-card p-6">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-lg font-bold text-white">Soil & Crop Details</h3>
-                            <button onclick="toggleSoilCropEdit(true)" id="edit-soil-crop-btn" class="text-sm bg-blue-900/50 text-blue-300 border border-blue-800 px-3 py-1 rounded hover:bg-blue-800">Edit</button>
-                        </div>
-                        
-                        <!-- VIEW MODE -->
-                        <div id="soil-crop-view-mode">
-                            <div class="space-y-4">
-                                <div>
-                                    <p class="text-xs text-gray-500 uppercase">Soil Type</p>
-                                    <p id="dash-soil-type" class="text-white text-lg font-semibold">---</p>
-                                </div>
-                                <div>
-                                    <p class="text-xs text-gray-500 uppercase">Registered Crops</p>
-                                    <p id="dash-selected-crops" class="text-gray-300 text-base leading-relaxed">---</p>
-                                </div>
-                                <div class="pt-2 border-t border-white/10">
-                                    <p class="text-xs text-green-400 uppercase font-semibold">Soil Characteristics</p>
-                                    <ul id="dash-soil-char" class="mt-2 soil-char-list"></ul>
-                                </div>
-                                <div class="pt-2">
-                                    <p class="text-xs text-green-400 uppercase font-semibold">Management Tips</p>
-                                    <ul id="dash-management-tips" class="mt-2 soil-char-list"></ul>
-                                </div>
-                                 <div class="pt-2">
-                                    <p class="text-xs text-green-400 uppercase font-semibold">Ideal pH Range</p>
-                                    <p id="dash-ideal-ph" class="text-white text-lg font-semibold mt-1"></p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- EDIT MODE (Initially Hidden) -->
-                        <div id="soil-crop-edit-mode" class="hidden">
-                             <div class="space-y-4">
-                                <div>
-                                    <label class="text-xs text-gray-400">Soil Type</label>
-                                    <select id="farmer-edit-soil-type" class="form-select" onchange="populateFarmerCrops()"></select>
-                                </div>
-                                <div>
-                                    <label class="text-xs text-gray-400">Select Crops (Ctrl+Click)</label>
-                                    <select multiple id="farmer-edit-crops" class="form-select"></select>
-                                </div>
-                                <div class="flex gap-2 pt-2">
-                                     <button onclick="toggleSoilCropEdit(false)" class="neon-button-outline w-full py-2">Cancel</button>
-                                     <button onclick="saveFarmerSoilCropChanges()" id="save-soil-crop-btn" class="neon-button w-full py-2">Save Changes</button>
-                                </div>
-                             </div>
-                        </div>
-
-                    </div>
                      <div class="glass-card p-6 flex flex-col justify-between">
                         <h3 class="text-lg font-bold text-white mb-4" data-i18n="quick_actions">Quick Actions</h3>
                         <button class="w-full mb-3 bg-white/5 hover:bg-white/10 text-left p-3 rounded-lg"><p class="text-white" data-i18n="btn_dl_report">Download Report</p></button>
@@ -803,9 +754,11 @@
                     </div>
                 </div>
 
+                <!-- Right Column: Buy Products -->
                 <div class="lg:col-span-2 glass-card p-6">
                     <h3 class="text-xl font-semibold text-white mb-4">Buy Agri Supplies</h3>
                     <div id="farmer-buy-products-list" class="supplies-grid max-h-[600px] overflow-y-auto pr-2">
+                        <!-- Products will be rendered here by JS -->
                         <div class="text-center text-gray-500 text-sm py-4">No supplies available right now.</div>
                     </div>
                 </div>
@@ -857,6 +810,7 @@
                 <form id="sellForm" onsubmit="submitSellOffer(event)" class="space-y-3">
                     <div><label class="text-xs text-gray-400">Crop Name</label><input id="sell-crop" required class="form-input w-full px-3 py-2" placeholder="e.g. Tomatoes"></div>
                     
+                    <!-- Image Upload Input -->
                     <div>
                         <label class="text-xs text-gray-400">Crop Image</label>
                         <input id="sell-image" type="file" accept="image/*" onchange="previewImage(this, 'sell-preview-box')" required class="form-input w-full">
@@ -919,6 +873,7 @@
 
     </main>
     
+    <!-- SUPABASE SCRIPT -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
@@ -930,65 +885,64 @@
 
         // --- I18N & TRANSLATIONS ---
         const translations = {
-            // ... (translations remain the same)
+            en: {
+                nav_home: "Home", nav_dashboard: "Dashboard", nav_features: "Features", nav_marketplace: "Marketplace", btn_login: "Login / Get Started",
+                hero_title_1: "The Future of Farming", hero_title_2: "is Growing.", hero_subtitle: "KrishiSetu uses AI-driven analytics and a decentralized marketplace to bring transparency to your fields.", btn_view_dash: "View Dashboard", btn_portal_login: "Portal Login",
+                dash_title: "Your Smart Farm Dashboard", dash_subtitle: "Real-time data from your fields. AI-driven insights.", chart_title: "Crop Yield Forecast", sensors_title: "Live Sensors", sensor_soil: "Soil Moisture", sensor_sun: "Sunlight (UV)", sensor_temp: "Temp",
+                feat_ai_title: "AI Analytics", feat_ai_desc: "Predict yields and detect diseases with 99.8% accuracy.", feat_auto_title: "Smart Auto", feat_auto_desc: "Integrate with IoT drones and smart irrigation systems.", feat_block_title: "Blockchain", feat_block_desc: "Traceable supply chain from seed to supermarket.",
+                about_title_1: "Connecting", about_title_2: "Farmers", about_desc: "Empowering every farmer with the technology of tomorrow.",
+                market_title: "A Fairer Market", market_desc: "Browse, buy, and sell on our verified marketplace.", prod_saffron: "Saffron", prod_drones: "Drones", prod_greens: "Greens", prod_credits: "Credits",
+                footer_rights: "All rights reserved.",
+                login_title: "Select Your Portal", admin_login: "Admin Login", admin_desc: "Create DAN & Register Farmers", farmer_login: "Farmer Login", farmer_desc: "Access Farm Details with DAN", back_home: "Back to Home",
+                admin_sec: "Admin Security", password: "Password", ph_pass: "Enter: admin123", btn_unlock: "Unlock Portal", btn_cancel: "Cancel",
+                farmer_access: "Farmer Access", enter_dan: "Enter your Digital Application Number", btn_view_farm: "View Farm",
+                admin_console: "Admin Console", admin_console_desc: "Manage Farmers, Supplies, Offers & Support", btn_logout: "Logout", add_farmer: "Add New Farmer", lbl_fullname: "Full Name", lbl_plot: "Plot/Survey No.", lbl_addr: "Address", lbl_area: "Total Area (Acres)", lbl_mac: "ESP32 MAC Address", btn_gen_dan: "Generate DAN", farmer_registry: "Farmer Registry", search_placeholder: "Search Name/DAN...", th_name: "Name", th_plot: "Plot", th_area: "Area", th_status: "Status", th_action: "Action", support_inbox: "Support Inbox", btn_view: "View",
+                welcome_msg: "Welcome,", farm_overview: "Here is your farm overview.", digi_id: "Digital Identity", lbl_reg_plot: "Registered Plot", lbl_tot_area: "Total Area", live_status: "Live Status", quick_actions: "Quick Actions", btn_dl_report: "Download Report", btn_apply_loan: "Apply for Loan",
+                farm_condition: "Farm Condition & Yield", yield_graph: "Yield Forecast", moisture_graph: "Soil Moisture History",
+                news_title: "Latest Farming News", btn_close: "Close", news_all: "All", news_loans: "Loans", news_schemes: "Schemes", news_market: "Market", news_updated: "Last update:", btn_refresh: "Refresh"
+            },
+            hi: {
+                nav_home: "मुखपृष्ठ", nav_dashboard: "डैशबोर्ड", nav_features: "सुविधाएँ", nav_marketplace: "बाज़ार", btn_login: "लॉगिन / शुरू करें",
+                hero_title_1: "खेती का भविष्य", hero_title_2: "बढ़ रहा है।", hero_subtitle: "कृषि सेतु  आपके खेतों में पारदर्शिता लाने के लिए एआई-संचालित एनालिटिक्स का उपयोग करता है।", btn_view_dash: "डैशबोर्ड देखें", btn_portal_login: "पोर्टल लॉगिन",
+                dash_title: "आपका स्मार्ट फार्म डैशबोर्ड", dash_subtitle: "आपके खेतों से रीयल-टाइम डेटा। एआई-संचालित अंतर्दृष्टि।", chart_title: "फसल उपज पूर्वानुमान", sensors_title: "लाइव सेंसर", sensor_soil: "मिट्टी की नमी", sensor_sun: "सूरज की रोशनी (UV)", sensor_temp: "तापमान",
+                feat_ai_title: "एआई एनालिटिक्स", feat_ai_desc: "99.8% सटीकता के साथ उपज की भविष्यवाणी और बीमारियों का पता लगाएं।", feat_auto_title: "स्मार्ट ऑटो", feat_auto_desc: "IoT ड्रोन और स्मार्ट सिंचाई प्रणालियों के साथ एकीकृत करें।", feat_block_title: "ब्लॉकचेन", feat_block_desc: "बीज से सुपरमार्केट तक ट्रेस करने योग्य आपूर्ति श्रृंखला।",
+                about_title_1: "जोड़ रहे हैं", about_title_2: "किसानों को", about_desc: "हर किसान को कल की तकनीक से सशक्त बनाना।",
+                market_title: "एक निष्पक्ष बाज़ार", market_desc: "हमारे सत्यापित बाज़ार पर ब्राउज़ करें, खरीदें और बेचें।", prod_saffron: "केसर", prod_drones: "ड्रोन", prod_greens: "साग-सब्ज़ी", prod_credits: "क्रेडिट",
+                footer_rights: "सर्वाधिकार सुरक्षित।",
+                login_title: "अपना पोर्टल चुनें", admin_login: "एडमिन लॉगिन", admin_desc: "DAN बनाएं और किसानों को पंजीकृत करें", farmer_login: "किसान लॉगिन", farmer_desc: "DAN के साथ फार्म विवरण तक पहुंचें", back_home: "वापस जाएं",
+                admin_sec: "एडमिन सुरक्षा", password: "पासवर्ड", ph_pass: "दर्ज करें: admin123", btn_unlock: "पोर्टल खोलें", btn_cancel: "रद्द करें",
+                farmer_access: "किसान पहुंच", enter_dan: "अपना डिजिटल आवेदन नंबर दर्ज करें", btn_view_farm: "फार्म देखें",
+                admin_console: "एडमिन कंसोल", admin_console_desc: "नए किसानों को पंजीकृत करें और सहायता प्रबंधित करें", btn_logout: "लॉगआउट", add_farmer: "नया किसान जोड़ें", lbl_fullname: "पूरा नाम", lbl_plot: "प्लॉट/सर्वे नंबर", lbl_addr: "पता", lbl_area: "कुल क्षेत्रफल (एकड़)", lbl_mac: "ESP32 मैक पता", btn_gen_dan: "DAN उत्पन्न करें", farmer_registry: "किसान रजिस्ट्री", search_placeholder: "नाम/DAN खोजें...", th_name: "नाम", th_plot: "प्लॉट", th_area: "क्षेत्र", th_status: "स्थिति", th_action: "कार्रवाई", support_inbox: "सहायता इनबॉक्स", btn_view: "देखें",
+                welcome_msg: "स्वागत है,", farm_overview: "यहाँ आपका खेत अवलोकन है।", digi_id: "डिजिटल पहचान", lbl_reg_plot: "पंजीकृत प्लॉट", lbl_tot_area: "कुल क्षेत्रफल", live_status: "लाइव स्थिति", quick_actions: "त्वरित कार्य", btn_dl_report: "रिपोर्ट डाउनलोड करें", btn_apply_loan: "ऋण के लिए आवेदन करें",
+                farm_condition: "खेत की स्थिति और उपज", yield_graph: "उपज पूर्वानुमान", moisture_graph: "नमी का इतिहास",
+                news_title: "नवीनतम कृषि समाचार", btn_close: "बंद करें", news_all: "सभी", news_loans: "ऋण", news_schemes: "योजनाएं", news_market: "बाज़ार", news_updated: "अंतिम अपडेट:", btn_refresh: "रिफ्रेश"
+            },
+            kn: {
+                nav_home: "ಮುಖಪುಟ", nav_dashboard: "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್", nav_features: "ವೈಶಿಷ್ಟ್ಯಗಳು", nav_marketplace: "ಮಾರುಕಟ್ಟೆ", btn_login: "ಲಾಗಿನ್ / ಪ್ರಾರಂಭಿಸಿ",
+                hero_title_1: "ಕೃಷಿಯ ಭವಿಷ್ಯ", hero_title_2: "ಬೆಳೆಯುತ್ತಿದೆ.", hero_subtitle: "ಕೃಷಿಸೇತು  ನಿಮ್ಮ ಜಮೀನಿಗೆ ಪಾರದರ್ಶಕತೆ ತರಲು AI-ಚಾಲಿತ ವಿಶ್ಲೇಷಣೆಯನ್ನು ಬಳಸುತ್ತದೆ.", btn_view_dash: "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ ವೀಕ್ಷಿಸಿ", btn_portal_login: "ಪೋರ್ಟಲ್ ಲಾಗಿನ್",
+                dash_title: "ನಿಮ್ಮ ಸ್ಮಾರ್ಟ್ ಫಾರ್ಮ್ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್", dash_subtitle: "ನಿಮ்க்கು ಜಮೀನಿಂದ ನೈಜ-ಸಮಯದ ಡೇಟಾ.", chart_title: "ಬೆಳೆ ಇಳುವರಿ ಮುನ್ಸೂಚನೆ", sensors_title: "ಲೈವ್ ಸೆನ್ಸಾರ್‌ಗಳು", sensor_soil: "ಮಣ್ಣಿನ ತೇವಾಂಶ", sensor_sun: "ಸೂರ್ಯನ ಬೆಳಕು", sensor_temp: "ತಾಪಮಾನ",
+                feat_ai_title: "AI ವಿಶ್ಲೇಷಣೆ", feat_ai_desc: "99.8% ನಿಖರತೆಯೊಂದಿಗೆ ಇಳುವರಿಯನ್ನು ಊಹಿಸಿ ಮತ್ತು ರೋಗಗಳನ್ನು ಪತ್ತೆ ಮಾಡಿ.", feat_auto_title: "ಸ್ಮಾರ್ಟ್ ಆಟೋ", feat_auto_desc: "ಡ್ರೋನ್ಗಳು ಮತ್ತು ಸ್ಮಾರ್ಟ್ ನೀರಾವರಿ ವ್ಯವಸ್ಥೆಗಳೊಂದಿಗೆ ಸಂಯೋಜಿಸಿ.", feat_block_title: "ಬ್ಲಾಕ್‌ಚೈನ್", feat_block_desc: "ಬೀಜದಿಂದ ಸೂಪರ್ಮಾರ್ಕೆಟ್ವರೆಗೆ ಪತ್ತೆಹಚ್ಚಬಹುದಾದ ಪೂರೈಕೆ ಸರಪಳಿ.",
+                about_title_1: "ಸಂಪರ್ಕಿಸುತ್ತಿದೆ", about_title_2: "ರೈತರನ್ನು", about_desc: "ನಾಳೆಯ ತಂತ್ರಜ್ಞಾನದೊಂದಿಗೆ ಪ್ರತಿ ರೈತನನ್ನು ಸಬಲೀಕರಣಗೊಳಿಸುವುದು.",
+                market_title: "ನ್ಯಾಯಯುತ ಮಾರುಕಟ್ಟೆ", market_desc: "ನಮ್ಮ ಪರಿಶೀಲಿಸಿದ ಮಾರುಕಟ್ಟೆಯಲ್ಲಿ ಬ್ರೌಸ್ ಮಾಡಿ, ಖರೀದಿಸಿ ಮತ್ತು ಮಾರಾಟ ಮಾಡಿ.", prod_saffron: "ಕೇಸರಿ", prod_drones: "ಡ್ರೋನ್ಸ್", prod_greens: "ಹಸಿರು ಸೊಪ್ಪು", prod_credits: "ಕ್ರೆಡಿಟ್ಸ್",
+                footer_rights: "ಎಲ್ಲಾ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.",
+                login_title: "ನಿಮ್ಮ ಪೋರ್ಟಲ್ ಆಯ್ಕೆಮಾಡಿ", admin_login: "ನಿರ್ವಾಹಕ ಲಾಗಿನ್", admin_desc: "DAN ರಚಿಸಿ ಮತ್ತು ರೈತರನ್ನು ನೋಂದಾಯಿಸಿ", farmer_login: "ರೈತ ಲಾಗಿನ್", farmer_desc: "DAN ನೊಂದಿಗೆ ಫಾರ್ಮ್ ವಿವರಗಳನ್ನು ಪ್ರವೇಶಿಸಿ", back_home: "ಹಿಂದಕ್ಕೆ",
+                admin_sec: "ನಿರ್ವಾಹಕ ಭದ್ರತೆ", password: "ಪಾಸ್‌ವರ್ಡ್", ph_pass: "ನಮೂದಿಸಿ: admin123", btn_unlock: "ಪೋರ್ಟಲ್ ತೆರೆಯಿರಿ", btn_cancel: "ರದ್ದುಮಾಡಿ",
+                farmer_access: "ರೈತ ಪ್ರವೇಶ", enter_dan: "ನಿಮ್ಮ ಡಿಜಿಟಲ್ ಅಪ್ಲಿಕೇಶನ್ ಸಂಖ್ಯೆಯನ್ನು ನಮೂದಿಸಿ", btn_view_farm: "ಫಾರ್ಮ್ ವೀಕ್ಷಿಸಿ",
+                admin_console: "ನಿರ್ವಾಹಕ ಕನ್ಸೋಲ್", admin_console_desc: "ಹೊಸ ರೈತರನ್ನು ನೋಂದಾಯಿಸಿ ಮತ್ತು ಬೆಂಬಲವನ್ನು ನಿರ್ವಹಿಸಿ", btn_logout: "ಲಾಗ್ ಔಟ್", add_farmer: "ಹೊಸ ರೈತನನ್ನು ಸೇರಿಸಿ", lbl_fullname: "ಪೂರ್ಣ ಹೆಸರು", lbl_plot: "ಪ್ಲಾಟ್/ಸರ್ವೆ ನಂ.", lbl_addr: "ವಿಳಾಸ", lbl_area: "ಒಟ್ಟು ವಿಸ್ತೀರ್ಣ (ಎಕರೆ)", lbl_mac: "ESP32 MAC ವಿಳಾಸ", btn_gen_dan: "DAN ರಚಿಸಿ", farmer_registry: "ರೈತ ನೋಂದಣಿ", search_placeholder: "ಹೆಸರು/DAN ಹುಡುಕಿ...", th_name: "ಹೆಸರು", th_plot: "ಪ್ಲಾಟ್", th_area: "ವಿಸ್ತೀರ್ಣ", th_status: "ಸ್ಥಿತಿ", th_action: "ಕ್ರಮ", support_inbox: "ಬೆಂಬಲ ಇನ್‌ಬಾಕ್ಸ್", btn_view: "ವೀಕ್ಷಿಸಿ",
+                welcome_msg: "ಸ್ವಾಗತ,", farm_overview: "ಇಲ್ಲಿ ನಿಮ್ಮ ಫಾರ್ಮ್ ಅವಲೋಕನವಿದೆ.", digi_id: "ಡಿಜಿಟಲ್ ಗುರುತು", lbl_reg_plot: "ನೋಂದಾಯಿತ ಪ್ಲಾಟ್", lbl_tot_area: "ಒಟ್ಟು ವಿಸ್ತೀರ್ಣ", live_status: "ಲೈವ್ ಸ್ಥಿತಿ", quick_actions: "ತ್ವರಿತ ಕ್ರಮಗಳು", btn_dl_report: "ವರದಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ", btn_apply_loan: "ಸಾಲಕ್ಕೆ ಅರ್ಜಿ ಸಲ್ಲಿಸಿ",
+                farm_condition: "ಫಾರ್ಮ್ ಸ್ಥಿತಿ & ಇಳುವರಿ", yield_graph: "ಇಳುವರಿ ಮುನ್ಸೂಚನೆ", moisture_graph: "ತೇವಾಂಶ ಇತಿಹಾಸ",
+                news_title: "ಇತ್ತೀಚಿನ ಕೃಷಿ ಸುದ್ದಿ", btn_close: "ಮುಚ್ಚಿ", news_all: "ಎಲ್ಲಾ", news_loans: "ಸಾಲಗಳು", news_schemes: "ಯೋಜನೆಗಳು", news_market: "ಮಾರುಕಟ್ಟೆ", news_updated: "ಕೊನೆಯ ನವೀಕರಣ:", btn_refresh: "ರಿಫ್ರೆಶ್"
+            }
         };
 
-        // --- STATE & DATA ---
+        // --- STATE ---
         let farmersList = [];
-        let currentFarmer = null; // Store the logged-in farmer's data
         let globalChatMessages = [];
         let sellOffers = []; 
         let buyableProducts = [];
+
         let currentLang = localStorage.getItem('krishi_lang') || 'en';
-        let charts = {};
-
-        const SVG_PLACEHOLDER = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 600' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cstyle type='text/css'%3E%23holder_17912285153 text %7B fill:%23999;font-weight:normal;font-family:var(--bs-font-sans-serif), monospace;font-size:40pt %7D %3C/style%3E%3C/defs%3E%3Cg id='holder_17912285153'%3E%3Crect width='800' height='600' fill='%23333'%3E%3C/rect%3E%3Cg%3E%3Ctext x='247.3125' y='320'%3ENo Image%3C/text%3E%3C/g%3E%3C/g%3E%3C/svg%3E";
-
-        // EXPANDED: Soil Data object with more details
-        const soilData = {
-            'Alluvial Soil': {
-                characteristics: ['Fertile', 'Rich in potash & lime', 'Good moisture retention'],
-                crops: ['Rice', 'Wheat', 'Sugarcane', 'Maize', 'Pulses', 'Vegetables'],
-                management_tips: ["Ensure good drainage.", "Test for Potash levels regularly.", "Organic manure is highly beneficial."],
-                ideal_ph_range: "6.0 - 7.5"
-            },
-            'Black Soil': {
-                characteristics: ['Clayey', 'Retains moisture', 'Rich in calcium & magnesium'],
-                crops: ['Cotton', 'Sorghum (Jowar)', 'Millets', 'Soybean', 'Tobacco'],
-                management_tips: ["Deep ploughing helps aeration.", "Avoid over-irrigation.", "Use nitrogenous fertilizers."],
-                ideal_ph_range: "6.5 - 8.0"
-            },
-            'Red Soil': {
-                characteristics: ['Sandy texture', 'Low in nutrients', 'Needs balanced fertilizers'],
-                crops: ['Groundnut', 'Millets', 'Potato', 'Cotton', 'Wheat', 'Pulses'],
-                management_tips: ["Incorporate organic matter to improve fertility.", "Use lime to manage acidity.", "Mulching helps retain moisture."],
-                ideal_ph_range: "5.5 - 7.0"
-            },
-            'Laterite Soil': {
-                characteristics: ['Acidic', 'Low fertility', 'Rich in iron and aluminum'],
-                crops: ['Tea', 'Coffee', 'Cashew nut', 'Rubber', 'Coconut'],
-                management_tips: ["Liming is essential to reduce acidity.", "Apply nitrogen and potassium fertilizers.", "Prevent soil erosion on slopes."],
-                ideal_ph_range: "4.5 - 5.5"
-            },
-            'Desert Soil': {
-                characteristics: ['Sandy and saline', 'Low organic matter', 'Poor water retention'],
-                crops: ['Bajra (Pearl millet)', 'Guar', 'Barley', 'Kharif pulses'],
-                management_tips: ["Use drip irrigation to conserve water.", "Add gypsum to reclaim saline soils.", "Plant drought-resistant crop varieties."],
-                ideal_ph_range: "7.0 - 8.5"
-            },
-            'Mountain Soil': {
-                characteristics: ['Rich in humus', 'Varies by altitude', 'Often acidic'],
-                crops: ['Tea', 'Apples', 'Oranges', 'Barley', 'Maize'],
-                management_tips: ["Terrace farming is crucial to prevent erosion.", "Manage soil acidity with lime.", "Protect the organic layer from degradation."],
-                ideal_ph_range: "5.0 - 6.5"
-            },
-            'Peaty and Marshy Soil': {
-                characteristics: ['High organic matter', 'Acidic', 'Often waterlogged'],
-                crops: ['Rice', 'Jute'],
-                management_tips: ["Proper drainage systems are mandatory.", "Check for micronutrient deficiencies.", "Use acid-tolerant crop varieties."],
-                ideal_ph_range: "4.0 - 5.0"
-            }
-        };
+        let charts = {}; // Store chart instances for destroy/update
 
         const views = {
             landing: document.getElementById('view-landing'),
@@ -1002,6 +956,7 @@
         const newsArrowContainer = document.getElementById('newsArrowContainer');
         const loginBtn = document.getElementById('login-get-started-btn');
 
+        // DATA
         const sampleNews = [
             { id: 1, category: 'schemes', title: 'Govt launches new soil health subsidy scheme', source: 'Agri Ministry', date: '2025-11-10', excerpt: 'A new subsidy for soil health cards and micro-nutrients has been announced.' },
             { id: 2, category: 'market', title: 'Tomato prices spike in the north', source: 'MarketWatch', date: '2025-11-12', excerpt: 'Supply disruptions and lower yields have pushed tomato wholesale prices up by 28% this week.' },
@@ -1013,13 +968,14 @@
             currentLang = lang;
             localStorage.setItem('krishi_lang', lang);
             document.getElementById('language-selector').value = lang;
+
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
-                if (translations[lang] && translations[lang][key]) el.textContent = translations[lang][key];
+                if (translations[lang][key]) el.textContent = translations[lang][key];
             });
             document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
                 const key = el.getAttribute('data-i18n-placeholder');
-                 if (translations[lang] && translations[lang][key]) el.placeholder = translations[lang][key];
+                if (translations[lang][key]) el.placeholder = translations[lang][key];
             });
         }
 
@@ -1037,7 +993,7 @@
         function showAdminAuth() { hideAll(); views.adminAuth.classList.remove('hidden-section'); views.adminAuth.classList.add('fade-in'); document.getElementById('auth-error').classList.add('hidden'); }
         function showFarmerAuth() { hideAll(); views.farmerAuth.classList.remove('hidden-section'); views.farmerAuth.classList.add('fade-in'); document.getElementById('farmer-auth-error').classList.add('hidden'); }
 
-        // --- AUTHENTICATION & LOGOUT ---
+        // --- AUTHENTICATION & LOGOUT (WITH SESSION PERSISTENCE) ---
         async function verifyAdminPassword() {
             if(document.getElementById('admin-password-input').value === 'admin123') {
                 sessionStorage.setItem('krishi-user-type', 'admin');
@@ -1057,7 +1013,6 @@
             views.adminPanel.classList.add('fade-in');
             chatWidget.classList.add('hidden');
             loginBtn.classList.add('hidden');
-            populateSoilDropdown(document.getElementById('input-soil-type'));
             await Promise.all([
                 renderAdminTable(), 
                 renderAdminInbox(), 
@@ -1071,11 +1026,10 @@
             if (error || !farmer) {
                 console.error('Farmer login error:', error);
                 document.getElementById('farmer-auth-error').classList.remove('hidden');
-                sessionStorage.clear();
+                sessionStorage.clear(); // Clear bad session data
                 return;
             }
-            
-            currentFarmer = farmer; // Store farmer data globally
+
             sessionStorage.setItem('krishi-user-type', 'farmer');
             sessionStorage.setItem('krishi-user-dan', farmer.dan);
 
@@ -1083,8 +1037,6 @@
             document.getElementById('dash-dan').textContent = farmer.dan;
             document.getElementById('dash-plot').textContent = farmer.plot;
             document.getElementById('dash-area').textContent = farmer.area + ' Acres';
-            
-            displaySoilAndCropDetails(farmer.soil_type, farmer.selected_crops);
 
             hideAll();
             views.farmerDash.classList.remove('hidden-section');
@@ -1108,10 +1060,9 @@
             sessionStorage.removeItem('krishi-user-type');
             sessionStorage.removeItem('krishi-user-dan');
             chatWidget.dataset.currentDan = '';
-            currentFarmer = null;
             hideAll();
             returnHome();
-            location.reload();
+            location.reload(); // Force a clean reload to clear all states
         }
 
         async function checkSession() {
@@ -1126,77 +1077,45 @@
             }
         }
 
-        // --- ADMIN: FARMER MANAGEMENT & SOIL FEATURE ---
-        function populateSoilDropdown(selectElement) {
-            if (!selectElement) return;
-            if (selectElement.options.length <= 1) { // Only populate if empty
-                Object.keys(soilData).forEach(soil => {
-                    const option = document.createElement('option');
-                    option.value = soil;
-                    option.textContent = soil;
-                    selectElement.appendChild(option);
-                });
-            }
-        }
-
-        function populateCrops() {
-            const soilType = document.getElementById('input-soil-type').value;
-            const cropsSelect = document.getElementById('input-crops');
-            cropsSelect.innerHTML = ''; 
-
-            if (soilType && soilData[soilType]) {
-                soilData[soilType].crops.forEach(crop => {
-                    const option = document.createElement('option');
-                    option.value = crop;
-                    option.textContent = crop;
-                    cropsSelect.appendChild(option);
-                });
-            }
-        }
-
+        // --- ADMIN: FARMER MANAGEMENT ---
         async function handleFormSubmit(e) {
             e.preventDefault();
-            const selectedCrops = Array.from(document.getElementById('input-crops').selectedOptions)
-                                       .map(option => option.value)
-                                       .join(', ');
-
-            if (!selectedCrops) {
-                alert("Please select at least one suitable crop.");
-                return;
-            }
+            
+            // Get selected crops from multi-select
+            const selectedCrops = Array.from(document.getElementById('input-suitable-crops').selectedOptions).map(option => option.value);
 
             const newFarmer = {
                 dan: Math.floor(100000000000 + Math.random() * 900000000000).toString().replace(/(.{4})/g, '$1 ').trim(),
-                name: document.getElementById('input-name').value, 
-                plot: document.getElementById('input-plot').value, 
-                area: document.getElementById('input-area').value, 
-                mac: document.getElementById('input-mac').value, 
-                yieldData: Array.from({length:6}, () => Math.floor(Math.random() * 25)), 
-                moistureData: Array.from({length:6}, () => Math.floor(Math.random() * 60)),
+                name: document.getElementById('input-name').value,
+                plot: document.getElementById('input-plot').value,
+                area: document.getElementById('input-area').value,
+                mac: document.getElementById('input-mac').value,
                 soil_type: document.getElementById('input-soil-type').value,
-                selected_crops: selectedCrops
+                suitable_crops: selectedCrops, // Save the array here
+                yieldData: Array.from({length:6}, () => Math.floor(Math.random() * 25)),
+                moistureData: Array.from({length:6}, () => Math.floor(Math.random() * 60))
             };
 
-            const { data, error } = await supabaseClient.from('farmers').insert([newFarmer]).select();
-            if(error) {
+            const { data, error } = await supabaseClient.from('farmers').insert([newFarmer]).select().single();
+            if (error) {
                 console.error("Error adding farmer:", error);
                 alert("Failed to add farmer. Check console for details.");
                 return;
             }
 
             await renderAdminTable();
-            document.getElementById('card-name').textContent = newFarmer.name;
-            document.getElementById('card-dan').textContent = newFarmer.dan;
+            document.getElementById('card-name').textContent = data.name;
+            document.getElementById('card-dan').textContent = data.dan;
             document.getElementById('dan-modal').classList.remove('hidden');
             e.target.reset();
-            populateCrops();
         }
-
         function closeDanModal() { document.getElementById('dan-modal').classList.add('hidden'); }
 
         async function renderAdminTable(filterText = '') {
-             const { data, error } = await supabaseClient.from('farmers').select('*').order('created_at', { ascending: false });
-            if(error) { console.error("Error fetching farmers:", error); return; }
+            const { data, error } = await supabaseClient.from('farmers').select('*').order('created_at', { ascending: false });
+            if(error) {
+                console.error("Error fetching farmers:", error); return;
+            }
             farmersList = data || [];
             
             const tbody = document.getElementById('farmer-table-body'); 
@@ -1209,7 +1128,7 @@
             }
 
             filtered.forEach(f => {
-                const viewBtnText = (translations[currentLang] && translations[currentLang].btn_view) || 'View';
+                const viewBtnText = translations[currentLang].btn_view || 'View';
                 tbody.innerHTML += `<tr>
                     <td class="font-mono text-green-400">${f.dan}</td>
                     <td class="text-white">${f.name}</td>
@@ -1222,122 +1141,28 @@
                 </tr>`;
             });
         }
-        
+
         function searchFarmer() { renderAdminTable(document.getElementById('admin-search-input').value); }
         async function deleteFarmer(dan) { 
             if(!confirm('Delete farmer with DAN ' + dan + '?')) return;
             const { error } = await supabaseClient.from('farmers').delete().eq('dan', dan);
-            if (error) { console.error("Error deleting farmer:", error); alert("Could not delete farmer."); return; }
+            if (error) {
+                console.error("Error deleting farmer:", error);
+                alert("Could not delete farmer.");
+                return;
+            }
             await renderAdminTable(document.getElementById('admin-search-input').value); 
         }
 
         function viewFarmerDetails(dan) {
             const f = farmersList.find(x => x.dan === dan); if(!f) return;
-            document.getElementById('view-name').textContent = f.name; document.getElementById('view-dan').textContent = f.dan; document.getElementById('view-mac').textContent = f.mac || 'N/A';
+            document.getElementById('view-name').textContent = f.name;
+            document.getElementById('view-dan').textContent = f.dan;
+            document.getElementById('view-mac').textContent = f.mac || 'N/A';
             document.getElementById('admin-farmer-view-modal').classList.remove('hidden');
             setTimeout(() => renderCharts(f.yieldData, f.moistureData, 'adminViewYieldChart', 'adminViewMoistureChart'), 200);
         }
         function closeAdminViewModal() { document.getElementById('admin-farmer-view-modal').classList.add('hidden'); }
-        
-        // --- FARMER: EDITABLE SOIL & CROP DETAILS ---
-        function displaySoilAndCropDetails(soilType, selectedCrops) {
-            document.getElementById('dash-soil-type').textContent = soilType || 'Not specified';
-            document.getElementById('dash-selected-crops').textContent = selectedCrops || 'Not specified';
-            
-            const charList = document.getElementById('dash-soil-char');
-            const tipsList = document.getElementById('dash-management-tips');
-            const phEl = document.getElementById('dash-ideal-ph');
-            charList.innerHTML = '';
-            tipsList.innerHTML = '';
-            phEl.textContent = 'N/A';
-
-            if (soilType && soilData[soilType]) {
-                soilData[soilType].characteristics.forEach(char => {
-                    charList.innerHTML += `<li>${escapeHtml(char)}</li>`;
-                });
-                soilData[soilType].management_tips.forEach(tip => {
-                    tipsList.innerHTML += `<li>${escapeHtml(tip)}</li>`;
-                });
-                phEl.textContent = soilData[soilType].ideal_ph_range;
-            } else {
-                 charList.innerHTML = `<li>No data available.</li>`;
-                 tipsList.innerHTML = `<li>No data available.</li>`;
-            }
-        }
-
-        function populateFarmerCrops() {
-            const soilType = document.getElementById('farmer-edit-soil-type').value;
-            const cropsSelect = document.getElementById('farmer-edit-crops');
-            cropsSelect.innerHTML = '';
-            if (soilType && soilData[soilType]) {
-                soilData[soilType].crops.forEach(crop => {
-                    const option = document.createElement('option');
-                    option.value = crop;
-                    option.textContent = crop;
-                    cropsSelect.appendChild(option);
-                });
-            }
-        }
-
-        function toggleSoilCropEdit(isEditing) {
-            document.getElementById('soil-crop-view-mode').classList.toggle('hidden', isEditing);
-            document.getElementById('edit-soil-crop-btn').classList.toggle('hidden', isEditing);
-            document.getElementById('soil-crop-edit-mode').classList.toggle('hidden', !isEditing);
-
-            if (isEditing && currentFarmer) {
-                const soilSelect = document.getElementById('farmer-edit-soil-type');
-                populateSoilDropdown(soilSelect);
-                soilSelect.value = currentFarmer.soil_type;
-                populateFarmerCrops();
-
-                const currentCrops = currentFarmer.selected_crops ? currentFarmer.selected_crops.split(', ') : [];
-                const cropsSelect = document.getElementById('farmer-edit-crops');
-                Array.from(cropsSelect.options).forEach(option => {
-                    if (currentCrops.includes(option.value)) {
-                        option.selected = true;
-                    }
-                });
-            }
-        }
-
-        async function saveFarmerSoilCropChanges() {
-            const dan = sessionStorage.getItem('krishi-user-dan');
-            if (!dan) { alert("Session expired, please log in again."); return; }
-
-            const saveBtn = document.getElementById('save-soil-crop-btn');
-            saveBtn.disabled = true;
-            saveBtn.textContent = 'Saving...';
-            
-            const newSoilType = document.getElementById('farmer-edit-soil-type').value;
-            const newSelectedCrops = Array.from(document.getElementById('farmer-edit-crops').selectedOptions)
-                                           .map(option => option.value)
-                                           .join(', ');
-            
-            if (!newSelectedCrops) {
-                alert("Please select at least one crop.");
-                saveBtn.disabled = false;
-                saveBtn.textContent = 'Save Changes';
-                return;
-            }
-
-            const { data, error } = await supabaseClient.from('farmers')
-                .update({ soil_type: newSoilType, selected_crops: newSelectedCrops })
-                .eq('dan', dan)
-                .select()
-                .single();
-
-            if (error) {
-                console.error("Error updating farmer data:", error);
-                alert("Failed to save changes.");
-            } else {
-                currentFarmer = data; // Update global state with new data
-                displaySoilAndCropDetails(data.soil_type, data.selected_crops);
-                toggleSoilCropEdit(false);
-            }
-
-            saveBtn.disabled = false;
-            saveBtn.textContent = 'Save Changes';
-        }
 
         // --- IMAGE UPLOAD & PREVIEW ---
         function previewImage(fileInput, previewElementId) {
@@ -1357,65 +1182,29 @@
             const fileName = `${Date.now()}.${fileExt}`;
             const filePath = `public/${fileName}`;
 
-            const { error: uploadError } = await supabaseClient.storage.from('product-images').upload(filePath, file);
-            if (uploadError) { console.error('Error uploading image:', uploadError); return null; }
-            const { data } = supabaseClient.storage.from('product-images').getPublicUrl(filePath);
-            if (!data || !data.publicUrl) { console.error('Could not get public URL.'); return null; }
+            const { error: uploadError } = await supabaseClient.storage
+                .from('product-images')
+                .upload(filePath, file);
+
+            if (uploadError) {
+                console.error('Error uploading image:', uploadError);
+                return null;
+            }
+
+            const { data } = supabaseClient.storage
+                .from('product-images')
+                .getPublicUrl(filePath);
+
+            if (!data || !data.publicUrl) {
+                console.error('Could not get public URL for the uploaded image.');
+                return null;
+            }
+            
             return data.publicUrl;
         }
 
-        // --- The rest of the JS functions (handleProductFormSubmit, renderAdminProductsList, etc.) remain largely the same ---
-        // I've included them below for completeness, with the placeholder fix applied.
-        
-        async function handleProductFormSubmit(e) { e.preventDefault(); /* ... same as before */ }
-        async function renderAdminProductsList() { /* ... same, but using SVG_PLACEHOLDER */ }
-        async function deleteAdminProduct(id) { /* ... same as before */ }
-        async function renderFarmerBuyableProducts() { /* ... same, but using SVG_PLACEHOLDER */ }
-        async function buyProduct(id) { /* ... same as before */ }
-        function renderCharts(y, m, yId, mId) { /* ... same as before */ }
-        function toggleChat() { /* ... same as before */ }
-        async function sendUserMessage(e) { /* ... same as before */ }
-        async function renderAdminInbox() { /* ... same as before */ }
-        async function refreshChatWindowMessages() { /* ... same as before */ }
-        function toggleNews() { /* ... same as before */ }
-        function renderNews(f) { /* ... same as before */ }
-        function escapeHtml(u) { return String(u || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
-        function formatDanDisplay(d) { if(!d) return 'Visitor'; return (d.length===12 || d.includes(' ')) ? d : (d.replace(/(.{4})/g,'$1 ').trim()); }
-        function formatDanForStorage(d) { return (d || '').replace(/\s/g, '').replace(/(.{4})/g, '$1 ').trim(); }
-        function openSellModal(){ /* ... same as before */ }
-        function closeSellModal(){ /* ... same as before */ }
-        async function submitSellOffer(e){ /* ... same as before */ }
-        async function renderAdminSellOffers(){ /* ... same, but using SVG_PLACEHOLDER */ }
-        async function updateOfferStatus(id, s, m) { /* ... same as before */ }
-        async function acceptSellOffer(id){ /* ... same as before */ }
-        async function declineSellOffer(id){ /* ... same as before */ }
-        async function refreshFarmerOffersUI(){ /* ... same as before */ }
-        async function updateSellBadges(){ /* ... same as before */ }
-        function listenToChanges() { /* ... same as before */ }
 
-        // --- INITIALIZATION ---
-        document.addEventListener('DOMContentLoaded', async () => {
-            document.getElementById('preloader').classList.add('loaded');
-            document.getElementById('current-year').textContent = new Date().getFullYear();
-
-            const ctx = document.getElementById('cropHealthChart').getContext('2d');
-            new Chart(ctx, { type: 'line', data: { labels: ['J','F','M','A','M','J'], datasets: [{ data: [12,15,14,18,20,22], borderColor: '#4ade80', backgroundColor: 'rgba(74,222,128,0.1)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins:{legend:{display:false}}, scales:{x:{display:false},y:{display:true, grid:{color:'rgba(255,255,255,0.05)'}}} } });
-
-            const observer = new IntersectionObserver((entries) => { entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('is-visible'); }); });
-            document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
-            
-            await checkSession();
-
-            renderNews('all');
-            changeLanguage(currentLang);
-            listenToChanges();
-        });
-
-        // --- FULL FUNCTION IMPLEMENTATIONS (for completeness) ---
-
-        // (Re-pasting the full JS logic here for copy-paste convenience)
-        // NOTE: The logic above this comment is the primary change. The code below is mostly unchanged except for placeholder fixes.
-
+        // --- ADMIN: MANAGE BUYABLE SUPPLIES ---
         async function handleProductFormSubmit(e) {
             e.preventDefault();
             const submitBtn = document.getElementById('add-supply-btn');
@@ -1425,7 +1214,7 @@
             const imageFile = document.getElementById('input-prod-image').files[0];
             const imageUrl = await uploadImageAndGetUrl(imageFile);
             if (!imageUrl) {
-                alert("Image upload failed. Please try again.");
+                alert("Image upload failed. Please check the console for errors and try again.");
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Add Supply to Market';
                 return;
@@ -1458,13 +1247,14 @@
             buyableProducts = data || [];
             
             const container = document.getElementById('admin-products-list');
+            const placeholder = 'https://via.placeholder.com/64x64.png?text=No+Img';
             if(buyableProducts.length === 0) { container.innerHTML = '<div class="text-center text-gray-500 text-sm py-4">No supplies added yet.</div>'; return; }
             container.innerHTML = '';
             buyableProducts.forEach(p => {
                 container.innerHTML += `
                     <div class="bg-white/5 p-3 rounded-lg border border-white/10 flex justify-between items-center">
                         <div class="flex items-center gap-4">
-                            <img src="${escapeHtml(p.image || SVG_PLACEHOLDER)}" onerror="this.src='${SVG_PLACEHOLDER}'" alt="${escapeHtml(p.name)}" class="w-16 h-16 object-cover rounded-lg">
+                            <img src="${escapeHtml(p.image || placeholder)}" onerror="this.src='${placeholder}'" alt="${escapeHtml(p.name)}" class="w-16 h-16 object-cover rounded-lg">
                             <div>
                                 <p class="text-white font-semibold">${escapeHtml(p.name)}</p>
                                 <p class="text-sm text-green-400">₹${escapeHtml(p.price)} / ${escapeHtml(p.unit)}</p>
@@ -1479,10 +1269,16 @@
         async function deleteAdminProduct(productId) {
             if (!confirm('Are you sure you want to delete this product?')) return;
             const { error } = await supabaseClient.from('products').delete().eq('id', productId);
-            if (error) { console.error("Error deleting product:", error); alert("Failed to delete product."); return; }
+            if (error) {
+                console.error("Error deleting product:", error);
+                alert("Failed to delete product.");
+                return;
+            }
             await Promise.all([renderAdminProductsList(), renderFarmerBuyableProducts()]);
         }
 
+
+        // --- FARMER: BUY SUPPLIES (IMAGE FIX) ---
         async function renderFarmerBuyableProducts() {
             const container = document.getElementById('farmer-buy-products-list');
             if(!container) return;
@@ -1495,15 +1291,20 @@
             }
             
             const products = data || [];
-            if(products.length === 0) { container.innerHTML = '<div class="text-center text-gray-500 text-sm py-4">No supplies available right now.</div>'; return; }
+            
+            if(products.length === 0) { 
+                container.innerHTML = '<div class="text-center text-gray-500 text-sm py-4">No supplies available right now.</div>'; 
+                return; 
+            }
             container.innerHTML = '';
             products.forEach(p => {
                 const stockInfo = p.stock > 0 ? `${p.stock} ${p.unit}s available` : 'Out of Stock';
                 const buttonDisabled = p.stock > 0 ? '' : 'disabled';
+                const placeholder = 'https://via.placeholder.com/220x140.png?text=No+Image';
                 
                 container.innerHTML += `
                     <div class="supply-card">
-                        <img src="${escapeHtml(p.image || SVG_PLACEHOLDER)}" onerror="this.onerror=null;this.src='${SVG_PLACEHOLDER}';" alt="${escapeHtml(p.name)}">
+                        <img src="${escapeHtml(p.image || placeholder)}" onerror="this.onerror=null;this.src='${placeholder}';" alt="${escapeHtml(p.name)}">
                         <div class="flex-1">
                             <h4 class="text-lg font-bold text-white">${escapeHtml(p.name)}</h4>
                             <p class="text-green-400 font-semibold">₹${escapeHtml(p.price)} / ${escapeHtml(p.unit)}</p>
@@ -1515,8 +1316,13 @@
         }
 
         async function buyProduct(productId) {
-            const { data: product, error } = await supabaseClient.from('products').select('name, unit, stock, price').eq('id', productId).single();
-            if (error || !product) { alert("Could not find product."); return; }
+            const { data: product, error: fetchError } = await supabaseClient.from('products').select('name, unit, stock, price').eq('id', productId).single();
+            if (fetchError || !product) {
+                console.error("Error fetching product to buy:", fetchError);
+                alert("Could not find product.");
+                return;
+            }
+
             if (product.stock <= 0) { alert('This product is out of stock.'); return; }
 
             const qty = prompt(`How many ${product.unit}s of ${product.name} would you like to buy? (Available: ${product.stock})`, "1");
@@ -1529,13 +1335,22 @@
             }
 
             if (confirm(`Confirm purchase of ${quantityToBuy} ${product.unit}(s) of ${product.name} for ₹${quantityToBuy * product.price}?`)) {
-                const { error } = await supabaseClient.from('products').update({ stock: product.stock - quantityToBuy }).eq('id', productId);
-                if (error) { alert("Purchase failed. Please try again."); return; }
+                const newStock = product.stock - quantityToBuy;
+                const { error: updateError } = await supabaseClient.from('products').update({ stock: newStock }).eq('id', productId);
+
+                if (updateError) {
+                    console.error("Error updating stock:", updateError);
+                    alert("Purchase failed. Please try again.");
+                    return;
+                }
+                
                 await Promise.all([renderFarmerBuyableProducts(), renderAdminProductsList()]);
                 alert('Purchase successful!');
             }
         }
 
+
+        // --- CHARTS LOGIC ---
         function renderCharts(yieldData, moistureData, yieldCanvasId, moistCanvasId) {
             if(charts[yieldCanvasId]) charts[yieldCanvasId].destroy();
             if(charts[moistCanvasId]) charts[moistCanvasId].destroy();
@@ -1545,26 +1360,34 @@
             if(ctx2El) charts[moistCanvasId] = new Chart(ctx2El.getContext('2d'), { type: 'bar', data: { labels: ['Jan','Feb','Mar','Apr','May','Jun'], datasets: [{ label: 'Moisture %', data: moistureData, backgroundColor: '#60a5fa', borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins:{legend:{display:false}}, scales:{y:{grid:{color:'rgba(255,255,255,0.05)'}}, x:{grid:{color:'rgba(255,255,255,0.05)'}}} } });
         }
 
+
+        // --- CHAT UI ---
         function toggleChat() { document.getElementById('chat-window').classList.toggle('hidden'); if (!document.getElementById('chat-window').classList.contains('hidden')) setTimeout(() => document.getElementById('user-chat-input').focus(), 200); }
 
         async function sendUserMessage(e) {
             e.preventDefault();
             const input = document.getElementById('user-chat-input'); const msg = input.value.trim(); if(!msg) return;
+            
             const currentDan = (chatWidget.dataset.currentDan && chatWidget.dataset.currentDan.length>0) ? chatWidget.dataset.currentDan : null;
             const sender = currentDan ? ("Farmer (" + document.getElementById('dash-farmer-name').textContent + ")") : "Visitor";
 
-            const { error } = await supabaseClient.from('messages').insert([{ sender, text: msg, time: new Date().toLocaleTimeString(), type: "user", dan: currentDan }]);
-            if(error) { console.error("Error sending message:", error); return; }
+            const userMessage = { sender, text: msg, time: new Date().toLocaleTimeString(), type: "user", dan: currentDan };
+            const { error: userError } = await supabaseClient.from('messages').insert([userMessage]);
+            if(userError) { console.error("Error sending message:", userError); return; }
+
             input.value = '';
 
             setTimeout(async () => {
                 const botText = "Message received. Admin will contact you.";
-                await supabaseClient.from('messages').insert([{ sender: "KrishiSetu Bot", text: botText, time: new Date().toLocaleTimeString(), type: "bot", dan: currentDan }]);
+                const botMessage = { sender: "KrishiSetu Bot", text: botText, time: new Date().toLocaleTimeString(), type: "bot", dan: currentDan };
+                const { error: botError } = await supabaseClient.from('messages').insert([botMessage]);
+                if(botError) console.error("Error sending bot reply:", botError);
             }, 700);
         }
 
         async function renderAdminInbox() {
             const list = document.getElementById('admin-chat-list'); if(!list) return;
+            
             const { data, error } = await supabaseClient.from('messages').select('*').eq('type', 'user').order('created_at', { ascending: false });
             if (error) { console.error("Error fetching admin inbox:", error); return; }
             const userMessages = data || [];
@@ -1580,88 +1403,158 @@
         async function refreshChatWindowMessages() {
             const list = document.getElementById('chat-messages'); if (!list) return; 
             const currentDan = (chatWidget.dataset.currentDan || '').replace(/\s/g,'');
+
             const query = supabaseClient.from('messages').select('*');
-            if(currentDan) { query.eq('dan', currentDan); } else { query.is('dan', null); }
+            if(currentDan) {
+                query.eq('dan', currentDan);
+            } else {
+                query.is('dan', null);
+            }
             const { data, error } = await query.order('created_at', { ascending: true });
 
             if (error) { console.error("Error fetching chat messages:", error); return; }
             globalChatMessages = data || [];
             
             list.innerHTML = '';
-            if(globalChatMessages.length === 0) { list.innerHTML = '<div class="chat-bubble-bot">Namaste! How can I help you?</div>'; return; }
+            
+            if(globalChatMessages.length === 0) { 
+                const el = document.createElement('div'); 
+                el.className = 'chat-bubble-bot'; 
+                el.textContent = 'Namaste! How can I help you?'; 
+                list.appendChild(el); 
+                return; 
+            }
             globalChatMessages.forEach(m => { 
-                list.innerHTML += `<div class="${(m.type === 'user') ? 'chat-bubble-user' : 'chat-bubble-bot'}">${escapeHtml(m.text)}</div>`;
+                const el = document.createElement('div'); 
+                el.className = (m.type === 'user') ? 'chat-bubble-user' : 'chat-bubble-bot'; 
+                el.textContent = m.text; list.appendChild(el); 
             });
             list.scrollTop = list.scrollHeight;
         }
 
-        function toggleNews() { newsPanel.classList.toggle('open'); if(newsPanel.classList.contains('open')) renderNews('all'); }
+        // --- NEWS PANEL LOGIC ---
+        const newsPanel = document.getElementById('newsPanel');
+        const newsListEl = document.getElementById('newsList');
+        const newsFilters = Array.from(document.querySelectorAll('.news-filter'));
+        const newsLastUpdatedEl = document.getElementById('news-last-updated');
+        let currentFilter = 'all';
+
+        function toggleNews() { newsPanel.classList.toggle('open'); if(newsPanel.classList.contains('open')) renderNews(currentFilter); }
+        document.getElementById('closeNewsBtn').addEventListener('click', () => newsPanel.classList.remove('open'));
+        document.getElementById('refreshNewsBtn').addEventListener('click', () => renderNews(currentFilter));
+        newsFilters.forEach(btn => { btn.addEventListener('click', () => { newsFilters.forEach(b => b.classList.remove('active')); btn.classList.add('active'); currentFilter = btn.dataset.filter; renderNews(currentFilter); }); });
+
         function renderNews(filter = 'all') {
             const items = sampleNews.filter(n => (filter === 'all') ? true : n.category === filter);
             newsListEl.innerHTML = (items.length === 0) ? `<div class="news-empty">No news found.</div>` : items.map(it => `<div class="news-card"><div class="meta"><div>${escapeHtml(it.source)}</div><div>${escapeHtml(it.date)}</div></div><div class="title">${escapeHtml(it.title)}</div><div class="excerpt">${escapeHtml(it.excerpt)}</div></div>`).join('');
             newsLastUpdatedEl.textContent = new Date().toLocaleTimeString();
         }
 
-        function openSellModal(){ document.getElementById('sellForm').reset(); document.getElementById('sell-preview-box').innerHTML = '<span>Preview</span>'; document.getElementById('sell-modal').classList.remove('hidden'); }
+        // --- HELPERS ---
+        function escapeHtml(unsafe) { return String(unsafe || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;"); }
+        function formatDanDisplay(dan){ if(!dan) return 'Visitor'; return (dan.length===12 || dan.includes(' ')) ? dan : (dan.replace(/(.{4})/g,'$1 ').trim()); }
+        function formatDanForStorage(dan) { return (dan || '').replace(/\s/g, '').replace(/(.{4})/g, '$1 ').trim(); }
+
+        // --- SELL OFFERS ---
+        function openSellModal(){ const dan = (chatWidget.dataset.currentDan || '').replace(/\s/g,''); if(!dan){ alert('Please login to sell produce.'); return; } document.getElementById('sellForm').reset(); document.getElementById('sell-preview-box').innerHTML = '<span>Preview</span>'; document.getElementById('sell-modal').classList.remove('hidden'); }
         function closeSellModal(){ document.getElementById('sell-modal').classList.add('hidden'); }
 
         async function submitSellOffer(e){
             e.preventDefault();
             const submitBtn = document.getElementById('submit-offer-btn');
-            submitBtn.disabled = true; submitBtn.textContent = 'Uploading...';
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Uploading...';
+
             const dan = (chatWidget.dataset.currentDan || '').replace(/\s/g,''); if(!dan){ alert('Login required.'); return; }
+            
             const imageFile = document.getElementById('sell-image').files[0];
             const imageUrl = await uploadImageAndGetUrl(imageFile);
-            if (!imageUrl) { alert("Image upload failed."); submitBtn.disabled = false; submitBtn.textContent = 'Submit Offer'; return; }
+            if (!imageUrl) {
+                alert("Image upload failed. Please try again.");
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Offer';
+                return;
+            }
 
             const offer = { 
-                id: 'offer_' + Date.now(), dan: formatDanForStorage(dan), name: document.getElementById('dash-farmer-name').textContent, 
-                crop: document.getElementById('sell-crop').value, image: imageUrl, cost: parseFloat(document.getElementById('sell-cost').value), 
-                qty: parseFloat(document.getElementById('sell-qty').value), description: document.getElementById('sell-desc').value, 
-                status: 'pending', time: new Date().toLocaleTimeString(), seenByFarmer: true 
+                id: 'offer_' + Date.now(), 
+                dan: formatDanForStorage(dan), 
+                name: document.getElementById('dash-farmer-name').textContent, 
+                crop: document.getElementById('sell-crop').value, 
+                image: imageUrl, 
+                cost: parseFloat(document.getElementById('sell-cost').value), 
+                qty: parseFloat(document.getElementById('sell-qty').value), 
+                description: document.getElementById('sell-desc').value, 
+                status: 'pending', 
+                time: new Date().toLocaleTimeString(), 
+                seenByFarmer: true 
             };
             const { error } = await supabaseClient.from('offers').insert([offer]);
-            if (error) { alert("Failed to submit offer."); } else { alert('Offer submitted for review.'); closeSellModal(); }
-            submitBtn.disabled = false; submitBtn.textContent = 'Submit Offer';
+            if (error) {
+                console.error("Error submitting offer:", error);
+                alert("Failed to submit offer.");
+            } else {
+                alert('Offer submitted for review.');
+                closeSellModal(); 
+            }
+
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit Offer';
         }
 
         async function renderAdminSellOffers(){
             const filter = document.getElementById('admin-offer-filter').value;
             const query = supabaseClient.from('offers').select('*');
-            if (filter !== 'all') { query.eq('status', filter); }
+            if (filter !== 'all') {
+                query.eq('status', filter);
+            }
             const { data, error } = await query.order('created_at', { ascending: false });
 
             if (error) { console.error("Error fetching offers:", error); return; }
             sellOffers = data || [];
             
             const container = document.getElementById('admin-offers-list');
+            const placeholder = 'https://via.placeholder.com/56x56.png?text=No+Img';
             if(sellOffers.length === 0){ container.innerHTML = '<div class="text-center text-gray-500 text-sm py-4">No offers found.</div>'; return; }
             container.innerHTML = '';
             sellOffers.forEach(o => {
-                container.innerHTML += `<div class="bg-white/5 p-3 rounded-lg border border-white/10 flex justify-between items-start mb-2"> <div style="flex:1"> <div class="flex items-center gap-2 mb-1"><span class="text-green-400 text-sm font-bold">${escapeHtml(o.dan)}</span><span class="text-gray-500 text-xs ml-2">${escapeHtml(o.time)}</span></div> <div class="flex gap-3 items-center"> <img src="${escapeHtml(o.image || SVG_PLACEHOLDER)}" onerror="this.src='${SVG_PLACEHOLDER}'" alt="${escapeHtml(o.crop)}" style="width:56px;height:56px;object-fit:cover;border-radius:8px;"> <div> <div class="text-white font-semibold">${escapeHtml(o.crop)}</div> <div class="text-gray-300 text-sm">${escapeHtml(o.qty)} kg • ₹${escapeHtml(o.cost)}</div> <div class="offer-timeline mt-2"> <div class="timeline-step">${o.status === 'pending' ? '<span class="text-yellow-300">Pending</span>' : escapeHtml(o.status.charAt(0).toUpperCase()+o.status.slice(1))}</div> </div> </div> </div> </div> <div class="ml-3 flex flex-col gap-2"> ${ o.status === 'pending' ? `<button onclick="acceptSellOffer('${o.id}')" class="text-sm bg-green-500 text-black px-3 py-1 rounded hover:bg-green-400">Accept</button><button onclick="declineSellOffer('${o.id}')" class="text-sm bg-red-700 text-white px-3 py-1 rounded hover:bg-red-600">Decline</button>` : `<div class="text-xs text-gray-400 px-3 py-1 rounded">${escapeHtml(o.status)}</div>` } </div> </div>`;
+                container.innerHTML += `<div class="bg-white/5 p-3 rounded-lg border border-white/10 flex justify-between items-start mb-2"> <div style="flex:1"> <div class="flex items-center gap-2 mb-1"><span class="text-green-400 text-sm font-bold">${escapeHtml(o.dan)}</span><span class="text-gray-500 text-xs ml-2">${escapeHtml(o.time)}</span></div> <div class="flex gap-3 items-center"> <img src="${escapeHtml(o.image || placeholder)}" onerror="this.src='${placeholder}'" alt="${escapeHtml(o.crop)}" style="width:56px;height:56px;object-fit:cover;border-radius:8px;"> <div> <div class="text-white font-semibold">${escapeHtml(o.crop)}</div> <div class="text-gray-300 text-sm">${escapeHtml(o.qty)} kg • ₹${escapeHtml(o.cost)}</div> <div class="offer-timeline mt-2"> <div class="timeline-step">${o.status === 'pending' ? '<span class="text-yellow-300">Pending</span>' : escapeHtml(o.status.charAt(0).toUpperCase()+o.status.slice(1))}</div> </div> </div> </div> </div> <div class="ml-3 flex flex-col gap-2"> ${ o.status === 'pending' ? `<button onclick="acceptSellOffer('${o.id}')" class="text-sm bg-green-500 text-black px-3 py-1 rounded hover:bg-green-400">Accept</button><button onclick="declineSellOffer('${o.id}')" class="text-sm bg-red-700 text-white px-3 py-1 rounded hover:bg-red-600">Decline</button>` : `<div class="text-xs text-gray-400 px-3 py-1 rounded">${escapeHtml(o.status)}</div>` } </div> </div>`;
             });
         }
 
         async function updateOfferStatus(offerId, newStatus, message) {
             const { data, error } = await supabaseClient.from('offers').update({ status: newStatus, seenByFarmer: false }).eq('id', offerId).select().single();
-            if(error || !data) { alert("Failed to update offer."); return; }
-            await supabaseClient.from('messages').insert([{ sender: "KrishiSetu Admin", text: message, time: new Date().toLocaleTimeString(), type: "admin", dan: data.dan }]);
+            if(error || !data) {
+                console.error("Error updating offer status:", error);
+                alert("Failed to update offer.");
+                return;
+            }
+
+            const botMessage = { sender: "KrishiSetu Admin", text: message, time: new Date().toLocaleTimeString(), type: "admin", dan: data.dan };
+            await supabaseClient.from('messages').insert([botMessage]);
+            
             alert(`Offer ${newStatus}. Farmer notified.`);
         }
 
-        async function acceptSellOffer(offerId){ const o = sellOffers.find(x => x.id === offerId); if(o) await updateOfferStatus(offerId, 'accepted', `Your sell offer for ${o.crop} has been accepted.`); }
-        async function declineSellOffer(offerId){ const o = sellOffers.find(x => x.id === offerId); if(o) await updateOfferStatus(offerId, 'declined', `Your sell offer for ${o.crop} has been declined.`); }
+        async function acceptSellOffer(offerId){ 
+            const offer = sellOffers.find(o => o.id === offerId);
+            if(offer) await updateOfferStatus(offerId, 'accepted', `Your sell offer for ${offer.crop} has been accepted.`); 
+        }
+        async function declineSellOffer(offerId){ 
+            const offer = sellOffers.find(o => o.id === offerId);
+            if(offer) await updateOfferStatus(offerId, 'declined', `Your sell offer for ${offer.crop} has been declined.`); 
+        }
 
         async function refreshFarmerOffersUI(){
             const list = document.getElementById('farmer-offers-list');
             const dan = formatDanForStorage(chatWidget.dataset.currentDan || '');
             if(!list || !dan) return;
+            
             const { data, error } = await supabaseClient.from('offers').select('*').eq('dan', dan).order('created_at', { ascending: false });
             if (error) { console.error("Error fetching farmer offers:", error); return; }
             const myOffers = data || [];
 
-            document.getElementById('my-offers-count').textContent = myOffers.length;
-            document.getElementById('my-offers-count').classList.toggle('hidden', myOffers.length === 0);
+            document.getElementById('my-offers-count').textContent = myOffers.length; document.getElementById('my-offers-count').classList.toggle('hidden', myOffers.length === 0);
             if(myOffers.length === 0){ list.innerHTML = '<div class="text-center text-gray-500 text-sm py-4">No sell offers yet.</div>'; return; }
             list.innerHTML = myOffers.map(o => {
                 const statusColor = o.status === 'pending' ? 'text-yellow-300' : (o.status === 'accepted' ? 'text-green-300' : 'text-red-300');
@@ -1676,25 +1569,62 @@
         async function updateSellBadges(){
             const dan = formatDanForStorage(chatWidget.dataset.currentDan || '');
             if (!dan) return;
+
             const { count, error } = await supabaseClient.from('offers').select('*', { count: 'exact', head: true }).eq('dan', dan).eq('seenByFarmer', false).neq('status', 'pending');
             if (error) { console.error("Error counting unseen offers:", error); return; }
 
             [document.getElementById('sell-notif-badge'), document.getElementById('sell-notif-badge-2')].forEach(b => { if(b){ b.textContent = count; b.classList.toggle('hidden', count === 0); }});
         }
         
+        // --- REALTIME SUBSCRIPTIONS ---
         function listenToChanges() {
-            supabaseClient.channel('public-changes').on('postgres_changes', { event: '*', schema: 'public' }, payload => {
-                if (payload.table === 'messages') { renderAdminInbox(); refreshChatWindowMessages(); }
-                if (payload.table === 'offers') { renderAdminSellOffers(); refreshFarmerOffersUI(); updateSellBadges(); }
-                if (payload.table === 'products') { renderAdminProductsList(); renderFarmerBuyableProducts(); }
-            }).subscribe();
+            supabaseClient.channel('public:messages')
+              .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
+                console.log('New message received!', payload.new);
+                renderAdminInbox();
+                refreshChatWindowMessages();
+              })
+              .subscribe();
+
+            supabaseClient.channel('public:offers')
+              .on('postgres_changes', { event: '*', schema: 'public', table: 'offers' }, payload => {
+                console.log('Offer changed!', payload);
+                renderAdminSellOffers();
+                refreshFarmerOffersUI();
+                updateSellBadges();
+              })
+              .subscribe();
+              
+            supabaseClient.channel('public:products')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, payload => {
+                    console.log('Product list changed!', payload);
+                    renderAdminProductsList();
+                    renderFarmerBuyableProducts();
+                })
+                .subscribe();
         }
 
-        // Expose functions for inline onclick
-        Object.assign(window, {
-            returnHome, showLoginSelection, showAdminAuth, showFarmerAuth, verifyAdminPassword, verifyFarmerLogin, logout, viewFarmerDetails, deleteFarmer, closeDanModal, toggleChat, sendUserMessage, openSellModal, closeSellModal, submitSellOffer, acceptSellOffer, declineSellOffer, renderAdminSellOffers, refreshFarmerOffersUI, updateSellBadges, handleFormSubmit, populateCrops, handleProductFormSubmit, deleteAdminProduct, buyProduct, changeLanguage, toggleNews, searchFarmer, previewImage,
-            toggleSoilCropEdit, saveFarmerSoilCropChanges, populateFarmerCrops
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', async () => {
+            document.getElementById('preloader').classList.add('loaded');
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+
+            const ctx = document.getElementById('cropHealthChart').getContext('2d');
+            new Chart(ctx, { type: 'line', data: { labels: ['J','F','M','A','M','J'], datasets: [{ data: [12,15,14,18,20,22], borderColor: '#4ade80', backgroundColor: 'rgba(74,222,128,0.1)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins:{legend:{display:false}}, scales:{x:{display:false},y:{display:true, grid:{color:'rgba(255,255,255,0.05)'}}} } });
+
+            const observer = new IntersectionObserver((entries) => { entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('is-visible'); }); });
+            document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+            
+            await checkSession();
+
+            renderNews('all');
+            changeLanguage(currentLang);
+            listenToChanges();
         });
+
+        // Expose functions for inline onclick
+        Object.assign(window, { returnHome, showLoginSelection, showAdminAuth, showFarmerAuth, verifyAdminPassword, verifyFarmerLogin, logout, viewFarmerDetails, deleteFarmer, closeDanModal, toggleChat, sendUserMessage, openSellModal, closeSellModal, submitSellOffer, acceptSellOffer, declineSellOffer, renderAdminSellOffers, refreshFarmerOffersUI, updateSellBadges, handleFormSubmit, handleProductFormSubmit, deleteAdminProduct, buyProduct, changeLanguage, toggleNews, searchFarmer, previewImage });
     </script>
 </body>
 </html>
