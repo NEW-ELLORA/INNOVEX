@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
@@ -258,6 +257,7 @@
         }
 
         /* --- MODAL Z-INDICES --- */
+        #iot-alert-modal { z-index: 200; }
         #dan-modal { z-index: 120; }
         #admin-farmer-view-modal { z-index: 110; }
 
@@ -664,6 +664,24 @@
                             <div class="text-center text-gray-500 text-sm py-4">No offers yet.</div>
                         </div>
                     </div>
+                    
+                    <!-- NEW ALERTS INBOX SECTION -->
+                    <div class="glass-card p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-semibold text-white flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M18 3a1 1 0 00-1.447-.894L8.763 6H5a3 3 0 000 6h.28l1.771 5.316A1 1 0 008 18h1a1 1 0 001-1v-4.382l6.553 3.276A1 1 0 0018 15V3z" clip-rule="evenodd" />
+                                </svg>
+                                <span>IoT Device Alerts</span>
+                            </h3>
+                            <button onclick="clearAllAlerts()" class="text-sm text-gray-400 border border-gray-700 px-3 py-1 rounded hover:text-white hover:border-white">Clear All</button>
+                        </div>
+                        <div id="admin-alerts-list" class="space-y-3 max-h-72 overflow-y-auto pr-2">
+                            <!-- Alerts will be dynamically inserted here by JavaScript -->
+                            <div class="text-center text-gray-500 text-sm py-4">No new alerts.</div>
+                        </div>
+                    </div>
+                    <!-- END OF NEW ALERTS SECTION -->
                 </div>
             </div>
 
@@ -920,6 +938,20 @@
                 </div>
             </div>
         </div>
+
+        <!-- NEW - IOT ALERT MODAL (Can be used for future push notifications) -->
+        <div id="iot-alert-modal" class="fixed inset-0 bg-black/80 hidden z-[200] flex items-center justify-center p-4 backdrop-blur-sm">
+            <div class="glass-card max-w-lg w-full p-6 fade-in relative border-2 border-red-500">
+                <div class="text-center">
+                    <div class="w-16 h-16 mx-auto bg-red-900/50 rounded-full flex items-center justify-center mb-4 text-red-400 text-4xl">
+                        ⚠️
+                    </div>
+                    <h2 class="text-2xl font-bold text-white mb-2">Security Alert!</h2>
+                    <p id="iot-alert-message" class="text-gray-300 text-lg">---</p>
+                    <button onclick="document.getElementById('iot-alert-modal').classList.add('hidden')" class="neon-button bg-red-500 hover:bg-red-400 mt-6 px-8 py-2">Dismiss</button>
+                </div>
+            </div>
+        </div>
     </main>
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -998,7 +1030,7 @@
         const chatWidget = document.getElementById('chat-widget-container');
         const newsArrowContainer = document.getElementById('newsArrowContainer');
         const loginBtn = document.getElementById('login-get-started-btn');
-        const newsPanel = document.getElementById('newsPanel'); // Moved here for global access
+        const newsPanel = document.getElementById('newsPanel');
         
         const sampleNews = [
             { id: 1, category: 'schemes', title: 'Govt launches new soil health subsidy scheme', source: 'Agri Ministry', date: '2025-11-10', excerpt: 'A new subsidy for soil health cards and micro-nutrients has been announced.' },
@@ -1111,7 +1143,8 @@
                 renderAdminTable(), 
                 renderAdminInbox(), 
                 renderAdminSellOffers(), 
-                renderAdminProductsList()
+                renderAdminProductsList(),
+                renderAdminAlerts() // Load alerts when dashboard opens
             ]);
         }
         
@@ -1447,7 +1480,54 @@
         async function declineSellOffer(id){ /* ... same ... */ }
         async function refreshFarmerOffersUI(){ /* ... same ... */ }
         async function updateSellBadges(){ /* ... same ... */ }
-        
+
+        // --- NEW FUNCTIONS FOR THE ALERTS INBOX ---
+        async function renderAdminAlerts() {
+            const container = document.getElementById('admin-alerts-list');
+            if (!container) return;
+            const { data: alerts, error } = await supabaseClient.from('alerts').select('*').order('created_at', { ascending: false });
+            if (error) {
+                console.error("Error fetching alerts:", error);
+                container.innerHTML = '<div class="text-center text-red-500 text-sm py-4">Error loading alerts.</div>';
+                return;
+            }
+            if (alerts.length === 0) {
+                container.innerHTML = '<div class="text-center text-gray-500 text-sm py-4">No new alerts.</div>';
+                return;
+            }
+            container.innerHTML = alerts.map(alert => {
+                const alertDate = new Date(alert.created_at).toLocaleString();
+                return `
+                    <div class="bg-red-900/20 p-3 rounded-lg border border-red-500/20 flex justify-between items-center">
+                        <div>
+                            <p class="text-white text-sm">${escapeHtml(alert.message)}</p>
+                            <p class="text-xs text-gray-400 mt-1">
+                                DAN: <span class="font-mono">${escapeHtml(alert.farmer_dan)}</span> | Received: ${alertDate}
+                            </p>
+                        </div>
+                        <button onclick="deleteSingleAlert(${alert.id})" title="Delete this alert" class="text-red-400 hover:text-white text-xl">&times;</button>
+                    </div>
+                `;
+            }).join('');
+        }
+        async function deleteSingleAlert(alertId) {
+            const { error } = await supabaseClient.from('alerts').delete().eq('id', alertId);
+            if (error) {
+                console.error("Error deleting alert:", error);
+                alert("Could not delete the alert.");
+            }
+        }
+        async function clearAllAlerts() {
+            if (confirm("Are you sure you want to delete ALL alerts? This action cannot be undone.")) {
+                const { error } = await supabaseClient.from('alerts').delete().neq('id', 0);
+                if (error) {
+                    console.error("Error clearing alerts:", error);
+                    alert("Could not clear alerts.");
+                }
+            }
+        }
+        // --- END OF NEW FUNCTIONS ---
+
         function listenToChanges() {
             supabaseClient.channel('public-changes').on('postgres_changes', { event: '*', schema: 'public' }, payload => {
                 if (payload.table === 'messages') { renderAdminInbox(); refreshChatWindowMessages(); }
@@ -1455,6 +1535,14 @@
                 if (payload.table === 'products') { Promise.all([renderAdminProductsList(), renderFarmerBuyableProducts()]); }
                 if (payload.table === 'farmers') { renderAdminTable(); }
             }).subscribe();
+
+            // Listen for any change (insert, update, delete) on the alerts table and refresh the admin inbox
+            supabaseClient.channel('public:alerts')
+              .on('postgres_changes', { event: '*', schema: 'public', table: 'alerts' }, payload => {
+                  console.log('Alerts table changed, refreshing list.', payload);
+                  renderAdminAlerts();
+              })
+              .subscribe();
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
@@ -1490,7 +1578,9 @@
 
         Object.assign(window, {
             returnHome, showLoginSelection, showAdminAuth, showFarmerAuth, verifyAdminPassword, verifyFarmerLogin, logout, viewFarmerDetails, deleteFarmer, closeDanModal, toggleChat, sendUserMessage, openSellModal, closeSellModal, submitSellOffer, acceptSellOffer, declineSellOffer, renderAdminSellOffers, refreshFarmerOffersUI, updateSellBadges, handleFormSubmit, populateCrops, handleProductFormSubmit, deleteAdminProduct, buyProduct, changeLanguage, toggleNews, searchFarmer, previewImage,
-            toggleSoilCropEdit, saveFarmerSoilCropChanges, populateFarmerCrops, viewFarmerProfile, closeAdminViewModal
+            toggleSoilCropEdit, saveFarmerSoilCropChanges, populateFarmerCrops, viewFarmerProfile, closeAdminViewModal,
+            // Add the new functions to the window object
+            renderAdminAlerts, deleteSingleAlert, clearAllAlerts
         });
     </script>
 </body>
