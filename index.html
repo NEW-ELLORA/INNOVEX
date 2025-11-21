@@ -165,6 +165,15 @@
             background-color: var(--neon-green);
             color: #020601;
         }
+        /* MODIFIED: Styling for multi-select dropdown */
+        select[multiple] {
+            height: auto;
+            min-height: 100px; /* Give it some default height */
+            padding: 0.5rem;
+        }
+        select[multiple] option {
+            padding: 4px 8px;
+        }
 
         .admin-table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
         .admin-table th { text-align: left; color: var(--soft-green); padding: 10px; font-size: 0.85rem; text-transform: uppercase; }
@@ -600,17 +609,16 @@
                                 <div><label class="text-xs text-gray-400" data-i18n="lbl_addr">Address</label><input type="text" id="input-address" required class="form-input px-3 py-2"></div>
                                 <div><label class="text-xs text-gray-400" data-i18n="lbl_area">Total Area (Acres)</label><input type="number" step="0.1" id="input-area" required class="form-input px-3 py-2"></div>
                                 <div><label class="text-xs text-gray-400" data-i18n="lbl_mac">ESP32 MAC Address</label><input type="text" id="input-mac" placeholder="AA:BB:CC:DD:EE:FF" required class="form-input px-3 py-2"></div>
-                                <!-- NEW: Soil Type Dropdown -->
                                 <div>
                                     <label class="text-xs text-gray-400">Soil Type</label>
                                     <select id="input-soil-type" class="form-select" onchange="populateCrops()" required>
                                         <option value="">-- Select Soil --</option>
                                     </select>
                                 </div>
-                                <!-- NEW: Suitable Crops (auto-populated) -->
+                                <!-- MODIFIED: Changed textarea to a multi-select dropdown -->
                                 <div>
-                                    <label class="text-xs text-gray-400">Suitable Crops (Editable)</label>
-                                    <textarea id="input-crops" class="form-input" rows="3" placeholder="Select a soil type to see crop suggestions..."></textarea>
+                                    <label class="text-xs text-gray-400">Select Suitable Crops (Ctrl+Click for multiple)</label>
+                                    <select multiple id="input-crops" class="form-select"></select>
                                 </div>
                             </div>
                             <button type="submit" class="neon-button w-full mt-6 py-3" data-i18n="btn_gen_dan">Generate DAN</button>
@@ -660,7 +668,6 @@
                 </div>
             </div>
 
-            <!-- NEW SECTION: MANAGE BUYABLE PRODUCTS -->
             <div class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="glass-card p-6 lg:col-span-1 h-fit">
                     <h3 class="text-xl font-semibold text-green-400 mb-4">Add Agri Supply</h3>
@@ -668,7 +675,6 @@
                         <div class="space-y-4">
                             <div><label class="text-xs text-gray-400">Product Name</label><input type="text" id="input-prod-name" required class="form-input w-full px-3 py-2"></div>
                             
-                            <!-- Image Upload Input -->
                             <div>
                                 <label class="text-xs text-gray-400">Product Image</label>
                                 <input type="file" id="input-prod-image" accept="image/*" onchange="previewImage(this, 'admin-prod-preview')" required class="form-input w-full">
@@ -733,11 +739,8 @@
                 </div>
             </div>
 
-            <!-- Farmer Main Content Area -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <!-- Left Column: Quick Actions & Offers -->
                 <div class="lg:col-span-1 space-y-8">
-                    <!-- NEW: Soil and Crop Details Card -->
                     <div class="glass-card p-6">
                         <h3 class="text-lg font-bold text-white mb-4">Soil & Crop Details</h3>
                         <div class="space-y-4">
@@ -752,7 +755,6 @@
                             <div class="pt-2 border-t border-white/10">
                                 <p class="text-xs text-green-400 uppercase font-semibold">Soil Characteristics (HWSD Data)</p>
                                 <ul id="dash-soil-char" class="mt-2 soil-char-list">
-                                    <!-- Characteristics will be populated here -->
                                 </ul>
                             </div>
                         </div>
@@ -771,11 +773,9 @@
                     </div>
                 </div>
 
-                <!-- Right Column: Buy Products -->
                 <div class="lg:col-span-2 glass-card p-6">
                     <h3 class="text-xl font-semibold text-white mb-4">Buy Agri Supplies</h3>
                     <div id="farmer-buy-products-list" class="supplies-grid max-h-[600px] overflow-y-auto pr-2">
-                        <!-- Products will be rendered here by JS -->
                         <div class="text-center text-gray-500 text-sm py-4">No supplies available right now.</div>
                     </div>
                 </div>
@@ -827,7 +827,6 @@
                 <form id="sellForm" onsubmit="submitSellOffer(event)" class="space-y-3">
                     <div><label class="text-xs text-gray-400">Crop Name</label><input id="sell-crop" required class="form-input w-full px-3 py-2" placeholder="e.g. Tomatoes"></div>
                     
-                    <!-- Image Upload Input -->
                     <div>
                         <label class="text-xs text-gray-400">Crop Image</label>
                         <input id="sell-image" type="file" accept="image/*" onchange="previewImage(this, 'sell-preview-box')" required class="form-input w-full">
@@ -890,7 +889,6 @@
 
     </main>
     
-    <!-- SUPABASE SCRIPT -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
@@ -936,7 +934,7 @@
             },
             kn: {
                 nav_home: "ಮುಖಪುಟ", nav_dashboard: "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್", nav_features: "ವೈಶಿಷ್ಟ್ಯಗಳು", nav_marketplace: "ಮಾರುಕಟ್ಟೆ", btn_login: "ಲಾಗಿನ್ / ಪ್ರಾರಂಭಿಸಿ",
-                hero_title_1: "ಕೃಷಿಯ ಭವಿಷ್ಯ", hero_title_2: "ಬెಳೆಯುತ್ತಿದೆ.", hero_subtitle: "ಕೃಷಿಸೇತು  ನಿಮ್ಮ ಜಮೀನಿಗೆ ಪಾರದರ್ಶಕತೆ ತರಲು AI-ಚಾಲಿತ ವಿಶ್ಲೇಷಣೆಯನ್ನು ಬಳಸುತ್ತದೆ.", btn_view_dash: "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ ವೀಕ್ಷಿಸಿ", btn_portal_login: "ಪೋರ್ಟಲ್ ಲಾಗಿನ್",
+                hero_title_1: "ಕೃಷಿಯ ಭವಿಷ್ಯ", hero_title_2: "ಬೆಳೆಯುತ್ತಿದೆ.", hero_subtitle: "ಕೃಷಿಸೇತು  ನಿಮ್ಮ ಜಮೀನಿಗೆ ಪಾರದರ್ಶಕತೆ ತರಲು AI-ಚಾಲಿತ ವಿಶ್ಲೇಷಣೆಯನ್ನು ಬಳಸುತ್ತದೆ.", btn_view_dash: "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ ವೀಕ್ಷಿಸಿ", btn_portal_login: "ಪೋರ್ಟಲ್ ಲಾಗಿನ್",
                 dash_title: "ನಿಮ್ಮ ಸ್ಮಾರ್ಟ್ ಫಾರ್ಮ್ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್", dash_subtitle: "ನಿಮ்க்கು ಜಮೀನಿಂದ ನೈಜ-ಸಮಯದ ಡೇಟಾ.", chart_title: "ಬೆಳೆ ಇಳುವರಿ ಮುನ್ಸೂಚನೆ", sensors_title: "ಲೈವ್ ಸೆನ್ಸಾರ್‌ಗಳು", sensor_soil: "ಮಣ್ಣಿನ ತೇವಾಂಶ", sensor_sun: "ಸೂರ್ಯನ ಬೆಳಕು", sensor_temp: "ತಾಪಮಾನ",
                 feat_ai_title: "AI ವಿಶ್ಲೇಷಣೆ", feat_ai_desc: "99.8% ನಿಖರತೆಯೊಂದಿಗೆ ಇಳುವರಿಯನ್ನು ಊಹಿಸಿ ಮತ್ತು ರೋಗಗಳನ್ನು ಪತ್ತೆ ಮಾಡಿ.", feat_auto_title: "ಸ್ಮಾರ್ಟ್ ಆಟೋ", feat_auto_desc: "ಡ್ರೋನ್ಗಳು ಮತ್ತು ಸ್ಮಾರ್ಟ್ ನೀರಾವರಿ ವ್ಯವಸ್ಥೆಗಳೊಂದಿಗೆ ಸಂಯೋಜಿಸಿ.", feat_block_title: "ಬ್ಲಾಕ್‌ಚೈನ್", feat_block_desc: "ಬೀಜದಿಂದ ಸೂಪರ್ಮಾರ್ಕೆಟ್ವರೆಗೆ ಪತ್ತೆಹಚ್ಚಬಹುದಾದ ಪೂರೈಕೆ ಸರಪಳಿ.",
                 about_title_1: "ಸಂಪರ್ಕಿಸುತ್ತಿದೆ", about_title_2: "ರೈತರನ್ನು", about_desc: "ನಾಳೆಯ ತಂತ್ರಜ್ಞಾನದೊಂದಿಗೆ ಪ್ರತಿ ರೈತನನ್ನು ಸಬಲೀಕರಣಗೊಳಿಸುವುದು.",
@@ -961,7 +959,9 @@
         let currentLang = localStorage.getItem('krishi_lang') || 'en';
         let charts = {}; // Store chart instances for destroy/update
 
-        // NEW: Soil Data Object
+        // MODIFIED: This placeholder is embedded and works offline
+        const SVG_PLACEHOLDER = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 600' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cstyle type='text/css'%3E%23holder_17912285153 text %7B fill:%23999;font-weight:normal;font-family:var(--bs-font-sans-serif), monospace;font-size:40pt %7D %3C/style%3E%3C/defs%3E%3Cg id='holder_17912285153'%3E%3Crect width='800' height='600' fill='%23333'%3E%3C/rect%3E%3Cg%3E%3Ctext x='247.3125' y='320'%3ENo Image%3C/text%3E%3C/g%3E%3C/g%3E%3C/svg%3E";
+
         const soilData = {
             'Alluvial Soil': {
                 characteristics: ['Fertile', 'Rich in potash & lime', 'Good moisture retention'],
@@ -1005,7 +1005,6 @@
         const newsArrowContainer = document.getElementById('newsArrowContainer');
         const loginBtn = document.getElementById('login-get-started-btn');
 
-        // DATA
         const sampleNews = [
             { id: 1, category: 'schemes', title: 'Govt launches new soil health subsidy scheme', source: 'Agri Ministry', date: '2025-11-10', excerpt: 'A new subsidy for soil health cards and micro-nutrients has been announced.' },
             { id: 2, category: 'market', title: 'Tomato prices spike in the north', source: 'MarketWatch', date: '2025-11-12', excerpt: 'Supply disruptions and lower yields have pushed tomato wholesale prices up by 28% this week.' },
@@ -1042,7 +1041,7 @@
         function showAdminAuth() { hideAll(); views.adminAuth.classList.remove('hidden-section'); views.adminAuth.classList.add('fade-in'); document.getElementById('auth-error').classList.add('hidden'); }
         function showFarmerAuth() { hideAll(); views.farmerAuth.classList.remove('hidden-section'); views.farmerAuth.classList.add('fade-in'); document.getElementById('farmer-auth-error').classList.add('hidden'); }
 
-        // --- AUTHENTICATION & LOGOUT (WITH SESSION PERSISTENCE) ---
+        // --- AUTHENTICATION & LOGOUT ---
         async function verifyAdminPassword() {
             if(document.getElementById('admin-password-input').value === 'admin123') {
                 sessionStorage.setItem('krishi-user-type', 'admin');
@@ -1076,7 +1075,7 @@
             if (error || !farmer) {
                 console.error('Farmer login error:', error);
                 document.getElementById('farmer-auth-error').classList.remove('hidden');
-                sessionStorage.clear(); // Clear bad session data
+                sessionStorage.clear();
                 return;
             }
 
@@ -1088,7 +1087,6 @@
             document.getElementById('dash-plot').textContent = farmer.plot;
             document.getElementById('dash-area').textContent = farmer.area + ' Acres';
             
-            // NEW: Populate Soil & Crop info
             document.getElementById('dash-soil-type').textContent = farmer.soil_type || 'Not specified';
             document.getElementById('dash-selected-crops').textContent = farmer.selected_crops || 'Not specified';
             displaySoilCharacteristics(farmer.soil_type);
@@ -1118,7 +1116,7 @@
             chatWidget.dataset.currentDan = '';
             hideAll();
             returnHome();
-            location.reload(); // Force a clean reload to clear all states
+            location.reload();
         }
 
         async function checkSession() {
@@ -1136,7 +1134,7 @@
         // --- ADMIN: FARMER MANAGEMENT & SOIL FEATURE ---
         function populateSoilDropdown() {
             const select = document.getElementById('input-soil-type');
-            if (select.options.length > 1) return; // Already populated
+            if (select.options.length > 1) return;
             for (const soil in soilData) {
                 const option = document.createElement('option');
                 option.value = soil;
@@ -1145,13 +1143,19 @@
             }
         }
 
+        // MODIFIED: Populates the new <select multiple> dropdown
         function populateCrops() {
             const soilType = document.getElementById('input-soil-type').value;
-            const cropsTextarea = document.getElementById('input-crops');
+            const cropsSelect = document.getElementById('input-crops');
+            cropsSelect.innerHTML = ''; // Clear existing options
+
             if (soilType && soilData[soilType]) {
-                cropsTextarea.value = soilData[soilType].crops.join(', ');
-            } else {
-                cropsTextarea.value = '';
+                soilData[soilType].crops.forEach(crop => {
+                    const option = document.createElement('option');
+                    option.value = crop;
+                    option.textContent = crop;
+                    cropsSelect.appendChild(option);
+                });
             }
         }
 
@@ -1163,6 +1167,11 @@
             const randYield = Array.from({length:6}, () => Math.floor(Math.random() * 25));
             const randMoist = Array.from({length:6}, () => Math.floor(Math.random() * 60));
 
+            // MODIFIED: Reads values from the multi-select dropdown
+            const selectedCrops = Array.from(document.getElementById('input-crops').selectedOptions)
+                                       .map(option => option.value)
+                                       .join(', ');
+
             const newFarmer = {
                 dan, name, 
                 plot: document.getElementById('input-plot').value, 
@@ -1171,22 +1180,24 @@
                 yieldData: randYield, 
                 moistureData: randMoist,
                 soil_type: document.getElementById('input-soil-type').value,
-                selected_crops: document.getElementById('input-crops').value
+                selected_crops: selectedCrops // Use the correctly formatted string
             };
 
-            const { data, error } = await supabaseClient.from('farmers').insert([newFarmer]);
+            const { data, error } = await supabaseClient.from('farmers').insert([newFarmer]).select();
             if(error) {
                 console.error("Error adding farmer:", error);
-                alert("Failed to add farmer.");
+                alert("Failed to add farmer. Check console for details.");
                 return;
             }
 
             await renderAdminTable();
-            document.getElementById('card-name').textContent = name; document.getElementById('card-dan').textContent = dan;
+            document.getElementById('card-name').textContent = name;
+            document.getElementById('card-dan').textContent = dan;
             document.getElementById('dan-modal').classList.remove('hidden');
             e.target.reset();
-            populateCrops(); // Reset crops textarea
+            populateCrops(); // Reset crops dropdown
         }
+
         function closeDanModal() { document.getElementById('dan-modal').classList.add('hidden'); }
 
         async function renderAdminTable(filterText = '') {
@@ -1243,7 +1254,7 @@
         // --- FARMER: SOIL & HWSD SIMULATION ---
         function displaySoilCharacteristics(soilType) {
             const charList = document.getElementById('dash-soil-char');
-            charList.innerHTML = ''; // Clear previous list
+            charList.innerHTML = '';
             if (soilType && soilData[soilType]) {
                 soilData[soilType].characteristics.forEach(char => {
                     const li = document.createElement('li');
@@ -1270,7 +1281,6 @@
             reader.readAsDataURL(file);
         }
 
-        // --- FIX: MORE ROBUST IMAGE UPLOAD FUNCTION ---
         async function uploadImageAndGetUrl(file) {
             if (!file) return null;
             const fileExt = file.name.split('.').pop();
@@ -1343,14 +1353,13 @@
             buyableProducts = data || [];
             
             const container = document.getElementById('admin-products-list');
-            const placeholder = 'https://via.placeholder.com/64x64.png?text=No+Img';
             if(buyableProducts.length === 0) { container.innerHTML = '<div class="text-center text-gray-500 text-sm py-4">No supplies added yet.</div>'; return; }
             container.innerHTML = '';
             buyableProducts.forEach(p => {
                 container.innerHTML += `
                     <div class="bg-white/5 p-3 rounded-lg border border-white/10 flex justify-between items-center">
                         <div class="flex items-center gap-4">
-                            <img src="${escapeHtml(p.image || placeholder)}" onerror="this.src='${placeholder}'" alt="${escapeHtml(p.name)}" class="w-16 h-16 object-cover rounded-lg">
+                            <img src="${escapeHtml(p.image || SVG_PLACEHOLDER)}" onerror="this.src='${SVG_PLACEHOLDER}'" alt="${escapeHtml(p.name)}" class="w-16 h-16 object-cover rounded-lg">
                             <div>
                                 <p class="text-white font-semibold">${escapeHtml(p.name)}</p>
                                 <p class="text-sm text-green-400">₹${escapeHtml(p.price)} / ${escapeHtml(p.unit)}</p>
@@ -1374,7 +1383,7 @@
         }
 
 
-        // --- FARMER: BUY SUPPLIES (IMAGE FIX) ---
+        // --- FARMER: BUY SUPPLIES ---
         async function renderFarmerBuyableProducts() {
             const container = document.getElementById('farmer-buy-products-list');
             if(!container) return;
@@ -1396,11 +1405,10 @@
             products.forEach(p => {
                 const stockInfo = p.stock > 0 ? `${p.stock} ${p.unit}s available` : 'Out of Stock';
                 const buttonDisabled = p.stock > 0 ? '' : 'disabled';
-                const placeholder = 'https://via.placeholder.com/220x140.png?text=No+Image';
                 
                 container.innerHTML += `
                     <div class="supply-card">
-                        <img src="${escapeHtml(p.image || placeholder)}" onerror="this.onerror=null;this.src='${placeholder}';" alt="${escapeHtml(p.name)}">
+                        <img src="${escapeHtml(p.image || SVG_PLACEHOLDER)}" onerror="this.onerror=null;this.src='${SVG_PLACEHOLDER}';" alt="${escapeHtml(p.name)}">
                         <div class="flex-1">
                             <h4 class="text-lg font-bold text-white">${escapeHtml(p.name)}</h4>
                             <p class="text-green-400 font-semibold">₹${escapeHtml(p.price)} / ${escapeHtml(p.unit)}</p>
@@ -1610,11 +1618,10 @@
             sellOffers = data || [];
             
             const container = document.getElementById('admin-offers-list');
-            const placeholder = 'https://via.placeholder.com/56x56.png?text=No+Img';
             if(sellOffers.length === 0){ container.innerHTML = '<div class="text-center text-gray-500 text-sm py-4">No offers found.</div>'; return; }
             container.innerHTML = '';
             sellOffers.forEach(o => {
-                container.innerHTML += `<div class="bg-white/5 p-3 rounded-lg border border-white/10 flex justify-between items-start mb-2"> <div style="flex:1"> <div class="flex items-center gap-2 mb-1"><span class="text-green-400 text-sm font-bold">${escapeHtml(o.dan)}</span><span class="text-gray-500 text-xs ml-2">${escapeHtml(o.time)}</span></div> <div class="flex gap-3 items-center"> <img src="${escapeHtml(o.image || placeholder)}" onerror="this.src='${placeholder}'" alt="${escapeHtml(o.crop)}" style="width:56px;height:56px;object-fit:cover;border-radius:8px;"> <div> <div class="text-white font-semibold">${escapeHtml(o.crop)}</div> <div class="text-gray-300 text-sm">${escapeHtml(o.qty)} kg • ₹${escapeHtml(o.cost)}</div> <div class="offer-timeline mt-2"> <div class="timeline-step">${o.status === 'pending' ? '<span class="text-yellow-300">Pending</span>' : escapeHtml(o.status.charAt(0).toUpperCase()+o.status.slice(1))}</div> </div> </div> </div> </div> <div class="ml-3 flex flex-col gap-2"> ${ o.status === 'pending' ? `<button onclick="acceptSellOffer('${o.id}')" class="text-sm bg-green-500 text-black px-3 py-1 rounded hover:bg-green-400">Accept</button><button onclick="declineSellOffer('${o.id}')" class="text-sm bg-red-700 text-white px-3 py-1 rounded hover:bg-red-600">Decline</button>` : `<div class="text-xs text-gray-400 px-3 py-1 rounded">${escapeHtml(o.status)}</div>` } </div> </div>`;
+                container.innerHTML += `<div class="bg-white/5 p-3 rounded-lg border border-white/10 flex justify-between items-start mb-2"> <div style="flex:1"> <div class="flex items-center gap-2 mb-1"><span class="text-green-400 text-sm font-bold">${escapeHtml(o.dan)}</span><span class="text-gray-500 text-xs ml-2">${escapeHtml(o.time)}</span></div> <div class="flex gap-3 items-center"> <img src="${escapeHtml(o.image || SVG_PLACEHOLDER)}" onerror="this.src='${SVG_PLACEHOLDER}'" alt="${escapeHtml(o.crop)}" style="width:56px;height:56px;object-fit:cover;border-radius:8px;"> <div> <div class="text-white font-semibold">${escapeHtml(o.crop)}</div> <div class="text-gray-300 text-sm">${escapeHtml(o.qty)} kg • ₹${escapeHtml(o.cost)}</div> <div class="offer-timeline mt-2"> <div class="timeline-step">${o.status === 'pending' ? '<span class="text-yellow-300">Pending</span>' : escapeHtml(o.status.charAt(0).toUpperCase()+o.status.slice(1))}</div> </div> </div> </div> </div> <div class="ml-3 flex flex-col gap-2"> ${ o.status === 'pending' ? `<button onclick="acceptSellOffer('${o.id}')" class="text-sm bg-green-500 text-black px-3 py-1 rounded hover:bg-green-400">Accept</button><button onclick="declineSellOffer('${o.id}')" class="text-sm bg-red-700 text-white px-3 py-1 rounded hover:bg-red-600">Decline</button>` : `<div class="text-xs text-gray-400 px-3 py-1 rounded">${escapeHtml(o.status)}</div>` } </div> </div>`;
             });
         }
 
@@ -1630,7 +1637,6 @@
             await supabaseClient.from('messages').insert([botMessage]);
             
             alert(`Offer ${newStatus}. Farmer notified.`);
-            // UI will update via realtime subscription
         }
 
         async function acceptSellOffer(offerId){ 
@@ -1677,7 +1683,6 @@
         function listenToChanges() {
             supabaseClient.channel('public:messages')
               .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
-                console.log('New message received!', payload.new);
                 renderAdminInbox();
                 refreshChatWindowMessages();
               })
@@ -1685,7 +1690,6 @@
 
             supabaseClient.channel('public:offers')
               .on('postgres_changes', { event: '*', schema: 'public', table: 'offers' }, payload => {
-                console.log('Offer changed!', payload);
                 renderAdminSellOffers();
                 refreshFarmerOffersUI();
                 updateSellBadges();
@@ -1694,7 +1698,6 @@
               
             supabaseClient.channel('public:products')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, payload => {
-                    console.log('Product list changed!', payload);
                     renderAdminProductsList();
                     renderFarmerBuyableProducts();
                 })
