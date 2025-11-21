@@ -739,7 +739,7 @@
                     <div class="space-y-3">
                         <div><p class="text-xs text-gray-500 uppercase">DAN Code</p><p id="dash-dan" class="font-mono text-xl text-green-400 font-bold tracking-wider">---</p></div>
                         <div><p class="text-xs text-gray-500 uppercase" data-i18n="lbl_reg_plot">Registered Plot</p><p id="dash-plot" class="text-white text-lg">---</p></div>
-                        <div><p class="text-xs text-gray-500 uppercase" data-i18n="lbl_tot_area">Total Area</p><p id="dash-area" class="text-white text-lg">--- Acres</p></div>
+                        <div><p class="text-xs text-gray-400 uppercase" data-i18n="lbl_tot_area">Total Area</p><p id="dash-area" class="text-white text-lg">--- Acres</p></div>
                     </div>
                 </div>
 
@@ -1471,9 +1471,11 @@
             if(ctx2El) charts[moistCanvasId] = new Chart(ctx2El.getContext('2d'), { type: 'bar', data: { labels: ['Jan','Feb','Mar','Apr','May','Jun'], datasets: [{ label: 'Moisture', data: moistureData, backgroundColor: '#60a5fa', borderRadius: 4 }] }, options });
         }
         function toggleChat() { document.getElementById('chat-window').classList.toggle('hidden'); if (!document.getElementById('chat-window').classList.contains('hidden')) document.getElementById('user-chat-input').focus(); }
-        async function sendUserMessage(e) { e.preventDefault(); /* ... same ... */ }
-        async function renderAdminInbox() { /* ... same ... */ }
-        async function refreshChatWindowMessages() { /* ... same ... */ }
+        
+        async function sendUserMessage(e) { e.preventDefault(); /* ... same ... */ } // Placeholder
+        async function renderAdminInbox() { /* ... same ... */ } // Placeholder
+        async function refreshChatWindowMessages() { /* ... same ... */ } // Placeholder
+        
         function toggleNews() { newsPanel.classList.toggle('open'); if(newsPanel.classList.contains('open')) renderNews('all'); }
         function renderNews(filter = 'all') {
             const newsListEl = document.getElementById('newsList'); if (!newsListEl) return;
@@ -1486,8 +1488,8 @@
         function formatDanForStorage(d) { return (d || '').replace(/\s/g, '').replace(/(.{4})/g, '$1 ').trim(); }
         function openSellModal(){ document.getElementById('sellForm').reset(); document.getElementById('sell-preview-box').innerHTML = '<span>Preview</span>'; document.getElementById('sell-modal').classList.remove('hidden'); }
         function closeSellModal(){ document.getElementById('sell-modal').classList.add('hidden'); }
+        
         // --- COMPLETE 'SELL OFFER' FUNCTIONS ---
-
         async function submitSellOffer(e) {
             e.preventDefault();
             const btn = document.getElementById('submit-offer-btn');
@@ -1517,7 +1519,7 @@
                 quantity: parseFloat(document.getElementById('sell-qty').value),
                 description: document.getElementById('sell-desc').value,
                 image_url: imageUrl,
-                status: 'pending' // Initial status
+                status: 'pending'
             };
 
             const { error } = await supabaseClient.from('offers').insert([newOffer]);
@@ -1619,13 +1621,6 @@
             document.getElementById('sell-notif-badge').classList.toggle('hidden', unreadCount === 0);
             document.getElementById('sell-notif-badge-2').classList.toggle('hidden', unreadCount === 0);
         }
-        async function submitSellOffer(e){ /* ... same ... */ }
-        async function renderAdminSellOffers(){ /* ... same ... */ }
-        async function updateOfferStatus(id, s, m) { /* ... same ... */ }
-        async function acceptSellOffer(id){ /* ... same ... */ }
-        async function declineSellOffer(id){ /* ... same ... */ }
-        async function refreshFarmerOffersUI(){ /* ... same ... */ }
-        async function updateSellBadges(){ /* ... same ... */ }
 
         // --- FUNCTIONS FOR ALERTS INBOXES ---
         async function renderAdminAlerts() {
