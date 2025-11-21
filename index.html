@@ -1490,6 +1490,7 @@
         function closeSellModal(){ document.getElementById('sell-modal').classList.add('hidden'); }
         
         // --- COMPLETE 'SELL OFFER' FUNCTIONS ---
+        // --- COMPLETE 'SELL OFFER' FUNCTIONS ---
         async function submitSellOffer(e) {
             e.preventDefault();
             const btn = document.getElementById('submit-offer-btn');
@@ -1614,14 +1615,13 @@
 
         async function updateSellBadges() {
             if(!currentFarmer) return;
-            const { data, error, count } = await supabaseClient.from('offers').select('*', { count: 'exact' }).eq('farmer_dan', currentFarmer.dan).neq('status', 'pending');
-            const unreadCount = data.filter(o => !o.admin_message).length; // simple logic for demo
+            const { data } = await supabaseClient.from('offers').select('*', { count: 'exact' }).eq('farmer_dan', currentFarmer.dan).neq('status', 'pending');
+            const unreadCount = data ? data.filter(o => !o.admin_message).length : 0;
             document.getElementById('sell-notif-badge').textContent = unreadCount;
             document.getElementById('sell-notif-badge-2').textContent = unreadCount;
             document.getElementById('sell-notif-badge').classList.toggle('hidden', unreadCount === 0);
             document.getElementById('sell-notif-badge-2').classList.toggle('hidden', unreadCount === 0);
         }
-
         // --- FUNCTIONS FOR ALERTS INBOXES ---
         async function renderAdminAlerts() {
             const container = document.getElementById('admin-alerts-list');
