@@ -147,9 +147,8 @@
         .fade-in { animation: fadeIn 0.5s ease-in-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        .form-input, .form-select { background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border-glass); border-radius: 0.5rem; color: white; transition: 0.3s; padding: .5rem; width: 100%;}
-        .form-input:focus, .form-select:focus { border-color: var(--neon-green); outline: none; box-shadow: 0 0 15px rgba(74, 222, 128, 0.2); }
-        .form-select option { background: #020601; color: white;}
+        .form-input { background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border-glass); border-radius: 0.5rem; color: white; transition: 0.3s; padding: .5rem; }
+        .form-input:focus { border-color: var(--neon-green); outline: none; box-shadow: 0 0 15px rgba(74, 222, 128, 0.2); }
         /* Style for file inputs */
         input[type="file"]::file-selector-button {
             background-color: var(--dark-green);
@@ -164,15 +163,6 @@
         input[type="file"]::file-selector-button:hover {
             background-color: var(--neon-green);
             color: #020601;
-        }
-        /* MODIFIED: Styling for multi-select dropdown */
-        select[multiple] {
-            height: auto;
-            min-height: 100px; /* Give it some default height */
-            padding: 0.5rem;
-        }
-        select[multiple] option {
-            padding: 4px 8px;
         }
 
         .admin-table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
@@ -316,17 +306,6 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-        }
-         /* SOIL CHARACTERISTICS LIST */
-        .soil-char-list { list-style: none; padding-left: 0; }
-        .soil-char-list li {
-            background: rgba(74, 222, 128, 0.05);
-            border-left: 3px solid var(--neon-green);
-            padding: 8px 12px;
-            border-radius: 0 4px 4px 0;
-            margin-bottom: 6px;
-            font-size: 0.9rem;
-            color: #d1d5db;
         }
     </style>
 </head>
@@ -604,21 +583,37 @@
                         <h3 class="text-xl font-semibold text-green-400 mb-4" data-i18n="add_farmer">Add New Farmer</h3>
                         <form id="farmerForm" onsubmit="handleFormSubmit(event)">
                             <div class="space-y-4">
-                                <div><label class="text-xs text-gray-400" data-i18n="lbl_fullname">Full Name</label><input type="text" id="input-name" required class="form-input px-3 py-2"></div>
-                                <div><label class="text-xs text-gray-400" data-i18n="lbl_plot">Plot/Survey No.</label><input type="text" id="input-plot" required class="form-input px-3 py-2"></div>
-                                <div><label class="text-xs text-gray-400" data-i18n="lbl_addr">Address</label><input type="text" id="input-address" required class="form-input px-3 py-2"></div>
-                                <div><label class="text-xs text-gray-400" data-i18n="lbl_area">Total Area (Acres)</label><input type="number" step="0.1" id="input-area" required class="form-input px-3 py-2"></div>
-                                <div><label class="text-xs text-gray-400" data-i18n="lbl_mac">ESP32 MAC Address</label><input type="text" id="input-mac" placeholder="AA:BB:CC:DD:EE:FF" required class="form-input px-3 py-2"></div>
+                                <div><label class="text-xs text-gray-400" data-i18n="lbl_fullname">Full Name</label><input type="text" id="input-name" required class="form-input w-full px-3 py-2"></div>
+                                <div><label class="text-xs text-gray-400" data-i18n="lbl_plot">Plot/Survey No.</label><input type="text" id="input-plot" required class="form-input w-full px-3 py-2"></div>
+                                <div><label class="text-xs text-gray-400" data-i18n="lbl_addr">Address</label><input type="text" id="input-address" required class="form-input w-full px-3 py-2"></div>
+                                <div><label class="text-xs text-gray-400" data-i18n="lbl_area">Total Area (Acres)</label><input type="number" step="0.1" id="input-area" required class="form-input w-full px-3 py-2"></div>
+                                <div><label class="text-xs text-gray-400" data-i18n="lbl_mac">ESP32 MAC Address</label><input type="text" id="input-mac" placeholder="AA:BB:CC:DD:EE:FF" required class="form-input w-full px-3 py-2"></div>
+
+                                <!-- NEW: Soil Type and Suitable Crops Fields -->
                                 <div>
                                     <label class="text-xs text-gray-400">Soil Type</label>
-                                    <select id="input-soil-type" class="form-select" onchange="populateCrops()" required>
-                                        <option value="">-- Select Soil --</option>
+                                    <select id="input-soil-type" required class="form-input w-full px-3 py-2 bg-gray-900 text-white">
+                                        <option value="Alluvial Soil">Alluvial Soil</option>
+                                        <option value="Black Soil">Black Soil</option>
+                                        <option value="Red and Yellow Soil">Red and Yellow Soil</option>
+                                        <option value="Laterite Soil">Laterite Soil</option>
+                                        <option value="Arid Soil">Arid Soil</option>
+                                        <option value="Saline Soil">Saline Soil</option>
                                     </select>
                                 </div>
-                                <!-- MODIFIED: Changed textarea to a multi-select dropdown -->
                                 <div>
                                     <label class="text-xs text-gray-400">Select Suitable Crops (Ctrl+Click for multiple)</label>
-                                    <select multiple id="input-crops" class="form-select"></select>
+                                    <select id="input-suitable-crops" multiple required class="form-input w-full h-32 px-3 py-2 bg-gray-900 text-white">
+                                        <option>Cotton</option>
+                                        <option>Sorghum (Jowar)</option>
+                                        <option>Millets</option>
+                                        <option>Soybean</option>
+                                        <option>Wheat</option>
+                                        <option>Rice</option>
+                                        <option>Maize</option>
+                                        <option>Sugarcane</option>
+                                        <option>Groundnut</option>
+                                    </select>
                                 </div>
                             </div>
                             <button type="submit" class="neon-button w-full mt-6 py-3" data-i18n="btn_gen_dan">Generate DAN</button>
@@ -668,6 +663,7 @@
                 </div>
             </div>
 
+            <!-- NEW SECTION: MANAGE BUYABLE PRODUCTS -->
             <div class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="glass-card p-6 lg:col-span-1 h-fit">
                     <h3 class="text-xl font-semibold text-green-400 mb-4">Add Agri Supply</h3>
@@ -675,6 +671,7 @@
                         <div class="space-y-4">
                             <div><label class="text-xs text-gray-400">Product Name</label><input type="text" id="input-prod-name" required class="form-input w-full px-3 py-2"></div>
                             
+                            <!-- Image Upload Input -->
                             <div>
                                 <label class="text-xs text-gray-400">Product Image</label>
                                 <input type="file" id="input-prod-image" accept="image/*" onchange="previewImage(this, 'admin-prod-preview')" required class="form-input w-full">
@@ -739,26 +736,10 @@
                 </div>
             </div>
 
+            <!-- Farmer Main Content Area -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Left Column: Quick Actions & Offers -->
                 <div class="lg:col-span-1 space-y-8">
-                    <div class="glass-card p-6">
-                        <h3 class="text-lg font-bold text-white mb-4">Soil & Crop Details</h3>
-                        <div class="space-y-4">
-                            <div>
-                                <p class="text-xs text-gray-500 uppercase">Soil Type</p>
-                                <p id="dash-soil-type" class="text-white text-lg font-semibold">---</p>
-                            </div>
-                            <div>
-                                <p class="text-xs text-gray-500 uppercase">Registered Crops</p>
-                                <p id="dash-selected-crops" class="text-gray-300 text-base leading-relaxed">---</p>
-                            </div>
-                            <div class="pt-2 border-t border-white/10">
-                                <p class="text-xs text-green-400 uppercase font-semibold">Soil Characteristics (HWSD Data)</p>
-                                <ul id="dash-soil-char" class="mt-2 soil-char-list">
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
                      <div class="glass-card p-6 flex flex-col justify-between">
                         <h3 class="text-lg font-bold text-white mb-4" data-i18n="quick_actions">Quick Actions</h3>
                         <button class="w-full mb-3 bg-white/5 hover:bg-white/10 text-left p-3 rounded-lg"><p class="text-white" data-i18n="btn_dl_report">Download Report</p></button>
@@ -773,9 +754,11 @@
                     </div>
                 </div>
 
+                <!-- Right Column: Buy Products -->
                 <div class="lg:col-span-2 glass-card p-6">
                     <h3 class="text-xl font-semibold text-white mb-4">Buy Agri Supplies</h3>
                     <div id="farmer-buy-products-list" class="supplies-grid max-h-[600px] overflow-y-auto pr-2">
+                        <!-- Products will be rendered here by JS -->
                         <div class="text-center text-gray-500 text-sm py-4">No supplies available right now.</div>
                     </div>
                 </div>
@@ -827,6 +810,7 @@
                 <form id="sellForm" onsubmit="submitSellOffer(event)" class="space-y-3">
                     <div><label class="text-xs text-gray-400">Crop Name</label><input id="sell-crop" required class="form-input w-full px-3 py-2" placeholder="e.g. Tomatoes"></div>
                     
+                    <!-- Image Upload Input -->
                     <div>
                         <label class="text-xs text-gray-400">Crop Image</label>
                         <input id="sell-image" type="file" accept="image/*" onchange="previewImage(this, 'sell-preview-box')" required class="form-input w-full">
@@ -889,6 +873,7 @@
 
     </main>
     
+    <!-- SUPABASE SCRIPT -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
@@ -950,7 +935,7 @@
             }
         };
 
-        // --- STATE & DATA ---
+        // --- STATE ---
         let farmersList = [];
         let globalChatMessages = [];
         let sellOffers = []; 
@@ -958,40 +943,6 @@
 
         let currentLang = localStorage.getItem('krishi_lang') || 'en';
         let charts = {}; // Store chart instances for destroy/update
-
-        // MODIFIED: This placeholder is embedded and works offline
-        const SVG_PLACEHOLDER = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 600' preserveAspectRatio='none'%3E%3Cdefs%3E%3Cstyle type='text/css'%3E%23holder_17912285153 text %7B fill:%23999;font-weight:normal;font-family:var(--bs-font-sans-serif), monospace;font-size:40pt %7D %3C/style%3E%3C/defs%3E%3Cg id='holder_17912285153'%3E%3Crect width='800' height='600' fill='%23333'%3E%3C/rect%3E%3Cg%3E%3Ctext x='247.3125' y='320'%3ENo Image%3C/text%3E%3C/g%3E%3C/g%3E%3C/svg%3E";
-
-        const soilData = {
-            'Alluvial Soil': {
-                characteristics: ['Fertile', 'Rich in potash & lime', 'Good moisture retention'],
-                crops: ['Rice', 'Wheat', 'Sugarcane', 'Maize', 'Pulses', 'Vegetables']
-            },
-            'Black Soil': {
-                characteristics: ['Clayey', 'Retains moisture', 'Rich in calcium & magnesium'],
-                crops: ['Cotton', 'Sorghum (Jowar)', 'Millets', 'Soybean', 'Tobacco']
-            },
-            'Red Soil': {
-                characteristics: ['Sandy', 'Low in nutrients', 'Needs fertilizers'],
-                crops: ['Groundnut', 'Millets', 'Potato', 'Cotton', 'Wheat', 'Pulses']
-            },
-            'Laterite Soil': {
-                characteristics: ['Acidic', 'Low fertility'],
-                crops: ['Tea', 'Coffee', 'Cashew nut', 'Rubber', 'Coconut']
-            },
-            'Desert Soil': {
-                characteristics: ['Sandy', 'Low organic matter'],
-                crops: ['Bajra (Pearl millet)', 'Guar', 'Barley', 'Kharif pulses']
-            },
-            'Mountain Soil': {
-                characteristics: ['Rich in humus', 'Varies by altitude'],
-                crops: ['Tea', 'Apples', 'Oranges', 'Barley', 'Maize']
-            },
-            'Peaty and Marshy Soil': {
-                characteristics: ['High organic matter', 'Acidic'],
-                crops: ['Rice', 'Jute']
-            }
-        };
 
         const views = {
             landing: document.getElementById('view-landing'),
@@ -1005,6 +956,7 @@
         const newsArrowContainer = document.getElementById('newsArrowContainer');
         const loginBtn = document.getElementById('login-get-started-btn');
 
+        // DATA
         const sampleNews = [
             { id: 1, category: 'schemes', title: 'Govt launches new soil health subsidy scheme', source: 'Agri Ministry', date: '2025-11-10', excerpt: 'A new subsidy for soil health cards and micro-nutrients has been announced.' },
             { id: 2, category: 'market', title: 'Tomato prices spike in the north', source: 'MarketWatch', date: '2025-11-12', excerpt: 'Supply disruptions and lower yields have pushed tomato wholesale prices up by 28% this week.' },
@@ -1041,7 +993,7 @@
         function showAdminAuth() { hideAll(); views.adminAuth.classList.remove('hidden-section'); views.adminAuth.classList.add('fade-in'); document.getElementById('auth-error').classList.add('hidden'); }
         function showFarmerAuth() { hideAll(); views.farmerAuth.classList.remove('hidden-section'); views.farmerAuth.classList.add('fade-in'); document.getElementById('farmer-auth-error').classList.add('hidden'); }
 
-        // --- AUTHENTICATION & LOGOUT ---
+        // --- AUTHENTICATION & LOGOUT (WITH SESSION PERSISTENCE) ---
         async function verifyAdminPassword() {
             if(document.getElementById('admin-password-input').value === 'admin123') {
                 sessionStorage.setItem('krishi-user-type', 'admin');
@@ -1061,7 +1013,6 @@
             views.adminPanel.classList.add('fade-in');
             chatWidget.classList.add('hidden');
             loginBtn.classList.add('hidden');
-            populateSoilDropdown();
             await Promise.all([
                 renderAdminTable(), 
                 renderAdminInbox(), 
@@ -1075,7 +1026,7 @@
             if (error || !farmer) {
                 console.error('Farmer login error:', error);
                 document.getElementById('farmer-auth-error').classList.remove('hidden');
-                sessionStorage.clear();
+                sessionStorage.clear(); // Clear bad session data
                 return;
             }
 
@@ -1086,11 +1037,6 @@
             document.getElementById('dash-dan').textContent = farmer.dan;
             document.getElementById('dash-plot').textContent = farmer.plot;
             document.getElementById('dash-area').textContent = farmer.area + ' Acres';
-            
-            document.getElementById('dash-soil-type').textContent = farmer.soil_type || 'Not specified';
-            document.getElementById('dash-selected-crops').textContent = farmer.selected_crops || 'Not specified';
-            displaySoilCharacteristics(farmer.soil_type);
-
 
             hideAll();
             views.farmerDash.classList.remove('hidden-section');
@@ -1116,7 +1062,7 @@
             chatWidget.dataset.currentDan = '';
             hideAll();
             returnHome();
-            location.reload();
+            location.reload(); // Force a clean reload to clear all states
         }
 
         async function checkSession() {
@@ -1131,73 +1077,38 @@
             }
         }
 
-        // --- ADMIN: FARMER MANAGEMENT & SOIL FEATURE ---
-        function populateSoilDropdown() {
-            const select = document.getElementById('input-soil-type');
-            if (select.options.length > 1) return;
-            for (const soil in soilData) {
-                const option = document.createElement('option');
-                option.value = soil;
-                option.textContent = soil;
-                select.appendChild(option);
-            }
-        }
-
-        // MODIFIED: Populates the new <select multiple> dropdown
-        function populateCrops() {
-            const soilType = document.getElementById('input-soil-type').value;
-            const cropsSelect = document.getElementById('input-crops');
-            cropsSelect.innerHTML = ''; // Clear existing options
-
-            if (soilType && soilData[soilType]) {
-                soilData[soilType].crops.forEach(crop => {
-                    const option = document.createElement('option');
-                    option.value = crop;
-                    option.textContent = crop;
-                    cropsSelect.appendChild(option);
-                });
-            }
-        }
-
+        // --- ADMIN: FARMER MANAGEMENT ---
         async function handleFormSubmit(e) {
             e.preventDefault();
-            const name = document.getElementById('input-name').value;
-            const dan = Math.floor(100000000000 + Math.random() * 900000000000).toString().replace(/(.{4})/g, '$1 ').trim();
-            const mac = document.getElementById('input-mac').value;
-            const randYield = Array.from({length:6}, () => Math.floor(Math.random() * 25));
-            const randMoist = Array.from({length:6}, () => Math.floor(Math.random() * 60));
-
-            // MODIFIED: Reads values from the multi-select dropdown
-            const selectedCrops = Array.from(document.getElementById('input-crops').selectedOptions)
-                                       .map(option => option.value)
-                                       .join(', ');
+            
+            // Get selected crops from multi-select
+            const selectedCrops = Array.from(document.getElementById('input-suitable-crops').selectedOptions).map(option => option.value);
 
             const newFarmer = {
-                dan, name, 
-                plot: document.getElementById('input-plot').value, 
-                area: document.getElementById('input-area').value, 
-                mac: mac, 
-                yieldData: randYield, 
-                moistureData: randMoist,
+                dan: Math.floor(100000000000 + Math.random() * 900000000000).toString().replace(/(.{4})/g, '$1 ').trim(),
+                name: document.getElementById('input-name').value,
+                plot: document.getElementById('input-plot').value,
+                area: document.getElementById('input-area').value,
+                mac: document.getElementById('input-mac').value,
                 soil_type: document.getElementById('input-soil-type').value,
-                selected_crops: selectedCrops // Use the correctly formatted string
+                suitable_crops: selectedCrops, // Save the array here
+                yieldData: Array.from({length:6}, () => Math.floor(Math.random() * 25)),
+                moistureData: Array.from({length:6}, () => Math.floor(Math.random() * 60))
             };
 
-            const { data, error } = await supabaseClient.from('farmers').insert([newFarmer]).select();
-            if(error) {
+            const { data, error } = await supabaseClient.from('farmers').insert([newFarmer]).select().single();
+            if (error) {
                 console.error("Error adding farmer:", error);
                 alert("Failed to add farmer. Check console for details.");
                 return;
             }
 
             await renderAdminTable();
-            document.getElementById('card-name').textContent = name;
-            document.getElementById('card-dan').textContent = dan;
+            document.getElementById('card-name').textContent = data.name;
+            document.getElementById('card-dan').textContent = data.dan;
             document.getElementById('dan-modal').classList.remove('hidden');
             e.target.reset();
-            populateCrops(); // Reset crops dropdown
         }
-
         function closeDanModal() { document.getElementById('dan-modal').classList.add('hidden'); }
 
         async function renderAdminTable(filterText = '') {
@@ -1245,29 +1156,13 @@
 
         function viewFarmerDetails(dan) {
             const f = farmersList.find(x => x.dan === dan); if(!f) return;
-            document.getElementById('view-name').textContent = f.name; document.getElementById('view-dan').textContent = f.dan; document.getElementById('view-mac').textContent = f.mac || 'N/A';
+            document.getElementById('view-name').textContent = f.name;
+            document.getElementById('view-dan').textContent = f.dan;
+            document.getElementById('view-mac').textContent = f.mac || 'N/A';
             document.getElementById('admin-farmer-view-modal').classList.remove('hidden');
             setTimeout(() => renderCharts(f.yieldData, f.moistureData, 'adminViewYieldChart', 'adminViewMoistureChart'), 200);
         }
         function closeAdminViewModal() { document.getElementById('admin-farmer-view-modal').classList.add('hidden'); }
-        
-        // --- FARMER: SOIL & HWSD SIMULATION ---
-        function displaySoilCharacteristics(soilType) {
-            const charList = document.getElementById('dash-soil-char');
-            charList.innerHTML = '';
-            if (soilType && soilData[soilType]) {
-                soilData[soilType].characteristics.forEach(char => {
-                    const li = document.createElement('li');
-                    li.textContent = char;
-                    charList.appendChild(li);
-                });
-            } else {
-                const li = document.createElement('li');
-                li.textContent = 'No characteristics data available.';
-                charList.appendChild(li);
-            }
-        }
-
 
         // --- IMAGE UPLOAD & PREVIEW ---
         function previewImage(fileInput, previewElementId) {
@@ -1305,7 +1200,6 @@
                 return null;
             }
             
-            console.log('Successfully uploaded image. Public URL:', data.publicUrl);
             return data.publicUrl;
         }
 
@@ -1353,13 +1247,14 @@
             buyableProducts = data || [];
             
             const container = document.getElementById('admin-products-list');
+            const placeholder = 'https://via.placeholder.com/64x64.png?text=No+Img';
             if(buyableProducts.length === 0) { container.innerHTML = '<div class="text-center text-gray-500 text-sm py-4">No supplies added yet.</div>'; return; }
             container.innerHTML = '';
             buyableProducts.forEach(p => {
                 container.innerHTML += `
                     <div class="bg-white/5 p-3 rounded-lg border border-white/10 flex justify-between items-center">
                         <div class="flex items-center gap-4">
-                            <img src="${escapeHtml(p.image || SVG_PLACEHOLDER)}" onerror="this.src='${SVG_PLACEHOLDER}'" alt="${escapeHtml(p.name)}" class="w-16 h-16 object-cover rounded-lg">
+                            <img src="${escapeHtml(p.image || placeholder)}" onerror="this.src='${placeholder}'" alt="${escapeHtml(p.name)}" class="w-16 h-16 object-cover rounded-lg">
                             <div>
                                 <p class="text-white font-semibold">${escapeHtml(p.name)}</p>
                                 <p class="text-sm text-green-400">₹${escapeHtml(p.price)} / ${escapeHtml(p.unit)}</p>
@@ -1383,7 +1278,7 @@
         }
 
 
-        // --- FARMER: BUY SUPPLIES ---
+        // --- FARMER: BUY SUPPLIES (IMAGE FIX) ---
         async function renderFarmerBuyableProducts() {
             const container = document.getElementById('farmer-buy-products-list');
             if(!container) return;
@@ -1405,10 +1300,11 @@
             products.forEach(p => {
                 const stockInfo = p.stock > 0 ? `${p.stock} ${p.unit}s available` : 'Out of Stock';
                 const buttonDisabled = p.stock > 0 ? '' : 'disabled';
+                const placeholder = 'https://via.placeholder.com/220x140.png?text=No+Image';
                 
                 container.innerHTML += `
                     <div class="supply-card">
-                        <img src="${escapeHtml(p.image || SVG_PLACEHOLDER)}" onerror="this.onerror=null;this.src='${SVG_PLACEHOLDER}';" alt="${escapeHtml(p.name)}">
+                        <img src="${escapeHtml(p.image || placeholder)}" onerror="this.onerror=null;this.src='${placeholder}';" alt="${escapeHtml(p.name)}">
                         <div class="flex-1">
                             <h4 class="text-lg font-bold text-white">${escapeHtml(p.name)}</h4>
                             <p class="text-green-400 font-semibold">₹${escapeHtml(p.price)} / ${escapeHtml(p.unit)}</p>
@@ -1618,10 +1514,11 @@
             sellOffers = data || [];
             
             const container = document.getElementById('admin-offers-list');
+            const placeholder = 'https://via.placeholder.com/56x56.png?text=No+Img';
             if(sellOffers.length === 0){ container.innerHTML = '<div class="text-center text-gray-500 text-sm py-4">No offers found.</div>'; return; }
             container.innerHTML = '';
             sellOffers.forEach(o => {
-                container.innerHTML += `<div class="bg-white/5 p-3 rounded-lg border border-white/10 flex justify-between items-start mb-2"> <div style="flex:1"> <div class="flex items-center gap-2 mb-1"><span class="text-green-400 text-sm font-bold">${escapeHtml(o.dan)}</span><span class="text-gray-500 text-xs ml-2">${escapeHtml(o.time)}</span></div> <div class="flex gap-3 items-center"> <img src="${escapeHtml(o.image || SVG_PLACEHOLDER)}" onerror="this.src='${SVG_PLACEHOLDER}'" alt="${escapeHtml(o.crop)}" style="width:56px;height:56px;object-fit:cover;border-radius:8px;"> <div> <div class="text-white font-semibold">${escapeHtml(o.crop)}</div> <div class="text-gray-300 text-sm">${escapeHtml(o.qty)} kg • ₹${escapeHtml(o.cost)}</div> <div class="offer-timeline mt-2"> <div class="timeline-step">${o.status === 'pending' ? '<span class="text-yellow-300">Pending</span>' : escapeHtml(o.status.charAt(0).toUpperCase()+o.status.slice(1))}</div> </div> </div> </div> </div> <div class="ml-3 flex flex-col gap-2"> ${ o.status === 'pending' ? `<button onclick="acceptSellOffer('${o.id}')" class="text-sm bg-green-500 text-black px-3 py-1 rounded hover:bg-green-400">Accept</button><button onclick="declineSellOffer('${o.id}')" class="text-sm bg-red-700 text-white px-3 py-1 rounded hover:bg-red-600">Decline</button>` : `<div class="text-xs text-gray-400 px-3 py-1 rounded">${escapeHtml(o.status)}</div>` } </div> </div>`;
+                container.innerHTML += `<div class="bg-white/5 p-3 rounded-lg border border-white/10 flex justify-between items-start mb-2"> <div style="flex:1"> <div class="flex items-center gap-2 mb-1"><span class="text-green-400 text-sm font-bold">${escapeHtml(o.dan)}</span><span class="text-gray-500 text-xs ml-2">${escapeHtml(o.time)}</span></div> <div class="flex gap-3 items-center"> <img src="${escapeHtml(o.image || placeholder)}" onerror="this.src='${placeholder}'" alt="${escapeHtml(o.crop)}" style="width:56px;height:56px;object-fit:cover;border-radius:8px;"> <div> <div class="text-white font-semibold">${escapeHtml(o.crop)}</div> <div class="text-gray-300 text-sm">${escapeHtml(o.qty)} kg • ₹${escapeHtml(o.cost)}</div> <div class="offer-timeline mt-2"> <div class="timeline-step">${o.status === 'pending' ? '<span class="text-yellow-300">Pending</span>' : escapeHtml(o.status.charAt(0).toUpperCase()+o.status.slice(1))}</div> </div> </div> </div> </div> <div class="ml-3 flex flex-col gap-2"> ${ o.status === 'pending' ? `<button onclick="acceptSellOffer('${o.id}')" class="text-sm bg-green-500 text-black px-3 py-1 rounded hover:bg-green-400">Accept</button><button onclick="declineSellOffer('${o.id}')" class="text-sm bg-red-700 text-white px-3 py-1 rounded hover:bg-red-600">Decline</button>` : `<div class="text-xs text-gray-400 px-3 py-1 rounded">${escapeHtml(o.status)}</div>` } </div> </div>`;
             });
         }
 
@@ -1683,6 +1580,7 @@
         function listenToChanges() {
             supabaseClient.channel('public:messages')
               .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
+                console.log('New message received!', payload.new);
                 renderAdminInbox();
                 refreshChatWindowMessages();
               })
@@ -1690,6 +1588,7 @@
 
             supabaseClient.channel('public:offers')
               .on('postgres_changes', { event: '*', schema: 'public', table: 'offers' }, payload => {
+                console.log('Offer changed!', payload);
                 renderAdminSellOffers();
                 refreshFarmerOffersUI();
                 updateSellBadges();
@@ -1698,6 +1597,7 @@
               
             supabaseClient.channel('public:products')
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, payload => {
+                    console.log('Product list changed!', payload);
                     renderAdminProductsList();
                     renderFarmerBuyableProducts();
                 })
@@ -1724,7 +1624,7 @@
         });
 
         // Expose functions for inline onclick
-        Object.assign(window, { returnHome, showLoginSelection, showAdminAuth, showFarmerAuth, verifyAdminPassword, verifyFarmerLogin, logout, viewFarmerDetails, deleteFarmer, closeDanModal, toggleChat, sendUserMessage, openSellModal, closeSellModal, submitSellOffer, acceptSellOffer, declineSellOffer, renderAdminSellOffers, refreshFarmerOffersUI, updateSellBadges, handleFormSubmit, populateCrops, handleProductFormSubmit, deleteAdminProduct, buyProduct, changeLanguage, toggleNews, searchFarmer, previewImage });
+        Object.assign(window, { returnHome, showLoginSelection, showAdminAuth, showFarmerAuth, verifyAdminPassword, verifyFarmerLogin, logout, viewFarmerDetails, deleteFarmer, closeDanModal, toggleChat, sendUserMessage, openSellModal, closeSellModal, submitSellOffer, acceptSellOffer, declineSellOffer, renderAdminSellOffers, refreshFarmerOffersUI, updateSellBadges, handleFormSubmit, handleProductFormSubmit, deleteAdminProduct, buyProduct, changeLanguage, toggleNews, searchFarmer, previewImage });
     </script>
 </body>
 </html>
