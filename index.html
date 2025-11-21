@@ -739,7 +739,7 @@
                     <div class="space-y-3">
                         <div><p class="text-xs text-gray-500 uppercase">DAN Code</p><p id="dash-dan" class="font-mono text-xl text-green-400 font-bold tracking-wider">---</p></div>
                         <div><p class="text-xs text-gray-500 uppercase" data-i18n="lbl_reg_plot">Registered Plot</p><p id="dash-plot" class="text-white text-lg">---</p></div>
-                        <div><p class="text-xs text-gray-400 uppercase" data-i18n="lbl_tot_area">Total Area</p><p id="dash-area" class="text-white text-lg">--- Acres</p></div>
+                        <div><p class="text-xs text-gray-500 uppercase" data-i18n="lbl_tot_area">Total Area</p><p id="dash-area" class="text-white text-lg">--- Acres</p></div>
                     </div>
                 </div>
 
@@ -1472,9 +1472,9 @@
         }
         function toggleChat() { document.getElementById('chat-window').classList.toggle('hidden'); if (!document.getElementById('chat-window').classList.contains('hidden')) document.getElementById('user-chat-input').focus(); }
         
-        async function sendUserMessage(e) { e.preventDefault(); /* ... same ... */ } // Placeholder
-        async function renderAdminInbox() { /* ... same ... */ } // Placeholder
-        async function refreshChatWindowMessages() { /* ... same ... */ } // Placeholder
+        async function sendUserMessage(e) { e.preventDefault(); /* ... same ... */ } 
+        async function renderAdminInbox() { /* ... same ... */ } 
+        async function refreshChatWindowMessages() { /* ... same ... */ } 
         
         function toggleNews() { newsPanel.classList.toggle('open'); if(newsPanel.classList.contains('open')) renderNews('all'); }
         function renderNews(filter = 'all') {
