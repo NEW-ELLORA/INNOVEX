@@ -573,7 +573,7 @@
                     <h2 class="text-3xl font-bold text-white" data-i18n="admin_console">Admin Console</h2>
                     <p class="text-gray-400" data-i18n="admin_console_desc">Manage Farmers, Supplies, Offers & Support</p>
                 </div>
-                <button onclick="showLoginSelection()" class="text-sm text-red-400 border border-red-900 px-4 py-2 rounded hover:bg-red-900/20" data-i18n="btn_logout">Logout</button>
+                <button onclick="logout()" class="text-sm text-red-400 border border-red-900 px-4 py-2 rounded hover:bg-red-900/20" data-i18n="btn_logout">Logout</button>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -677,7 +677,7 @@
                     <p class="text-gray-400" data-i18n="farm_overview">Here is your farm overview.</p>
                 </div>
                 <div class="flex items-center gap-3">
-                    <button id="farmer-logout-btn" onclick="logoutFromFarmer()" class="text-sm text-gray-400 border border-gray-700 px-4 py-2 rounded hover:text-white" data-i18n="btn_logout">Logout</button>
+                    <button id="farmer-logout-btn" onclick="logout()" class="text-sm text-gray-400 border border-gray-700 px-4 py-2 rounded hover:text-white" data-i18n="btn_logout">Logout</button>
                     <div class="relative">
                         <button id="sell-product-btn-2" onclick="openSellModal()" class="neon-button px-4 py-2">Sell Produce</button>
                         <span id="sell-notif-badge-2" class="small-badge hidden absolute -top-2 -right-2">0</span>
@@ -966,9 +966,12 @@
         function showAdminAuth() { hideAll(); views.adminAuth.classList.remove('hidden-section'); views.adminAuth.classList.add('fade-in'); document.getElementById('auth-error').classList.add('hidden'); }
         function showFarmerAuth() { hideAll(); views.farmerAuth.classList.remove('hidden-section'); views.farmerAuth.classList.add('fade-in'); document.getElementById('farmer-auth-error').classList.add('hidden'); }
 
-        // --- AUTHENTICATION & LOGOUT ---
+        // --- AUTHENTICATION & LOGOUT (WITH SESSION PERSISTENCE) ---
         async function verifyAdminPassword() {
             if(document.getElementById('admin-password-input').value === 'admin123') {
+                // Save session state
+                sessionStorage.setItem('krishi-user-type', 'admin');
+
                 hideAll();
                 views.adminPanel.classList.remove('hidden-section');
                 views.adminPanel.classList.add('fade-in');
@@ -999,6 +1002,10 @@
             }
 
             if(farmer) {
+                // Save session state
+                sessionStorage.setItem('krishi-user-type', 'farmer');
+                sessionStorage.setItem('krishi-user-dan', farmer.dan);
+
                 document.getElementById('dash-farmer-name').textContent = farmer.name;
                 document.getElementById('dash-dan').textContent = farmer.dan;
                 document.getElementById('dash-plot').textContent = farmer.plot;
@@ -1023,10 +1030,38 @@
             } else document.getElementById('farmer-auth-error').classList.remove('hidden');
         }
 
-        function logoutFromFarmer() {
+        function logout() {
+            // Clear session state
+            sessionStorage.removeItem('krishi-user-type');
+            sessionStorage.removeItem('krishi-user-dan');
+            
             chatWidget.dataset.currentDan = '';
             hideAll();
             returnHome();
+        }
+
+        // --- SESSION CHECK ON PAGE LOAD ---
+        async function checkSession() {
+            const userType = sessionStorage.getItem('krishi-user-type');
+            if (userType === 'admin') {
+                hideAll();
+                views.adminPanel.classList.remove('hidden-section');
+                views.adminPanel.classList.add('fade-in');
+                chatWidget.classList.add('hidden');
+                loginBtn.classList.add('hidden');
+                await Promise.all([
+                    renderAdminTable(),
+                    renderAdminInbox(),
+                    renderAdminSellOffers(),
+                    renderAdminProductsList()
+                ]);
+            } else if (userType === 'farmer') {
+                const dan = sessionStorage.getItem('krishi-user-dan');
+                if (dan) {
+                    document.getElementById('farmer-dan-input').value = dan;
+                    await verifyFarmerLogin();
+                }
+            }
         }
 
         // --- ADMIN: FARMER MANAGEMENT ---
@@ -1217,22 +1252,35 @@
         }
 
 
-        // --- FARMER: BUY SUPPLIES ---
+        // --- FARMER: BUY SUPPLIES (IMAGE FIX) ---
         async function renderFarmerBuyableProducts() {
             const container = document.getElementById('farmer-buy-products-list');
             if(!container) return;
             const { data, error } = await supabaseClient.from('products').select('*').order('created_at', { ascending: false });
-            if (error) { console.error("Error fetching products for farmer:", error); return; }
-            const products = data || [];
             
-            if(products.length === 0) { container.innerHTML = '<div class="text-center text-gray-500 text-sm py-4">No supplies available right now.</div>'; return; }
+            if (error) { 
+                console.error("Error fetching products for farmer:", error); 
+                container.innerHTML = '<div class="text-center text-red-400 text-sm py-4">Error loading supplies.</div>';
+                return; 
+            }
+            
+            const products = data || [];
+            console.log("Products fetched for farmer view:", products); // For debugging
+            
+            if(products.length === 0) { 
+                container.innerHTML = '<div class="text-center text-gray-500 text-sm py-4">No supplies available right now.</div>'; 
+                return; 
+            }
             container.innerHTML = '';
             products.forEach(p => {
                 const stockInfo = p.stock > 0 ? `${p.stock} ${p.unit}s available` : 'Out of Stock';
-                const buttonDisabled = p.stock > 0 ? '' : 'disabled style="background-color: #555; cursor: not-allowed;"';
+                const buttonDisabled = p.stock > 0 ? '' : 'disabled';
+                // FIX: Use a placeholder if image URL is missing
+                const imageUrl = p.image ? escapeHtml(p.image) : 'https://via.placeholder.com/220x140.png?text=No+Image';
+                
                 container.innerHTML += `
                     <div class="supply-card">
-                        <img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.name)}">
+                        <img src="${imageUrl}" alt="${escapeHtml(p.name)}">
                         <div class="flex-1">
                             <h4 class="text-lg font-bold text-white">${escapeHtml(p.name)}</h4>
                             <p class="text-green-400 font-semibold">₹${escapeHtml(p.price)} / ${escapeHtml(p.unit)}</p>
@@ -1510,7 +1558,6 @@
             supabaseClient.channel('public:messages')
               .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
                 console.log('New message received!', payload.new);
-                // Update UI for both admin and relevant farmer
                 renderAdminInbox();
                 refreshChatWindowMessages();
               })
@@ -1520,7 +1567,6 @@
             supabaseClient.channel('public:offers')
               .on('postgres_changes', { event: '*', schema: 'public', table: 'offers' }, payload => {
                 console.log('Offer changed!', payload);
-                // Update UI for both admin and relevant farmer
                 renderAdminSellOffers();
                 refreshFarmerOffersUI();
                 updateSellBadges();
@@ -1539,7 +1585,7 @@
 
 
         // --- INITIALIZATION ---
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('preloader').classList.add('loaded');
             document.getElementById('current-year').textContent = new Date().getFullYear();
 
@@ -1549,13 +1595,15 @@
             const observer = new IntersectionObserver((entries) => { entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('is-visible'); }); });
             document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
             
+            await checkSession(); // Check for existing session on page load
+
             renderNews('all');
             changeLanguage(currentLang);
             listenToChanges(); // Start listening for realtime updates
         });
 
         // Expose functions for inline onclick
-        Object.assign(window, { returnHome, showLoginSelection, showAdminAuth, showFarmerAuth, verifyAdminPassword, verifyFarmerLogin, logoutFromFarmer, viewFarmerDetails, deleteFarmer, closeDanModal, toggleChat, sendUserMessage, openSellModal, closeSellModal, submitSellOffer, acceptSellOffer, declineSellOffer, renderAdminSellOffers, refreshFarmerOffersUI, updateSellBadges, handleFormSubmit, handleProductFormSubmit, deleteAdminProduct, buyProduct, changeLanguage, toggleNews, searchFarmer, previewImage });
+        Object.assign(window, { returnHome, showLoginSelection, showAdminAuth, showFarmerAuth, verifyAdminPassword, verifyFarmerLogin, logout, viewFarmerDetails, deleteFarmer, closeDanModal, toggleChat, sendUserMessage, openSellModal, closeSellModal, submitSellOffer, acceptSellOffer, declineSellOffer, renderAdminSellOffers, refreshFarmerOffersUI, updateSellBadges, handleFormSubmit, handleProductFormSubmit, deleteAdminProduct, buyProduct, changeLanguage, toggleNews, searchFarmer, previewImage });
     </script>
 </body>
 </html>
